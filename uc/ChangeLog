@@ -1,0 +1,40 @@
+2003-08-05  LÇ·szlÇÛ Monda  <monda.laszlo@stud.u-szeged.hu>
+
+	* gtkbasic.py (init_colors): New method which initialises colors
+	used by widgets for faster creation.
+
+	* gtkpanel.py (Panel.move_tagged_entries_squashlessly): Rename
+	method name to `move_tagged_entries'. Remove `squash'
+	variable. Rename variable `row_num' to `row'.
+	(Panel.crowd_tagged_entries): Add new method.
+	(Panel.move_tagged_entries): Generalize by introduce `extrude'
+	parameter.
+	(Panel.swap_rows): Add method.
+
+2003-08-04  LÅ·szlÅÛ Monda  <monda.laszlo@stud.u-szeged.hu>
+
+	* gtkpanel.py (Panel.chdir_hook, Panel.select_row_handler):
+	Replace `iso-8859-2' constant with `encoding' variable which
+	now resides in `gtkconfig.py'.
+	(Panel.select_row_handler): A more elegant solution used without
+	catching exceptions. Remove unnecessary arguments.
+	(Panel.mouse_tag_handler): Rename variable `row_num' to `row' and
+	`row' to `row_iter' which results in a shorter and cleaner code.
+	(Panel.set_columns_hook): Merge `Panel.new_list' and
+	`Panel.resize_list' into this method. They were called only from
+	here and they are short enough.
+	(Panel.__init__): Align statusbar properly.
+	* gtkconfig.py: Add `encoding' variable.
+
+2003-08-03  LÅ·szlÅÛ Monda  <monda.laszlo@stud.u-szeged.hu>
+
+	* gtkpanel.py: Move "helper methods" which are formerly called as
+	"user interface helpers" right after "general methods". This seems
+	to be more logical, since these methods implement new features,
+	instead of overdefining existing ones or gluing them together with
+	the user interface.
+
+	* basepanel.py (BasePanel.chdir_hook, BasePanel.set_columns_hook):
+	Reindent correctly.
+
+	* ChangeLog: Change log started. Finally...
