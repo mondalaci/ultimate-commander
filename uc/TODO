@@ -1,2 +1,9 @@
-symlink bug?
-
+- forking a shell
+- passing the selected file list to any executable as arguments
+- binding an arbitrary executable to a key (sequence). it's a shortcut for the previous feature.
+- resortable panel entries for maximum flexibility: suppose we've got a script that burns an audio cd from various formats (vob, mp3, wav) and we want to burn them in a special order.
+- file specific data fields embedded into the panel: there are many file format that carries meta informations we want to edit. these formats could be editable through the panel. some examples are mp3, vob, avi, etc.
+- the file formats that consists similar meta info could be groupable based on mime.
+- various panel modes: The above features makes sense of three different panel modes. one is normal. second is sort mode and the third is meta-edit.
+- emacs-like frame handling
+- probably much more
