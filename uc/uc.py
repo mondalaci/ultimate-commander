@@ -1,7 +1,9 @@
 import gtk
 
 from gtkpanel import *
+import gtkbasic
 
+gtkbasic.init_colors()
 window = gtk.Window()
 window.set_title('The Ultimate Commander')
 window.connect('destroy', lambda widget: gtk.main_quit())
