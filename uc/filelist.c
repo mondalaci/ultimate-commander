@@ -1,4 +1,6 @@
 #include <dirent.h>
+//#include <string.h>
+#include <libgen.h>
 #include "filelist.h"
 
 file_list_t *new_file_list()
@@ -61,3 +63,41 @@ file_list_t *chdir_file_list(char *sdir)
     return file_list;
 }
 
+void remove_entry(file_list_t *list, file_entry_t *entry)
+{
+    if (!strcmp(basename(entry->fn), ".."))
+	return;
+    if (entry->prev)
+	entry->prev->next=entry->next;
+    else
+	list->head=entry->next;
+    if (entry->next)
+	entry->next->prev=entry->prev;
+    else
+	list->tail=entry->prev;
+    list->len--;
+}
+
+void move_entry(file_list_t *list, file_entry_t *dest, file_entry_t *src, int pos)
+{
+    /* currently broken */
+    /* unlacing old link */
+/*    if (entry->prev)
+	entry->prev->next=entry->next;
+    else
+	list->head=entry->next;
+    if (entry->next)
+	entry->next->prev=entry->prev;
+    else
+    list->tail=entry->prev;*/
+    /* lacing up new link*/
+/*    if (!(entry->prev->next=entry->next))
+	list->tail=src;
+	dest->next=entry->prev;*/
+}
+
+void shift_selected_entries(file_list_t *list, int space, int congestion)
+{
+    file_entry_t *entry, *last_selected_entry, *next_entry_ref;
+    
+}
