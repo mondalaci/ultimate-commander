@@ -7,28 +7,47 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <grp.h>
-#include <time.h>
-#include <math.h>
 #include "fileentry.h"
 #include "curses.h"
 #include "panel.h"
 #include "color.h"
-//extern char **environ;
-/* draw parts of the panel */
-//void draw_panel_entry(char* entry, int len);
-//void draw_panel_row(file_entry_t *entry, panel_t *panel, int active);
-//file_entry_t *draw_panel_pane(panel_t *panel, file_entry_t *start_entry, int row, rect_t *rect);
+#include "global.h"
 
+/* local functions */
 
+void draw_panel_entry(char* entry, int len);
+void draw_panel_row(file_entry_t *entry, panel_column_t *column, int row, int panel_row);
+file_entry_t *draw_panel_pane(file_entry_t *entry, panel_column_t *column, int row, int panel_row, rect_t *rect);
+int set_panel_row(panel_t *panel, int row);
+file_entry_t *get_panel_entry(panel_t *panel);
+int get_panel_panes(panel_t *panel);
 
-int get_panel_panes(panel_t *panel)
+/* construction and destruction */
+
+panel_t *new_panel(char* path, char* format)
 {
-    if (panel->panes>0)
-	return panel->panes;
-    else
-	return -panel->link.rect.w/panel->panes;
+    panel_t *panel=(panel_t*)xmalloc(sizeof(panel_t));
+    *panel->columns=NULL;
+    panel->columns[1]=NULL;
+    panel->file_list=new_file_list();
+    panel->target=NULL;
+    panel->format=NULL;
+    *panel->path='\0';
+    panel->panes=2;
+    panel->index=0;
+    panel->row=0;
+    panel->col=0;
+    panel->mode=PANEL_MODE_NORMAL;
+    if (!format)
+	panel->format=strdup(default_panel_format);
+    reformat_panel(panel, panel->format);
 }
 
+void destroy_panel(panel_t *panel)
+{
+}
+
+/* data manipulation */
 
 int reformat_panel(panel_t *panel, char *sformat)
 {
@@ -38,15 +57,14 @@ int reformat_panel(panel_t *panel, char *sformat)
     panel_column_t *columns, *column, *column_type;
     int total_percentage;
     int expanding_columns=0;
-    int remaining_cells=panel->link.rect.w/get_panel_panes(panel);
+    int remaining_cells=panel->widget.rect.w/get_panel_panes(panel);
     int expanding_column_len;
     int variable_column=0;
     int variable_column_len=-1;
 
-//    printf("initial remaining cells: %i\n", remaining_cells);
     format=strdup(sformat); /* strtok doesn't like static string to be tokenized */
 
-/* computing the number of columns */
+    /* computing the number of columns */
     for (c=format; *c; c++)
 	if (*c=='|')
 	    column_num++;
@@ -58,9 +76,7 @@ int reformat_panel(panel_t *panel, char *sformat)
 	int parenthesis_depth=0;
 	int defined_len=0;
 	char *data=NULL;
-//	printf("new token: `%s'\n", token);
 	for (c=token; *c; c++) {
-//	    printf("new char: %c\n", *c);
 	    switch (*c) {
 	        case '(':
 		    if (!parenthesis_depth++)
@@ -73,7 +89,6 @@ int reformat_panel(panel_t *panel, char *sformat)
 	        case ':':
 		    if (!parenthesis_depth) {
 			*(c++)='\0';
-//			printf("trying to read number: `%s'\n", c+1); //optimizable
 			if (sscanf(c,"%i",&column->len)) {
 			    defined_len=1;
 			    if (!column->len)
@@ -130,7 +145,6 @@ int reformat_panel(panel_t *panel, char *sformat)
 	return -1; /* not enough free space for the expanding columns */
 
     /* resolving expanding columns */
-//    printf("listen...\n");
     if (expanding_columns) {
 	expanding_column_len=remaining_cells/expanding_columns;
 	printf("expanding_column_len: %i\n", expanding_column_len);
@@ -144,12 +158,10 @@ int reformat_panel(panel_t *panel, char *sformat)
 	    }
     }
     
-    printf("remaining cells: %i\n", remaining_cells);
-    printf("expanding_columns: %i\n", expanding_columns);
-
     if (panel->columns[0])
 	free(panel->columns[0]);
     panel->columns[0]=columns;
+
 /*    if (panel->columns[1])
 	free(panel->columns[1]);
     panel->columns[1]=columns;
@@ -157,6 +169,114 @@ int reformat_panel(panel_t *panel, char *sformat)
     return 0;
 }
 
+void chdir_panel(panel_t *panel, char* dir)
+{
+    file_list_t *list;
+    char* path;
+    panel->index=0;
+    panel->row=0;
+    free_file_list(panel->file_list);
+    if (list=chdir_file_list(dir))
+	panel->file_list=list;
+    getcwd(panel->path, PATH_MAX);
+    cache_file_list(panel->file_list, panel->columns[0]);
+}
+
+int set_panel_panes(panel_t *panel, int panes)
+{
+}
+
+/* common widget interfaces */
+
+void draw_panel(panel_t *panel)
+{
+    int pane, i, row=0;
+    rect_t rect=panel->widget.rect;
+    file_entry_t *entry = panel->file_list->head;
+    int panes=get_panel_panes(panel);
+    int pane_w=rect.w/panes;
+    int pane_r=rect.w%panes;
+    for (i=0; i<panel->index; i++) {
+	entry=entry->next;
+	row++;
+    }
+    for (pane=0; pane<panes; pane++, row+=rect.h) {
+	rect.x = pane*pane_w+min(pane, pane_r);
+	rect.w = pane_w+min(pane, pane_r);
+	if (pane>0) {
+	    attrset(getpair(COLOR_WHITE, COLOR_BLACK)|A_BOLD);
+	    draw_hline(rect.y, rect.x-1, rect.h);
+	}
+	entry=draw_panel_pane(entry, panel->columns[0], row, panel->row, &rect);
+    }
+}
+
+/* ui functions */
+
+void prev_panel_row(panel_t *panel)
+{
+    set_panel_row(panel, -1);
+}
+
+void next_panel_row(panel_t *panel)
+{
+    set_panel_row(panel, 1);
+}
+
+void prev_panel_pane(panel_t *panel)
+{
+    set_panel_row(panel, -panel->widget.rect.h*get_panel_panes(panel));
+}
+
+void next_panel_pane(panel_t *panel)
+{
+    set_panel_row(panel, panel->widget.rect.h*get_panel_panes(panel));
+}
+
+void prev_panel_page(panel_t *panel)
+{
+    set_panel_row(panel, -panel->widget.rect.h);
+}
+
+void next_panel_page(panel_t *panel)
+{
+    set_panel_row(panel, panel->widget.rect.h);
+}
+
+void move_panel_start(panel_t *panel)
+{
+    set_panel_row(panel, -panel->file_list->len);
+}
+
+void move_panel_end(panel_t *panel)
+{
+    set_panel_row(panel, panel->file_list->len);
+}
+
+void select_panel_entry(panel_t *panel)
+{
+    file_entry_t *entry=get_panel_entry(panel);
+    if (entry->st.st_mode&S_IFDIR) {
+	strcat(panel->path, "/");
+	strcat(panel->path, entry->fn);
+	chdir_panel(panel, panel->path);
+    } else {
+	if (!fork()) {
+	    char path[PATH_MAX];
+	    strcpy(path, panel->path);
+	    strcat(path, "/");
+	    strcat(path, entry->fn);
+	    mvaddstr(0,0,path);
+	    /* the following line is quite arbitarry ;) */
+	    execl("/usr/local/bin/mplayer", "mplayer",  path);
+	} else {
+	    wait(NULL);
+	    wrefresh(curscr);
+	}
+    }
+}
+
+/* local functions */
 
 void draw_panel_entry(char* entry, int len)
 {
@@ -215,74 +335,9 @@ file_entry_t *draw_panel_pane(file_entry_t *entry, panel_column_t *column, int r
     return entry;
 }
 
-
-
-#define min(a, b) (a>b?b:a)
-
-void draw_hline(int y, int x, int h)
-{
-    int pos;
-    int end=y+h;
-    for (pos=y; pos<end; pos++)
-	mvaddch(pos, x, ACS_VLINE);
-}
-
-
-void draw_panel(panel_t *panel)
-{
-    int pane, i, row=0;
-    rect_t rect=panel->link.rect;
-    file_entry_t *entry = panel->file_list->head;
-    int panes=get_panel_panes(panel);
-    int pane_w=rect.w/panes;
-    int pane_r=rect.w%panes;
-    for (i=0; i<panel->index; i++) {
-	entry=entry->next;
-	row++;
-    }
-    for (pane=0; pane<panes; pane++, row+=rect.h) {
-	rect.x = pane*pane_w+min(pane, pane_r);
-	rect.w = pane_w+min(pane, pane_r);
-	if (pane>0) {
-	    attrset(getpair(COLOR_WHITE, COLOR_BLACK)|A_BOLD);
-	    draw_hline(rect.y, rect.x-1, rect.h);
-	}
-	entry=draw_panel_pane(entry, panel->columns[0], row, panel->row, &rect);
-    }
-}
-
-panel_t *new_panel()
-{
-    panel_t *panel = (panel_t*)xmalloc(sizeof(panel_t));
-    *panel->columns = NULL;
-    panel->columns[1]=NULL;
-    panel->file_list=new_file_list();
-    panel->target = NULL;
-    panel->format=NULL;
-    *panel->path='\0';
-    panel->panes = 2;
-    panel->index = 0;
-    panel->row = 0;
-    panel->col=0;
-    panel->mode = PANEL_MODE_NORMAL;
-}
-
-void chdir_panel(panel_t *panel, char* dir)
-{
-    file_list_t *list;
-    char* path;
-    panel->index=0;
-    panel->row=0;
-    free_file_list(panel->file_list);
-    if (list=chdir_file_list(dir))
-	panel->file_list=list;
-    getcwd(panel->path, PATH_MAX);
-    cache_file_list(panel->file_list, panel->columns[0]);
-}
-
 int set_panel_row(panel_t *panel, int row)
 {
-    int len=get_panel_panes(panel)*panel->link.rect.h;
+    int len=get_panel_panes(panel)*panel->widget.rect.h;
     int arow=panel->row+row;
     if (arow<0)
 	panel->row=0;
@@ -294,80 +349,10 @@ int set_panel_row(panel_t *panel, int row)
 	panel->index+=row;
     if (panel->index<0)
 	panel->index=0;
-    else if (panel->index>panel->file_list->len-get_panel_panes(panel)*panel->link.rect.h)
-	panel->index=panel->file_list->len-get_panel_panes(panel)*panel->link.rect.h;
+    else if (panel->index>panel->file_list->len-get_panel_panes(panel)*panel->widget.rect.h)
+	panel->index=panel->file_list->len-get_panel_panes(panel)*panel->widget.rect.h;
 }
 
-void prev_panel_row(panel_t *panel)
-{
-    set_panel_row(panel, -1);
-}
-
-void next_panel_row(panel_t *panel)
-{
-    set_panel_row(panel, 1);
-}
-
-void prev_panel_page(panel_t *panel)
-{
-    set_panel_row(panel, -panel->link.rect.h);
-}
-
-void next_panel_page(panel_t *panel)
-{
-    set_panel_row(panel, panel->link.rect.h);
-}
-
-void prev_panel_pane(panel_t *panel)
-{
-    set_panel_row(panel, -panel->link.rect.h*get_panel_panes(panel));
-}
-
-void next_panel_pane(panel_t *panel)
-{
-    set_panel_row(panel, panel->link.rect.h*get_panel_panes(panel));
-}
-
-void move_panel_start(panel_t *panel)
-{
-    set_panel_row(panel, -panel->file_list->len);
-}
-
-void move_panel_end(panel_t *panel)
-{
-    set_panel_row(panel, panel->file_list->len);
-}
-
-void select_panel_entry(panel_t *panel)
-{
-//    char *path=(char*)malloc(PATH_MAX);
-    file_entry_t *entry=get_panel_entry(panel);
-    if (entry->st.st_mode&S_IFDIR) {
-	strcat(panel->path, "/");
-	strcat(panel->path, entry->fn);
-	chdir_panel(panel, panel->path);
-    } else {
-	if (!fork()) {
-	    char path[PATH_MAX];
-	    strcpy(path, panel->path);
-	    strcat(path, "/");
-	    strcat(path, entry->fn);
-	    mvaddstr(0,0,path);
-//	    getch();
-/*	    s=environ;
-	    while (s) {
-		addstr(*s);
-		s++;
-	    }
-	    getch();*/
-	    execl("/usr/local/bin/mplayer", "mplayer",  path);
-//	    free(argv[0]);
-	} else {
-	    wait(NULL);
-	    wrefresh(curscr);
-	}
-    }
-}
 file_entry_t *get_panel_entry(panel_t *panel)
 {
     file_entry_t *entry=panel->file_list->head;
@@ -378,5 +363,13 @@ file_entry_t *get_panel_entry(panel_t *panel)
 	entry=entry->next;
     }
     return entry;
+}
+
+int get_panel_panes(panel_t *panel)
+{
+    if (panel->panes>0)
+	return panel->panes;
+    else
+	return -panel->widget.rect.w/panel->panes;
 }
 
