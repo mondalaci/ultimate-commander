@@ -1,38 +1,52 @@
-from gtk import *
+"""This module implements Panel."""
+
+import gtk
 import os
+import time
 
-from basepanel import *
-import gtkbasic
+import Colors
+import config
 
-class Panel(BasePanel):
-    'This class implements the GTK2 Panel widget.'
+from Panel import *
+from File import *
+
+class Panel(gtk.VBox):
+
+    """The Panel which is one of the central widgets of UC.
+    """
+
     def __init__(self):
+        gtk.VBox.__init__(self)
         # initialize input flags
         self.buttons_pressed = [0, 0, 0]
         self.prev_active_row = 0
 
         # build widgets
-        self.scrollwin = ScrolledWindow()
-        self.scrollwin.set_policy(POLICY_AUTOMATIC, POLICY_AUTOMATIC)
+        self.scrollwin = gtk.ScrolledWindow()
+        self.scrollwin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 
-        self.title = Label()
-        self.title.set_line_wrap(TRUE)
+        self.title = gtk.Label()
+        self.title.set_line_wrap(gtk.TRUE)
 
-        self.list = CList(1) # `set_column_hook' will replace this CList
+        self.list = gtk.CList(1) # `set_column_hook' will replace this CList
 
-        self.statusbar = Label()
-        self.statusbar.set_line_wrap(TRUE)
+        self.statusbar = gtk.Label()
+        self.statusbar.set_line_wrap(gtk.TRUE)
         self.statusbar.set_alignment(xalign=0, yalign=0.5)
-
-        self.widget = VBox()
 
         # connect widgets
         self.scrollwin.add(self.list)
-        self.widget.pack_start(self.title, FALSE)
-        self.widget.pack_start(self.scrollwin)
-        self.widget.pack_start(self.statusbar, FALSE)
+        self.pack_start(self.title, gtk.FALSE)
+        self.pack_start(self.scrollwin)
+        self.pack_start(self.statusbar, gtk.FALSE)
 
-        BasePanel.__init__(self)
+        #Panel.__init__(self)
+        self.set_columns(config.panel_column_format)
+        #self.set_statusbar(statusbar_format)
+        #self.set_sort_order(sort_format)
+        #self.set_filter(filter_format)
+        self.chdir('~')
+
 
         self.set_colors()
 
@@ -41,6 +55,106 @@ class Panel(BasePanel):
 
 # general methods
 
+    def chdir(self, path='~'):
+        'Change the current directory of the panel.'
+        self.path = os.path.abspath(os.path.expanduser(path))
+
+        if self.have_updir():
+            path = self.path + '/'
+        else:
+            path = self.path
+
+        self.files = [path + file for file in os.listdir(self.path)]
+
+        self.chdir_hook()
+
+    def set_columns(self, format=config.panel_column_format):
+        'Sets the columns of the panel.'
+        paren_stack = []
+        format_pos_list = []
+        prev_char = ' '
+
+        # examine parenthesis structure, prepare tokenization
+        for pos in range(len(format)):
+            current_char = format[pos]
+            if current_char == '(':
+                paren_stack.append(pos)
+            elif current_char == ')':
+                try:
+                    paren_stack.pop()
+                except:
+                    raise ParseError, ('parenthesis depth is below zero', pos)
+
+            if len(paren_stack) == 0 and prev_char in string.whitespace\
+            and current_char not in string.whitespace:
+                format_pos_list.append(pos)
+
+            prev_char = current_char
+
+        if len(paren_stack) != 0:
+            raise ParseError, ('parenthesis has no closing pair',
+                               paren_stack.pop())
+
+        format_pos_list.append(pos+1)
+        prev_pos = format_pos_list[0]
+        column_list = []
+        column_names = []
+
+        # tokenize and check the validity of column formats
+        test_entry = File('/etc/fstab')
+
+        for pos in format_pos_list[1:]:
+            column = string.strip(format[prev_pos:pos])
+            try:
+                paren_pos = column.index('(')
+                column_name = column[:paren_pos]
+            except:
+                column_name = column
+                column = column + '()'
+
+            printer = 'File.print_' + column_name
+            try:
+                eval(printer)
+            except:
+                raise ParseError, ("invalid column type: '" +
+                                   column_name + "'", prev_pos)
+
+            validator = 'test_entry.validate_' + column
+            try:
+                eval(validator)
+            except AttributeError:
+                pass
+            except ParseError, error:
+                raise ParseError, (error.type + " in '" + column_name + "' type", prev_pos + paren_pos)
+
+            printer_with_args = 'test_entry.print_' + column
+            try:
+                eval(printer_with_args)
+            except:
+                raise ParseError, ("invalid argument(s) passed to '" +
+                                   column_name + "'", prev_pos + paren_pos)
+
+            column_list.append(column)
+            column_names.append(column_name)
+            prev_pos = pos
+
+        self.column_format = format
+        self.column_list = ['self.print_' + column for
+                            column in column_list]
+        self.column_names = column_names
+        self.set_columns_hook()
+
+    def have_updir(self):
+        'Asks whether there should be a ".." entry in the panel.'
+        return self.path != '/'
+
+# hooks
+
+    def chdir_hook(self):
+        pass
+
+    def set_columns_hook(self):
+        pass
     def move_tagged_entries(self, diff, extrude=1):
         'Moves tagged entries without with the given difference.'
         if diff < 0:
@@ -114,11 +228,17 @@ class Panel(BasePanel):
         row.tag()
 
         if row.tagged:
-            self.list.set_background(row_num, gtkbasic.color_panel_tagged)
+            self.list.set_background(row_num, Colors.panel_tagged)
         else:
-            self.list.set_background(row_num, gtkbasic.color_panel_background)
+            self.list.set_background(row_num, Colors.panel_background)
 
-# helper methods
+    def open_row(self, row):
+        file = self.list.get_row_data(row)
+
+        if S_ISDIR(file.stat[ST_MODE]):
+            self.chdir(file.filename)
+        else:
+            file.open()
 
     def swap_rows(self, row1, row2):
         self.list.swap_rows(row1, row2)
@@ -132,21 +252,21 @@ class Panel(BasePanel):
     def set_colors(self):
         '(Re)Sets the colors of the panel widget.'
         style = self.list.get_style()
-        style.base[STATE_NORMAL] = gtkbasic.color_panel_background
-        style.bg[STATE_NORMAL] = gtkbasic.color_panel_background
-        style.fg[STATE_NORMAL] = gtkbasic.color_panel_foreground
+        style.base[gtk.STATE_NORMAL] = Colors.panel_background
+        style.bg[gtk.STATE_NORMAL] = Colors.panel_background
+        style.fg[gtk.STATE_NORMAL] = Colors.panel_foreground
         self.list.set_style(style)
-
-# hooks
 
     def chdir_hook(self):
         'Fills the list according to the new files and sets the title.'
+        self.files = [File(file) for file in self.files]
+
         self.list.freeze()
         self.list.clear()
         row_num=0
 
         if self.have_updir():
-            up_dir = FileEntry(self.path + '/..')
+            up_dir = File(self.path + '/..')
             self.list.append(up_dir.print_column_list(self.column_list))
             self.list.set_row_data(0, up_dir)
             row_num += 1
@@ -155,6 +275,7 @@ class Panel(BasePanel):
                     for entry in self.files]:
             self.list.append(row[1])
             self.list.set_row_data(row_num,row[0])
+            self.list.set_foreground(row_num, row[0].get_color())
             row_num += 1
 
         self.list.thaw()
@@ -166,19 +287,19 @@ class Panel(BasePanel):
         self.scrollwin.remove(self.list)
         del self.list
 
-        list = CList(len(self.column_list))
+        list = gtk.CList(len(self.column_list))
 
-        list.set_selection_mode(SELECTION_BROWSE)
-        list.set_shadow_type(SHADOW_NONE)
-        list.set_events(gdk.KEY_PRESS_MASK | gdk.KEY_RELEASE_MASK |
-                        gdk.BUTTON_PRESS_MASK | gdk.BUTTON_RELEASE_MASK |
-                        gdk.BUTTON_MOTION_MASK)
+        list.set_selection_mode(gtk.SELECTION_BROWSE)
+        list.set_shadow_type(gtk.SHADOW_NONE)
+        list.set_events(gtk.gdk.KEY_PRESS_MASK | gtk.gdk.KEY_RELEASE_MASK |
+                        gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.BUTTON_RELEASE_MASK |
+                        gtk.gdk.BUTTON_MOTION_MASK)
         list.connect('event', self.main_event_handler)
         list.connect('select_row', lambda widget, row, col, event:
                      self.select_row_handler(row))
 
         for col_num in range(len(self.column_list)):
-            list.set_column_title(col_num, self.column_list[col_num])
+            list.set_column_title(col_num, self.column_names[col_num])
 
         list.column_titles_show()
         self.scrollwin.add(list)
@@ -199,10 +320,10 @@ class Panel(BasePanel):
 
     def main_event_handler(self, widget, event):
         'Dispatches the events of the list to the appropriate handlers.'
-        key_press_events = [gdk.KEY_PRESS]
-        mouse_button_events = [gdk.BUTTON_PRESS, gdk._2BUTTON_PRESS,
-                               gdk._3BUTTON_PRESS, gdk.BUTTON_RELEASE]
-        mouse_motion_events = [gdk.MOTION_NOTIFY]
+        key_press_events = [gtk.gdk.KEY_PRESS]
+        mouse_button_events = [gtk.gdk.BUTTON_PRESS, gtk.gdk._2BUTTON_PRESS,
+                               gtk.gdk._3BUTTON_PRESS, gtk.gdk.BUTTON_RELEASE]
+        mouse_motion_events = [gtk.gdk.MOTION_NOTIFY]
         mouse_events = mouse_button_events + mouse_motion_events
         type = event.type
 
@@ -246,21 +367,22 @@ class Panel(BasePanel):
     def key_press_handler(self, event):
         'Handles key press events of the list.'
         keyval = event.keyval
+        file = self.list.get_row_data(self.list.focus_row)
 
-        if keyval == keysyms.Return: # chdir to the actual dir
-            self.chdir(self.list.get_row_data(self.list.focus_row).filename)
-        elif keyval == keysyms.Insert:
+        if keyval == gtk.keysyms.Return: # chdir to the actual dir
+            self.open_row(self.list.focus_row)
+        elif keyval == gtk.keysyms.Insert:
             focus_row = self.list.focus_row
             if focus_row < self.list.rows:
-                self.list.select_row(focus_row+1,1)
-                self.list.select_row(focus_row+2,1)
-        elif keyval == keysyms.a:
+                self.list.select_row(focus_row+1, 1)
+                #self.list.select_row(focus_row+1,1)
+        elif keyval == gtk.keysyms.a:
             self.move_tagged_entries(-1)
-        elif keyval == keysyms.z:
+        elif keyval == gtk.keysyms.z:
             self.move_tagged_entries(1)
-        elif keyval == keysyms.s:
+        elif keyval == gtk.keysyms.s:
             self.crowd_tagged_entries(-1)
-        elif keyval == keysyms.x:
+        elif keyval == gtk.keysyms.x:
             self.crowd_tagged_entries(1)
 
     def mouse_button_handler(self, event):
@@ -273,17 +395,17 @@ class Panel(BasePanel):
         # set input flags
         self.prev_active_row = row_num
 
-        if type == gdk.BUTTON_PRESS:
+        if type == gtk.gdk.BUTTON_PRESS:
             self.buttons_pressed[button-1] = 1
-        elif type == gdk.BUTTON_RELEASE:
+        elif type == gtk.gdk.BUTTON_RELEASE:
             self.buttons_pressed[button-1] = 0
 
         # change directory
-        if event.button == 1 and event.type == gdk._2BUTTON_PRESS:
+        if event.button == 1 and event.type == gtk.gdk._2BUTTON_PRESS:
             self.chdir(entry.filename)
 
         # mouse tagging
-        elif event.button == 3 and event.type == gdk.BUTTON_PRESS:
+        elif event.button == 3 and event.type == gtk.gdk.BUTTON_PRESS:
             self.tag_row(row_num)
 
     def mouse_motion_handler(self, event):

@@ -5,33 +5,35 @@ import pwd
 import string
 import time
 
-from parseerror import *
+from ParseError import *
 import config
+import Colors
 
-unit_table = { # used by 'print_size' and 'validate_size'
-    'b': 2**0,
-    'K': 2**10,
-    'M': 2**20,
-    'G': 2**30,
-    'T': 2**40,
-    'P': 2**50,
-    'E': 2**60,
-    'Z': 2**70,
-    'Y': 2**80,
-    'KiB': 10**3,
-    'MiB': 10**6,
-    'GiB': 10**9,
-    'TiB': 10**12,
-    'PiB': 10**15,
-    'EiB': 10**18,
-    'ZiB': 10**21,
-    'YiB': 10**24
-}
-
-class FileEntry:
+class File:
     '''Describes a single file.
        This file can be either on VFS or it can be any regular file.
     '''
+
+    unit_table = { # used by 'print_size' and 'validate_size'
+        'b': 2**0,
+        'K': 2**10,
+        'M': 2**20,
+        'G': 2**30,
+        'T': 2**40,
+        'P': 2**50,
+        'E': 2**60,
+        'Z': 2**70,
+        'Y': 2**80,
+        'KiB': 10**3,
+        'MiB': 10**6,
+        'GiB': 10**9,
+        'TiB': 10**12,
+        'PiB': 10**15,
+        'EiB': 10**18,
+        'ZiB': 10**21,
+        'YiB': 10**24
+        }
+
     def __init__(self, filename, stat=0, link=''):
         '''stat(2)ing is not achievable if the file resides on a VFS so higher
            layers should pass the stat tuple.
@@ -42,11 +44,22 @@ class FileEntry:
 
         if self.is_direct():
             try:
-                self.stat = os.stat(filename)
+                self.stat = os.lstat(filename)
             except: # stalled link
                 self.stat = (-1, -1, -1, -1, -1, -1, -1, -1, -1, -1)
         else:
             self.stat = stat
+
+        #self.link = os.readlink(filename)
+        self.stalled_link = 0
+        if S_ISLNK(self.stat[ST_MODE]):
+            self.link = os.readlink(filename)
+            try:
+                os.stat(self.link)
+            except OSError:
+                self.stalled_link = 1
+        else:
+            self.link = ''
 
     def __del__(self):
         'Decaching should happen when the object is destroyed.'
@@ -97,6 +110,13 @@ class FileEntry:
         '''
         return is_local(self) and is_direct(self) or self.cached
 
+    def get_extension(self):
+        pos = string.rfind(self.filename, '.')
+        if pos > 0:
+            return self.filename[pos + 1:]
+        else:
+            return ''
+
     def tag(self):
         self.tagged = not self.tagged
 
@@ -133,7 +153,7 @@ class FileEntry:
             return '='
         elif S_ISCHR(mode):
             return '-'
-        elif S_ISBLK(mode):
+        else: # S_ISBLK(mode):
             return '+'
 
     def print_type_letter(self):
@@ -152,7 +172,7 @@ class FileEntry:
             return 's'
         elif S_ISCHR(mode):
             return 'c'
-        elif S_ISBLK(mode):
+        else: # S_ISBLK(mode):
             return 'b'
 
     def print_filename(self, prefixed=0, absolute=0):
@@ -287,7 +307,7 @@ class FileEntry:
                Powers of 1000: [KMGTPEZY]iB
         '''
         size = self.stat[ST_SIZE]
-        unit_size = unit_table[unit]
+        unit_size = self.unit_table[unit]
         return '%i' % (size/unit_size) + unit
 
     def print_atime(self, format=config.panel_time_format):
@@ -315,7 +335,74 @@ class FileEntry:
 
     def validate_size(self, unit='KiB'):
         'Throws a ParseError exception if "unit" has illegal value.'
-        if not unit_table.has_key(unit):
+        if not self.unit_table.has_key(unit):
             raise ParseError, "invalid unit: '%s'" % unit
 
     # comparsion methods for sorting
+
+    def compare_type(self, other):
+        if S_ISDIR(self.stat[ST_MODE]) and not S_ISDIR(other.stat[ST_MODE]):
+            return 1
+        else:
+            return 0
+
+    def compare_filename(self, other):
+        return self.filename > other.filename
+
+    def compare_mode(self, other):
+        return self.stat[ST_MODE] > other.stat[ST_MODE]
+
+    def compare_inode(self, other):
+        return self.stat[ST_INO] > other.stat[ST_INO]
+
+    def compare_dev(self, other):
+        return self.stat[ST_DEV] > other.stat[ST_DEV]
+
+    def compare_nlink(self, other):
+        return self.stat[ST_NLINK] > other.stat[ST_NLINK]
+
+    def compare_uid(self, other):
+        return self.stat[ST_UID] > other.stat[ST_UID]
+
+    def compare_owner(self, other):
+        return pwd.getpwuid(self.stat[ST_UID])[0] >\
+               pwd.getpwuid(other.stat[ST_UID])[0]
+
+    def compare_gid(self, other):
+        return self.stat[ST_GID] > other.stat[ST_GID]
+
+    def compare_group(self, other):
+        return grp.getgrgid(self.stat[ST_GID])[0] >\
+               grp.getgrgid(other.stat[ST_GID])[0]
+
+    def compare_size(self, other):
+        return self.stat[ST_SIZE] > other.stat[ST_SIZE]
+
+    def compare_atime(self, other):
+        return self.stat[ST_ATIME] > other.stat[ST_ATIME]
+
+    def compare_mtime(self, other):
+        return self.stat[ST_MTIME] > other.stat[ST_MTIME]
+
+    def compare_ctime(self, other):
+        return self.stat[ST_CTIME] > other.stat[ST_CTIME]
+
+    def open(self):
+        extension = string.lower(self.get_extension())
+        if extension == 'avi':
+            if os.fork() == 0:
+                os.execlp('mplayer', 'mplayer', self.filename)
+
+    def get_color(self):
+        mode = self.stat[ST_MODE]
+        if S_ISDIR(mode):
+            return Colors.directory
+        elif S_ISLNK(mode):
+            if self.stalled_link:
+                return Colors.stalled_link
+            else:
+                return Colors.regular_file
+        elif mode & 0111:
+            return Colors.executable
+        else:
+            return Colors.regular_file

@@ -1,3 +1,21 @@
+2003-08-07  L‚ászl‚ó Monda  <monda.laszlo@stud.u-szeged.hu>
+
+	* uc: Add file.
+
+	* uc.py: Rename to `gtk_uc.py' according to `HACKING'.
+
+	* basepanel.py, config.py, fileentry.py, gtkbasic.py,
+	gtkconfig.py, gtkpanel.py: Rename according to `HACKING'
+
+	* HACKING: Add file.
+
+2003-08-06  L‚ászl‚ó Monda  <monda.laszlo@stud.u-szeged.hu>
+
+	* gtkpanel.py (Panel.set_columns_hook): Print `column_names' in
+	place of `column_list'.
+
+	* basepanel.py (BasePanel.set_columns): Add `column_names'.
+
 2003-08-05  L‚ászl‚ó Monda  <monda.laszlo@stud.u-szeged.hu>
 
 	* gtkbasic.py (init_colors): New method which initialises colors

@@ -1,14 +1,14 @@
-import gtk
+#!/usr/bin/env python
 
-from gtkpanel import *
-import gtkbasic
+import pygtk
+pygtk.require('2.0')
 
-gtkbasic.init_colors()
-window = gtk.Window()
-window.set_title('The Ultimate Commander')
-window.connect('destroy', lambda widget: gtk.main_quit())
-panel=Panel()
-window.add(panel.widget)
-window.set_default_size(400, 700)
-window.show_all()
+from MainWindow import *
+import Colors
+
+Colors.init()
+
+main_window = MainWindow()
+main_window.show_all()
+
 gtk.main()
