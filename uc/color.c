@@ -13,3 +13,11 @@ void init_color_pairs()
 	for (bg=0; bg<8; bg++)
 	    init_pair(bg*8+fg, colors[fg], colors[bg]);
 }
+
+void draw_hline(int y, int x, int h)
+{
+    int pos;
+    int end=y+h;
+    for (pos=y; pos<end; pos++)
+	mvaddch(pos, x, ACS_VLINE);
+}
