@@ -27,7 +27,7 @@ unit_table = { # used by 'print_size' and 'validate_size'
     'ZiB': 10**21,
     'YiB': 10**24
 }
-        
+
 class FileEntry:
     '''Describes a single file.
        This file can be either on VFS or it can be any regular file.
@@ -63,7 +63,7 @@ class FileEntry:
             s += ' tagged'
         s += '>'
         return s
-        
+
     def is_direct(self):
         '''Checks whether the file is directly accessible through the Unix VFS.
            The counterpart of "is_virtual".
@@ -78,7 +78,7 @@ class FileEntry:
            The counterpart of "is_direct".
         '''
         return not self.is_direct()
-    
+
     def is_local(self):
         '''Checks whether the file is on a local storage.
            The counterpart of "is_remote".
@@ -99,7 +99,7 @@ class FileEntry:
 
     def tag(self):
         self.tagged = not self.tagged
-    
+
     def cache(self, done=0):
         '''Caching a file copies it to a fast local storage for time critical operations.
            This method is not related to files on UC VFSes since that would be extremely
@@ -154,7 +154,7 @@ class FileEntry:
             return 'c'
         elif S_ISBLK(mode):
             return 'b'
-        
+
     def print_filename(self, prefixed=0, absolute=0):
         '''Returns the filename of the file.
            If "prefixed" is true, filename will be prefixed with symbolic type prefix.
@@ -169,7 +169,7 @@ class FileEntry:
             filename = self.print_type_sym() + filename
 
         return unicode(filename, 'iso-8859-2')
-    
+
     def print_mode(self, full=0):
         '''Returns the octal mode of the file.
            If "full" is true, the type part of the mode will be included too.
@@ -271,7 +271,7 @@ class FileEntry:
     def print_owner(self):
         "Returns the owner of the file (owner's name)."
         return pwd.getpwuid(self.stat[ST_UID])[0]
-        
+
     def print_gid(self):
         'Returns the GID of the file.'
         return '%i' % self.stat[ST_GID]
@@ -279,7 +279,7 @@ class FileEntry:
     def print_group(self):
         "Returns the GID of the file (group's name)."
         return grp.getgrgid(self.stat[ST_GID])[0]
-        
+
     def print_size(self, unit='b'):
         '''Returns the size of the file.
            "unit" can be one of the followings:
@@ -305,17 +305,17 @@ class FileEntry:
     def print_link(self):
         'Returns the filename referred by "self" if it is a link.'
         return self.link
-    
+
     def print_last_link(self):
         'Recursively searches the filename referred by a chain of links and returns it.'
         filename = self.filename
         return '' #TODO
 
     # validation methods
-    
+
     def validate_size(self, unit='KiB'):
         'Throws a ParseError exception if "unit" has illegal value.'
         if not unit_table.has_key(unit):
             raise ParseError, "invalid unit: '%s'" % unit
-    
+
     # comparsion methods for sorting
