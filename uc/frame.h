@@ -1,36 +1,33 @@
 #ifndef __FRAME_H
 #define __FRAME_H
 
-#include <link.h>
+#include "widget.h"
 
 typedef enum frame_dir_t {
-    FRAME_DIR_VERT,
-    FRAME_DIR_HOR
+    FRAME_DIR_HOR,
+    FRAME_DIR_VERT
 } frame_dir_t;
 
-typedef struct frame_child_t {
-    void *child;
-    int (*size_callback)(); /* if it's NULL then `size' is correct */
-    int size; /* negative is fixed size, 0 fills remaining and from 1 to 1000 is `percentage' */
-} frame_child_t;
-
 typedef struct frame_t {
-    struct frame_t *parent;
+    widget_t widget;
     frame_dir_t dir;
-    frame_child_t *childs;
+    struct widget_t *childs;
+    int size;
 } frame_t;
 
-/* start & end */
-frame_t *new_frame(frame_t *parent, frame_dir_t dir);
-void destroy_frame(frame_t *frame);
+widget_t *new_frame(widget_t *parent, frame_dir_t dir);
+void destroy_frame(widget_t *frame);
 
-/* manipulating frames */
-/*void split_frame_horizontally(buffer_t *buffer);
-void split_frame_vertically(buffer_t *buffer);
-*/
-void add_child_frame(frame_t* parent, void* child, frame_child_t type, int size);
+/* user interface functions */
+int delete_window();
+void other_window();
+int split_window_horizontally(int size);
+int split_window_vertically(int size);
 
-extern frame_t *root_frame;
-extern frame_t *current_frame;
+void add_child_frame(frame_t* parent, frame_t* child, frame_dir_t dir, int size);
+
+extern widget_t *root_frame;
+extern widget_t *current_frame;
+extern widget_t *minibuffer;
 
 #endif /* __FRAME_H */
