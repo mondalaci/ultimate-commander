@@ -18,7 +18,7 @@ class BasePanel:
         #self.set_sort_order(sort_format)
         #self.set_filter(filter_format)
         self.chdir(path)
-        
+
 # general methods
 
     def chdir(self, path='~'):
@@ -62,13 +62,14 @@ class BasePanel:
         if len(paren_stack) != 0:
             raise ParseError, ('parenthesis has no closing pair',
                                paren_stack.pop())
-        
+
         token_pos_list.append(pos+1)
         prev_pos = token_pos_list[0]
         column_list = []
 
         # tokenize and check the validity of column formats
         entry = FileEntry('/etc/fstab') # for validity check
+
         for current_pos in token_pos_list[1:]:
             column = string.strip(format[prev_pos:current_pos])
             try:
@@ -92,14 +93,14 @@ class BasePanel:
                 pass
             except ParseError, error:
                 raise ParseError, (error.type + " in '" + column_name + "' type", prev_pos + paren_pos)
-            
+
             printer_with_args = 'entry.print_' + column
             try:
                 eval(printer_with_args)
             except:
                 raise ParseError, ("invalid argument(s) passed to '" +
                                    column_name + "'", prev_pos + paren_pos)
-            
+
             column_list.append(column)
             prev_pos = current_pos
 
@@ -109,14 +110,13 @@ class BasePanel:
         self.set_columns_hook()
 
     def have_updir(self):
-        'Asks whether there suould be a ".." entry in the panel.'
+        'Asks whether there should be a ".." entry in the panel.'
         return self.path != '/'
 
 # hooks
 
-        def chdir_hook(self):
-            pass
-        
-        def set_columns_hook(self):
-            pass
-        
+    def chdir_hook(self):
+        pass
+
+    def set_columns_hook(self):
+        pass
