@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using Mono.Unix;
+using Mono.Unix.Native;
 
 namespace UltimateCommander {
 
@@ -15,7 +15,7 @@ namespace UltimateCommander {
 			//full_path = System.IO.Path.GetFullPath(path);
 			this.full_path = full_path;
 			filename = System.IO.Path.GetFileName(full_path);
-			Mono.Unix.Syscall.lstat(full_path, out stat);
+			Mono.Unix.Native.Syscall.lstat(full_path, out stat);
 			Selected = false;
 		}
 
@@ -28,11 +28,11 @@ namespace UltimateCommander {
 		}
 
 		public bool IsFile {
-			get {return (int)(stat.st_mode & FilePermissions.S_IFREG) != 0; }
+			get {return (int)(stat.st_mode & Mono.Unix.Native.FilePermissions.S_IFREG) != 0; }
 		}
 
 		public bool IsDirectory {
-			get { return (int)(stat.st_mode & FilePermissions.S_IFDIR) != 0; }
+			get { return (int)(stat.st_mode & Mono.Unix.Native.FilePermissions.S_IFDIR) != 0; }
 		}
 
 		public bool Selected {

@@ -27,12 +27,11 @@ namespace UltimateCommander {
 			hpaned.Add1(panel1);
 			hpaned.Add2(panel2);
 			hpaned.Position = 500;
-			hpaned.MoveHandle += new MoveHandleHandler(OnMoveHandle);
           	Gtk.Window window = new Gtk.Window("Ultimate Commander");
           	window.SetDefaultSize(1000, 700);
           	window.DeleteEvent += new DeleteEventHandler(OnDeleteEvent);
 			window.Add(hpaned);
-			//window.ResizeChecked += new EventHandler(OnMainWindowResizeChecked);
+			window.ResizeChecked += new EventHandler(OnResizeChecked);
           	window.ShowAll();
 
           	Application.Run ();
@@ -51,16 +50,10 @@ namespace UltimateCommander {
 		}
 
 		[GLib.ConnectBefore]
-		private static void OnMainWindowResizeChecked(object o, EventArgs args)
+		private static void OnResizeChecked(object o, EventArgs args)
 		{
 			float ratio =  (float)hpaned.Position / (float)hpaned.Allocation.Width;
 			Console.WriteLine("resized {0}", ratio);
-		}
-
-		[GLib.ConnectBefore]
-		private static void OnMoveHandle(object o, MoveHandleArgs args)
-		{
-			Console.WriteLine("MoveHandle");
 		}
 
      	private static void OnDeleteEvent (System.Object o, DeleteEventArgs args)
