@@ -4,9 +4,6 @@ Panel:
 	
 	* Make spacing under the header.
 	
-	* Make the separator bar beween the left and right panel grow and shrink
-  	  proportionally to the window area.
-
 	* Implement selection using the mouse.
 
 	Not known how to do or cannot be done yet:
