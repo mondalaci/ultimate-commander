@@ -32,7 +32,9 @@ namespace UltimateCommander {
 			hpaned.Add1(panel1);
 			hpaned.Add2(panel2);
 
+			Pixbuf icon = new Pixbuf("logo.png");
           	Gtk.Window window = new Gtk.Window("Ultimate Commander");
+			window.Icon = icon;
           	window.SetDefaultSize(width, height);
           	window.DeleteEvent += new DeleteEventHandler(OnDeleteEvent);
 			window.Add(hpaned);
