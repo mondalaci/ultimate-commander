@@ -59,7 +59,7 @@ namespace UltimateCommander {
      	public Panel(): base()
      	{              
 			InitWidget ();
-			SetCurrentDirectory(UnixDirectory.GetCurrentDirectory());
+			SetCurrentDirectory(UnixDirectoryInfo.GetCurrentDirectory());
      	}
 
 		public Panel (string path) : base()
@@ -325,28 +325,16 @@ namespace UltimateCommander {
 
 		static private Label GetSpacedLabel(Label label)
 		{
-			//Label left_space = new Label();
-			//left_space.WidthRequest = label_space_width;
-
 			label.Xalign = 0;
 			label.LineWrap = true;
 			label.Xpad = 2;
 			label.Ypad = 2;
-			//Label right_space = new Label();
-			//right_space.WidthRequest = label_space_width;
-
-			//HBox hbox = new HBox();
-			//hbox.PackStart(left_space, false, true, 0);
-			//hbox.PackStart(label);
-			//hbox.PackStart(right_space, false, true, 0);
-
-			//return hbox;
 			return label;
 		}
 
 		static private string GetTopLevelAccessiblePath(string full_path)
 		{
-			while (!UnixDirectory.Exists(full_path)) {
+			while (!new UnixDirectoryInfo(full_path).Exists) {
 				full_path = UnixPath.Combine(full_path, "..");
 				full_path = UnixPath.GetFullPath(full_path);
 			}
