@@ -111,7 +111,7 @@ namespace UltimateCommander {
 
 		public void InitWidget ()
 		{
-			HBox header_hbox = GetSpacedLabel(header);
+			Label header_label = GetSpacedLabel(header);
 
 			CellRendererToggle cellrenderertoggle = new CellRendererToggle();
 			cellrenderertoggle.Toggled += new ToggledHandler(OnToggled);
@@ -149,11 +149,11 @@ namespace UltimateCommander {
 			ScrolledWindow scrolled_window = new ScrolledWindow();
 			scrolled_window.Add(view);
 
-			HBox statusbar_hbox = GetSpacedLabel(statusbar);
+			Label statusbar_label = GetSpacedLabel(statusbar);
 
 			VBox vbox1 = new VBox();
           	vbox1.PackStart(scrolled_window);
-			vbox1.PackStart(statusbar_hbox, false, true, 0);
+			vbox1.PackStart(statusbar_label, false, true, 0);
 
 			EventBox content_area = new EventBox();
 			content_area.Add(vbox1);
@@ -162,7 +162,7 @@ namespace UltimateCommander {
 			bottom_space.HeightRequest = border_width;
 
 			VBox vbox2 = new VBox();
-			vbox2.PackStart(header_hbox, false, true, 0);
+			vbox2.PackStart(header_label, false, true, 0);
 			vbox2.PackStart(content_area);
 			vbox2.PackStart(bottom_space, false, true, 0);
 
@@ -323,23 +323,25 @@ namespace UltimateCommander {
 			return "<span foreground=\"" + color + "\">" + escaped_text + "</span>";
 		}
 
-		static private HBox GetSpacedLabel(Label label)
+		static private Label GetSpacedLabel(Label label)
 		{
-			Label left_space = new Label();
-			left_space.WidthRequest = label_space_width;
+			//Label left_space = new Label();
+			//left_space.WidthRequest = label_space_width;
 
 			label.Xalign = 0;
 			label.LineWrap = true;
+			label.Xpad = 2;
+			label.Ypad = 2;
+			//Label right_space = new Label();
+			//right_space.WidthRequest = label_space_width;
 
-			Label right_space = new Label();
-			right_space.WidthRequest = label_space_width;
+			//HBox hbox = new HBox();
+			//hbox.PackStart(left_space, false, true, 0);
+			//hbox.PackStart(label);
+			//hbox.PackStart(right_space, false, true, 0);
 
-			HBox hbox = new HBox();
-			hbox.PackStart(left_space, false, true, 0);
-			hbox.PackStart(label);
-			hbox.PackStart(right_space, false, true, 0);
-
-			return hbox;
+			//return hbox;
+			return label;
 		}
 
 		static private string GetTopLevelAccessiblePath(string full_path)
@@ -403,7 +405,6 @@ namespace UltimateCommander {
 
 		public void OnToggled(object o, ToggledArgs args)
 		{
-			Console.WriteLine(o);
 			TreeIter iter;
 			if (store.GetIter(out iter, new TreePath(args.Path))) {
 	           	File file = GetFile(iter);
