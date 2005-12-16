@@ -87,9 +87,10 @@ namespace UltimateCommander {
 
 		public void CellDataToggleFunc(TreeViewColumn column, CellRenderer renderer, TreeModel model, TreeIter iter)
 		{
-			CellRendererToggle cellrenderertext = (CellRendererToggle)renderer;
+			CellRendererToggle cellrenderertoggle = (CellRendererToggle)renderer;
            	File file = GetFile(iter);
-			cellrenderertext.Active = file.Selected;
+			cellrenderertoggle.Active = file.Selected;
+			cellrenderertoggle.Activatable = !(file.FileName == "..");
 		}
 
 		public void CellDataFilenameFunc(TreeViewColumn column, CellRenderer renderer, TreeModel model, TreeIter iter)
@@ -113,6 +114,7 @@ namespace UltimateCommander {
 			HBox header_hbox = GetSpacedLabel(header);
 
 			CellRendererToggle cellrenderertoggle = new CellRendererToggle();
+			cellrenderertoggle.Toggled += new ToggledHandler(OnToggled);
 			TreeViewColumn column1 = new TreeViewColumn();
 			column1.PackStart(cellrenderertoggle, false);
 			column1.SetCellDataFunc(cellrenderertoggle, CellDataToggleFunc);
@@ -397,6 +399,16 @@ namespace UltimateCommander {
 		public void OnFocusInEvent(object o, FocusInEventArgs args)
 		{
 			SetActivated(true);
+		}
+
+		public void OnToggled(object o, ToggledArgs args)
+		{
+			Console.WriteLine(o);
+			TreeIter iter;
+			if (store.GetIter(out iter, new TreePath(args.Path))) {
+	           	File file = GetFile(iter);
+				file.Selected = !file.Selected;
+			}
 		}
 
 		protected override bool OnButtonPressEvent(EventButton eventbutton)
