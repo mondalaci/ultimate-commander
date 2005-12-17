@@ -19,6 +19,12 @@ namespace UltimateCommander {
 			Selected = false;
 		}
 
+		public void InvertSelection()
+		{
+			if (!IsUpDirectory)
+				Selected = !Selected;
+		}
+
 		public string FileName {
 			get { return filename; }
 		}
@@ -33,6 +39,10 @@ namespace UltimateCommander {
 
 		public bool IsDirectory {
 			get { return (int)(stat.st_mode & Mono.Unix.Native.FilePermissions.S_IFDIR) != 0; }
+		}
+
+		public bool IsUpDirectory {
+			get { return FileName == ".."; }
 		}
 
 		public bool Selected {

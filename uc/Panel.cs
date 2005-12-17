@@ -48,11 +48,15 @@ namespace UltimateCommander {
 		bool activated;
     	string current_directory = null;
 		ListStore store = null;
+		int number_of_files = 0;
 
 		Label header = new Label();
      	TreeView view = new TreeView();
 		EventBox frame = new EventBox();
 		Label statusbar = new Label();
+
+		bool button3_pressed = false;
+		int prev_row_num;
 
 		public ActivatedHandler ActivatedEvent;
 
@@ -90,7 +94,7 @@ namespace UltimateCommander {
 			CellRendererToggle cellrenderertoggle = (CellRendererToggle)renderer;
            	File file = GetFile(iter);
 			cellrenderertoggle.Active = file.Selected;
-			cellrenderertoggle.Activatable = !(file.FileName == "..");
+			cellrenderertoggle.Activatable = !file.IsUpDirectory;
 		}
 
 		public void CellDataFilenameFunc(TreeViewColumn column, CellRenderer renderer, TreeModel model, TreeIter iter)
@@ -145,6 +149,9 @@ namespace UltimateCommander {
           	view.CursorChanged += new EventHandler(OnCursorChanged);
 			view.RowActivated += new RowActivatedHandler(OnRowActivated);
 			view.FocusInEvent += new FocusInEventHandler(OnFocusInEvent);
+			view.ButtonPressEvent += new ButtonPressEventHandler(OnButtonPressEvent);
+			view.ButtonReleaseEvent += new ButtonReleaseEventHandler(OnButtonReleaseEvent);
+			view.MotionNotifyEvent += new MotionNotifyEventHandler(OnMotionNotifyEvent);
 
 			ScrolledWindow scrolled_window = new ScrolledWindow();
 			scrolled_window.Add(view);
@@ -192,6 +199,7 @@ namespace UltimateCommander {
 			string full_path = UnixPath.Combine(current_directory, "..");
 			File file = new File(full_path);
        		store.AppendValues(file);
+			number_of_files++;
 
 			// FIXME: When $MONO_EXTERNAL_ENCODINGS is not or inappropriately
 			//        set, GetFileSystemEntries() skips accentuated filenames.
@@ -200,6 +208,7 @@ namespace UltimateCommander {
 			foreach (string filename in filenames) {
 				file = new File(filename);
            	   	store.AppendValues(file);
+				number_of_files++;
        		}
 
           	view.Model = store;
@@ -255,25 +264,22 @@ namespace UltimateCommander {
            		Console.WriteLine("{0} is not a regular file nor a directory.", filename);
      	}
 
-		public void SelectRow()
+		public void SelectCurrentRow()
 		{
+			CurrentFile.InvertSelection();
+
 			TreeIter iter = CurrentIter;
-			File file = CurrentFile;
-
-			if (file.FileName != "..")
-				file.Selected = !file.Selected;
-
-			TreePath treepath = null;
-			TreeViewColumn treeviewcolumn = null;
-			view.GetCursor(out treepath, out treeviewcolumn);
+			TreePath path = null;
+			TreeViewColumn column = null;
+			view.GetCursor(out path, out column);
 
 			if (store.IterNext(ref iter))
-				view.SetCursor(store.GetPath(iter), treeviewcolumn, false);			
+				view.SetCursor(store.GetPath(iter), column, false);			
 			else
-				view.SetCursor(store.GetPath(CurrentIter), treeviewcolumn, false);  // Refresh row.
+				view.SetCursor(store.GetPath(CurrentIter), column, false);  // Refresh row.
 		}
 
-		public void SetActivated(bool activated)
+		public void SetActivatedState(bool activated)
 		{
 			Color header_bgcolor;
 
@@ -300,6 +306,30 @@ namespace UltimateCommander {
 				header_colorstring = inactive_header_colorstring;
 
 			header.Markup = GetFgPangoMarkup(header_colorstring, CurrentDirectory);
+		}
+
+		public int GetRowNumFromCoords(double x, double y)
+		{
+			TreePath path;
+			view.GetPathAtPos((int)x, (int)y, out path);
+
+			if (path == null) {
+				if (y<0)
+					return 0;
+				else
+					return number_of_files - 1;
+			} else
+				return path.Indices[0];
+		}
+
+		public void InvertRow(int row_num)
+		{
+			TreeIter iter;
+			int[] path_array = {row_num};
+			TreePath path = new TreePath(path_array);
+			store.GetIter(out iter, path);
+			File file = (File)store.GetValue(iter, 0);
+			file.InvertSelection();
 		}
 
 		// Utility methods.
@@ -378,7 +408,7 @@ namespace UltimateCommander {
 		public void OnKeyPressEvent(object o, KeyPressEventArgs args)
 		{
 			if (args.Event.Key == Gdk.Key.Insert)
-				SelectRow();
+				SelectCurrentRow();
 		}
 
      	public void OnCursorChanged(object o, EventArgs e)
@@ -388,7 +418,7 @@ namespace UltimateCommander {
 
 		public void OnFocusInEvent(object o, FocusInEventArgs args)
 		{
-			SetActivated(true);
+			SetActivatedState(true);
 		}
 
 		public void OnToggled(object o, ToggledArgs args)
@@ -400,9 +430,58 @@ namespace UltimateCommander {
 			}
 		}
 
+		[GLib.ConnectBefore]
+		public void OnButtonPressEvent(object o, ButtonPressEventArgs args)
+		{
+			if (args.Event.Button == 3) {
+				button3_pressed = true;
+				prev_row_num = GetRowNumFromCoords(args.Event.X, args.Event.Y);
+				InvertRow(prev_row_num);
+			}
+		}
+
+		public void OnButtonReleaseEvent(object o, ButtonReleaseEventArgs args)
+		{
+			if (args.Event.Button == 3)
+				button3_pressed = false;
+		}
+
+		[GLib.ConnectBefore]
+		public void OnMotionNotifyEvent(object o, MotionNotifyEventArgs args)
+		{
+			int row_num = GetRowNumFromCoords(args.Event.X, args.Event.Y);
+
+			if (!(button3_pressed && row_num != prev_row_num))
+				return;
+
+			int start = prev_row_num;
+			int end = row_num;
+
+			if (prev_row_num < row_num)
+				start++;
+			else
+				start--;
+			
+			if (start > end) {
+				int tmp = start;
+				start = end;
+				end = tmp;
+			}
+				
+			for (int row=start; row<=end; row++) {
+				InvertRow(row);
+				int[] path_array = {row};
+				TreeIter iter;
+				TreePath path = new TreePath(path_array);
+				store.GetIter(out iter, path);
+				store.EmitRowChanged(path, iter);
+			}
+			prev_row_num = row_num;
+		}
+
 		protected override bool OnButtonPressEvent(EventButton eventbutton)
 		{
-			SetActivated(true);
+			SetActivatedState(true);
 			return true;
 		}
 	}

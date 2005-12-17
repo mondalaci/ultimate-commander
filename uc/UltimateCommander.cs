@@ -66,7 +66,7 @@ namespace UltimateCommander {
 			else
 				passive_panel = panel1;
 				
-			passive_panel.SetActivated(false);
+			passive_panel.SetActivatedState(false);
 		}
 
 		[GLib.ConnectBefore]
