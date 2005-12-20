@@ -477,6 +477,10 @@ namespace UltimateCommander {
 				store.EmitRowChanged(path, iter);
 			}
 			prev_row_num = row_num;
+
+			int[] path_array2 = {end};
+      		view.SetCursor(new TreePath(path_array2), view.GetColumn(1), false);
+			
 		}
 
 		protected override bool OnButtonPressEvent(EventButton eventbutton)
