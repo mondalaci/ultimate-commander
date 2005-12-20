@@ -10,25 +10,6 @@ namespace UltimateCommander {
 
 	public delegate void ActivatedHandler(Panel panel);
 
-/* TODO
-
-	class ClickableTreeViewColumn: TreeViewColumn {
-		protected override void OnClicked()
-		{
-			Console.WriteLine("TreeViewColumn.OnClicked()");
-		}
-	}
-*/
-
-/* TODO
-
-	class MyListStore: ListStore {
-		protected override void OnRowsReordered(TreePath path, TreeIter iter, int new_order) {
-			Console.WriteLine("ListStore.OnRowsReordered()");
-		}
-	}
-*/
-
 	public class Panel: VBox {
                 
 		static int STOREROW_FILE = 0;
@@ -39,11 +20,7 @@ namespace UltimateCommander {
 		const string active_header_colorstring = "#ffffff";
 		const string inactive_header_colorstring = "#000000";
 
-		static Gdk.Color active_header_bgcolor = new Gdk.Color(66, 105, 123);
-		static Gdk.Color inactive_header_bgcolor = new Gdk.Color(231, 227, 222);
-
 		static Gdk.Color selected_row_bgcolor = new Gdk.Color(224, 224, 0);
-		static Gdk.Color unselected_row_bgcolor = new Gdk.Color(255, 255, 255);
 
 		bool activated;
     	string current_directory = null;
@@ -86,7 +63,7 @@ namespace UltimateCommander {
            	if (file.Selected)
            		cellrenderertext.BackgroundGdk = selected_row_bgcolor;
            	else
-           		cellrenderertext.BackgroundGdk = unselected_row_bgcolor;
+           		cellrenderertext.BackgroundGdk = Widget.DefaultStyle.BaseColors[(int)StateType.Normal];
 		}
 
 		public void CellDataToggleFunc(TreeViewColumn column, CellRenderer renderer, TreeModel model, TreeIter iter)
@@ -142,8 +119,6 @@ namespace UltimateCommander {
 			view.AppendColumn(column2);
 			view.AppendColumn(column3);
 			view.EnableSearch = false;
-			// view.HeadersClickable = true;  // TODO
-			// view.Reorderable = true;  // TODO
 
 			view.KeyPressEvent += new KeyPressEventHandler(OnKeyPressEvent);
           	view.CursorChanged += new EventHandler(OnCursorChanged);
@@ -224,10 +199,6 @@ namespace UltimateCommander {
 					upper_level = old_updir.Equals(current_directory);
 				}
 
-			//TreePath treepath = null;
-			//TreeViewColumn treeviewcolumn = null;
-			//view.GetCursor(out treepath, out treeviewcolumn);
-
 			if (upper_level) {  // Stepping up a level.
 				string filename = UnixPath.GetFileName(old_directory);
 				bool has_next = false;
@@ -287,10 +258,10 @@ namespace UltimateCommander {
 
 			if (activated) {
 				ActivatedEvent(this);
-				header_bgcolor = active_header_bgcolor;
+				header_bgcolor = Widget.DefaultStyle.BaseColors[(int)StateType.Selected];
 				view.HasFocus = true;
 			} else
-				header_bgcolor = inactive_header_bgcolor;
+				header_bgcolor = Widget.DefaultStyle.BaseColors[(int)StateType.Insensitive];
 			
 			RefreshHeaderString();
 			frame.ModifyBg(StateType.Normal, header_bgcolor);
