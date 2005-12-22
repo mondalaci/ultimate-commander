@@ -10,7 +10,7 @@ namespace UltimateCommander {
 
 	public delegate void ActivatedHandler(Panel panel);
 
-	public class Panel: VBox {
+	public class Panel: EventBox {
                 
 		static int STOREROW_FILE = 0;
 
@@ -29,7 +29,6 @@ namespace UltimateCommander {
 
 		Label header = new Label();
      	TreeView view = new TreeView();
-		EventBox frame = new EventBox();
 		Label statusbar = new Label();
 
 		bool button3_pressed = false;
@@ -158,8 +157,7 @@ namespace UltimateCommander {
 			hbox.PackStart(vbox2);
 			hbox.PackStart(right_space, false, true, 0);
 
-			frame.Add(hbox);
-			PackStart(frame);
+			Add(hbox);
 		}
 		
 		public void SetCurrentDirectory(string path)
@@ -264,7 +262,7 @@ namespace UltimateCommander {
 				header_bgcolor = Widget.DefaultStyle.BaseColors[(int)StateType.Insensitive];
 			
 			RefreshHeaderString();
-			frame.ModifyBg(StateType.Normal, header_bgcolor);
+			ModifyBg(StateType.Normal, header_bgcolor);
 		}
 
 		private void RefreshHeaderString()
