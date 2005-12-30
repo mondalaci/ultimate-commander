@@ -1,18 +1,15 @@
 using System;
 using System.IO;
 using Mono.Unix;
-
-using Gtk;
 using Gdk;
+using Gtk;
 using Gnome.Vfs;
 
 namespace UltimateCommander {
 
-	public delegate void ActivatedHandler(Panel panel);
-
 	public class Panel: EventBox {
                 
-		static int STOREROW_FILE = 0;
+		const int STOREROW_FILE = 0;
 
 		const int border_width = 3;
 		const int label_space_width = 3;
@@ -26,15 +23,16 @@ namespace UltimateCommander {
     	string current_directory = null;
 		ListStore store = null;
 		int number_of_files = 0;
+		public Panel other_panel;
 
 		Label header = new Label();
-     	TreeView view = new TreeView();
-		Label statusbar = new Label();
+		[Glade.Widget] public TreeView view;
+		[Glade.Widget] Gtk.Window panel_window;
+		[Glade.Widget] Gtk.VBox panel_vbox;
+		[Glade.Widget] Label statusbar;
 
 		bool button3_pressed = false;
 		int prev_row_num;
-
-		public ActivatedHandler ActivatedEvent;
 
      	public Panel(): base()
      	{              
@@ -48,14 +46,31 @@ namespace UltimateCommander {
 			SetCurrentDirectory(path);
 		}
 
-		// Primary methods.
+		public void SetActive(bool activated)
+		{
+			this.activated = activated;
+			Color header_bgcolor;
 
-		public File GetFile(TreeIter iter)
+			if (activated) {
+				header_bgcolor = Widget.DefaultStyle.BaseColors[(int)StateType.Selected];
+				view.GrabFocus();
+			} else
+				header_bgcolor = Widget.DefaultStyle.BaseColors[(int)StateType.Insensitive];
+			
+			RefreshHeaderString();
+			ModifyBg(StateType.Normal, header_bgcolor);
+		}
+
+		public bool Activated {
+			get { return activated; }
+		}        
+
+		File GetFile(TreeIter iter)
 		{
 			return (File)store.GetValue(iter, STOREROW_FILE);
 		}
 
-		public void SetCellBackground(TreeIter iter, CellRendererText cellrenderertext)
+		void SetCellBackground(TreeIter iter, CellRendererText cellrenderertext)
 		{
            	File file = GetFile(iter);
 
@@ -65,7 +80,7 @@ namespace UltimateCommander {
            		cellrenderertext.BackgroundGdk = Widget.DefaultStyle.BaseColors[(int)StateType.Normal];
 		}
 
-		public void CellDataToggleFunc(TreeViewColumn column, CellRenderer renderer, TreeModel model, TreeIter iter)
+		void CellDataToggleFunc(TreeViewColumn column, CellRenderer renderer, TreeModel model, TreeIter iter)
 		{
 			CellRendererToggle cellrenderertoggle = (CellRendererToggle)renderer;
            	File file = GetFile(iter);
@@ -73,7 +88,7 @@ namespace UltimateCommander {
 			cellrenderertoggle.Activatable = !file.IsUpDirectory;
 		}
 
-		public void CellDataFilenameFunc(TreeViewColumn column, CellRenderer renderer, TreeModel model, TreeIter iter)
+		void CellDataFilenameFunc(TreeViewColumn column, CellRenderer renderer, TreeModel model, TreeIter iter)
 		{
 			CellRendererText cellrenderertext = (CellRendererText)renderer;
            	File file = GetFile(iter);
@@ -81,7 +96,7 @@ namespace UltimateCommander {
 			cellrenderertext.Text = file.FileName;
 		}
 
-		public void CellDataSizeFunc(TreeViewColumn column, CellRenderer renderer, TreeModel model, TreeIter iter)
+		void CellDataSizeFunc(TreeViewColumn column, CellRenderer renderer, TreeModel model, TreeIter iter)
 		{
 			CellRendererText cellrenderertext = (CellRendererText)renderer;
            	File file = GetFile(iter);
@@ -89,8 +104,12 @@ namespace UltimateCommander {
 			cellrenderertext.Text = ((long)file.stat.st_size).ToString();
 		}
 
-		public void InitWidget ()
+		void InitWidget ()
 		{
+			Glade.XML glade_xml = new Glade.XML(UltimateCommander.GladeFileName, "panel_window", null);
+			glade_xml.Autoconnect(this);
+			panel_window.Remove(panel_vbox);
+			
 			Label header_label = GetSpacedLabel(header);
 
 			CellRendererToggle cellrenderertoggle = new CellRendererToggle();
@@ -117,34 +136,15 @@ namespace UltimateCommander {
 			view.AppendColumn(column1);
 			view.AppendColumn(column2);
 			view.AppendColumn(column3);
-			view.EnableSearch = false;
-
-			view.KeyPressEvent += new KeyPressEventHandler(OnKeyPressEvent);
-          	view.CursorChanged += new EventHandler(OnCursorChanged);
-			view.RowActivated += new RowActivatedHandler(OnRowActivated);
-			view.FocusInEvent += new FocusInEventHandler(OnFocusInEvent);
-			view.ButtonPressEvent += new ButtonPressEventHandler(OnButtonPressEvent);
-			view.ButtonReleaseEvent += new ButtonReleaseEventHandler(OnButtonReleaseEvent);
-			view.MotionNotifyEvent += new MotionNotifyEventHandler(OnMotionNotifyEvent);
-
-			ScrolledWindow scrolled_window = new ScrolledWindow();
-			scrolled_window.Add(view);
-
-			Label statusbar_label = GetSpacedLabel(statusbar);
-
-			VBox vbox1 = new VBox();
-          	vbox1.PackStart(scrolled_window);
-			vbox1.PackStart(statusbar_label, false, true, 0);
-
-			EventBox content_area = new EventBox();
-			content_area.Add(vbox1);
 
 			Label bottom_space = new Label();
 			bottom_space.HeightRequest = border_width;
 
 			VBox vbox2 = new VBox();
 			vbox2.PackStart(header_label, false, true, 0);
-			vbox2.PackStart(content_area);
+			EventBox e = new EventBox();
+			e.Add(panel_vbox);
+			vbox2.PackStart(e, true, true, 0);
 			vbox2.PackStart(bottom_space, false, true, 0);
 
 			Label left_space = new Label();
@@ -158,9 +158,10 @@ namespace UltimateCommander {
 			hbox.PackStart(right_space, false, true, 0);
 
 			Add(hbox);
+			view.GrabFocus();
 		}
 		
-		public void SetCurrentDirectory(string path)
+		void SetCurrentDirectory(string path)
 		{
        		store = new ListStore(typeof(File));
 
@@ -217,7 +218,7 @@ namespace UltimateCommander {
 
 		// Secondary methods.
 
-     	public void ActivateRow()
+     	void ActivateRow()
      	{
 			File file = CurrentFile;
 			string filename = file.FileName;
@@ -233,7 +234,7 @@ namespace UltimateCommander {
            		Console.WriteLine("{0} is not a regular file nor a directory.", filename);
      	}
 
-		public void SelectCurrentRow()
+		void SelectCurrentRow()
 		{
 			CurrentFile.InvertSelection();
 
@@ -248,24 +249,7 @@ namespace UltimateCommander {
 				view.SetCursor(store.GetPath(CurrentIter), column, false);  // Refresh row.
 		}
 
-		public void SetActivatedState(bool activated)
-		{
-			Color header_bgcolor;
-
-			this.activated = activated;
-
-			if (activated) {
-				ActivatedEvent(this);
-				header_bgcolor = Widget.DefaultStyle.BaseColors[(int)StateType.Selected];
-				view.HasFocus = true;
-			} else
-				header_bgcolor = Widget.DefaultStyle.BaseColors[(int)StateType.Insensitive];
-			
-			RefreshHeaderString();
-			ModifyBg(StateType.Normal, header_bgcolor);
-		}
-
-		private void RefreshHeaderString()
+		void RefreshHeaderString()
 		{
 			string header_colorstring;
 
@@ -277,7 +261,7 @@ namespace UltimateCommander {
 			header.Markup = GetFgPangoMarkup(header_colorstring, CurrentDirectory);
 		}
 
-		public int GetRowNumFromCoords(double x, double y)
+		int GetRowNumFromCoords(double x, double y)
 		{
 			TreePath path;
 			view.GetPathAtPos((int)x, (int)y, out path);
@@ -291,7 +275,7 @@ namespace UltimateCommander {
 				return path.Indices[0];
 		}
 
-		public void InvertRow(int row_num)
+		void InvertRow(int row_num)
 		{
 			TreeIter iter;
 			int[] path_array = {row_num};
@@ -303,7 +287,7 @@ namespace UltimateCommander {
 
 		// Utility methods.
 
-		static public string EscapeText(string unescaped_text, string chars_to_escape)
+		string EscapeText(string unescaped_text, string chars_to_escape)
 		{
 			string escaped_text = "";
 
@@ -316,13 +300,13 @@ namespace UltimateCommander {
 			return escaped_text;
 		}
 
-		static public string GetFgPangoMarkup(string color, string unescaped_text)
+		string GetFgPangoMarkup(string color, string unescaped_text)
 		{
 			string escaped_text = EscapeText(unescaped_text, "<>");
 			return "<span foreground=\"" + color + "\">" + escaped_text + "</span>";
 		}
 
-		static private Label GetSpacedLabel(Label label)
+		Label GetSpacedLabel(Label label)
 		{
 			label.Xalign = 0;
 			label.LineWrap = true;
@@ -331,7 +315,7 @@ namespace UltimateCommander {
 			return label;
 		}
 
-		static private string GetTopLevelAccessiblePath(string full_path)
+		string GetTopLevelAccessiblePath(string full_path)
 		{
 			while (!new UnixDirectoryInfo(full_path).Exists) {
 				full_path = UnixPath.Combine(full_path, "..");
@@ -343,11 +327,11 @@ namespace UltimateCommander {
 
 		// Accessors.
 
-     	public string CurrentDirectory {
+     	string CurrentDirectory {
 			get { return current_directory; }
 		}
 
-		public TreeIter CurrentIter {
+		TreeIter CurrentIter {
 			get {
         		TreePath path;
 	           	TreeViewColumn column;
@@ -359,38 +343,46 @@ namespace UltimateCommander {
 			}
 		}
 
-		public File CurrentFile {
+		File CurrentFile {
 			get {
 				TreeIter iter = CurrentIter;
 	           	File file = (File)store.GetValue(iter, STOREROW_FILE);
     	       	return file;
 			}
         }
-        
+
 		// Event handlers.
 
-		public void OnRowActivated(object o, RowActivatedArgs args)
+		void OnPanelRowActivated(object o, RowActivatedArgs args)
 		{
 			ActivateRow();
      	}
 
-		public void OnKeyPressEvent(object o, KeyPressEventArgs args)
+		[GLib.ConnectBefore]
+		void OnPanelKeyPressEvent(object o, KeyPressEventArgs args)
 		{
-			if (args.Event.Key == Gdk.Key.Insert)
+			Gdk.Key key = args.Event.Key;
+
+			if (key == Gdk.Key.Insert)
 				SelectCurrentRow();
+			else if (key == Gdk.Key.Tab) {
+				SetActive(false);
+				other_panel.SetActive(true);
+			}
 		}
 
-     	public void OnCursorChanged(object o, EventArgs e)
+     	void OnPanelCursorChanged(object o, EventArgs e)
      	{
          	statusbar.Text = CurrentFile.FileName;
 		}		
 
-		public void OnFocusInEvent(object o, FocusInEventArgs args)
+		void OnFrameFocusInEvent(object o, FocusInEventArgs args)
 		{
-			SetActivatedState(true);
+			other_panel.SetActive(false);
+			SetActive(true);
 		}
 
-		public void OnToggled(object o, ToggledArgs args)
+		void OnToggled(object o, ToggledArgs args)
 		{
 			TreeIter iter;
 			if (store.GetIter(out iter, new TreePath(args.Path))) {
@@ -400,7 +392,7 @@ namespace UltimateCommander {
 		}
 
 		[GLib.ConnectBefore]
-		public void OnButtonPressEvent(object o, ButtonPressEventArgs args)
+		void OnButtonPressEvent(object o, ButtonPressEventArgs args)
 		{
 			if (args.Event.Button == 3) {
 				button3_pressed = true;
@@ -409,14 +401,14 @@ namespace UltimateCommander {
 			}
 		}
 
-		public void OnButtonReleaseEvent(object o, ButtonReleaseEventArgs args)
+		void OnButtonReleaseEvent(object o, ButtonReleaseEventArgs args)
 		{
 			if (args.Event.Button == 3)
 				button3_pressed = false;
 		}
 
 		[GLib.ConnectBefore]
-		public void OnMotionNotifyEvent(object o, MotionNotifyEventArgs args)
+		void OnMotionNotifyEvent(object o, MotionNotifyEventArgs args)
 		{
 			int row_num = GetRowNumFromCoords(args.Event.X, args.Event.Y);
 
@@ -445,6 +437,7 @@ namespace UltimateCommander {
 				store.GetIter(out iter, path);
 				store.EmitRowChanged(path, iter);
 			}
+			
 			prev_row_num = row_num;
 
 			int[] path_array2 = {end};
@@ -452,9 +445,14 @@ namespace UltimateCommander {
 			
 		}
 
+		void OnToolBarButtonEvent(object o, EventArgs args)
+		{
+			UltimateCommander.MainWindow.ActivePanel.view.GrabFocus();
+		}
+
 		protected override bool OnButtonPressEvent(EventButton eventbutton)
 		{
-			SetActivatedState(true);
+			SetActive(true);
 			return true;
 		}
 	}

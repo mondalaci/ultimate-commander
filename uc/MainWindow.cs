@@ -1,7 +1,5 @@
 using System;
-
 using Gtk;
-using Gdk;
 using Glade;
 
 namespace UltimateCommander {
@@ -13,29 +11,41 @@ namespace UltimateCommander {
 
 		Panel panel1;
 		Panel panel2;
+		Panel active_panel;
+		Panel passive_panel;
 
 		float panel_ratio = 0.5f;
 		int width = 0;
 		int old_width = 0;
 
-		public MainWindow() {
+		public MainWindow()
+		{
 			string default_directory = ".";
 
-			Glade.XML glade_xml = new Glade.XML("gui/uc.glade", "main_window", null);
+			Glade.XML glade_xml = new Glade.XML(UltimateCommander.GladeFileName, "main_window", null);
 			glade_xml.Autoconnect(this);
 
 			panel1 = new Panel(default_directory);
-			panel1.ActivatedEvent += new ActivatedHandler(OnPanelActivated);
-
 			panel2 = new Panel(default_directory);
-			panel2.ActivatedEvent += new ActivatedHandler(OnPanelActivated);
+			panel1.other_panel = panel2;
+			panel2.other_panel = panel1;
 
 			hpaned.Add1(panel1);
 			hpaned.Add2(panel2);
 
 			ResizePanes();
-
+			panel1.SetActive(true);
 			main_window.ShowAll();
+		}
+
+		public Panel ActivePanel
+		{
+			get {
+				if (panel1.Activated)
+					return panel1;
+				else
+					return panel2;
+			}
 		}
 
 		void ResizePanes()
@@ -59,21 +69,14 @@ namespace UltimateCommander {
 			}
 		}
 
-		void OnPanelActivated(Panel panel)
-		{
-			Panel passive_panel;
-			
-			if (panel == panel1)
-				passive_panel = panel2;
-			else
-				passive_panel = panel1;
-				
-			passive_panel.SetActivatedState(false);
-		}
-
-		void OnPanesResizeChecked(object o, EventArgs args)
+		void OnWindowCheckResize(object o, EventArgs args)
 		{
 			ResizePanes();
+		}
+
+		void OnToolBarButtonEvent(object o, EventArgs args)
+		{
+			ActivePanel.SetActive(true);
 		}
 
      	void OnWindowDeleteEvent(object o, DeleteEventArgs args)
