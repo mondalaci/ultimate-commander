@@ -11,8 +11,6 @@ namespace UltimateCommander {
 
 		Panel panel1;
 		Panel panel2;
-		Panel active_panel;
-		Panel passive_panel;
 
 		float panel_ratio = 0.5f;
 		int width = 0;
@@ -27,21 +25,20 @@ namespace UltimateCommander {
 
 			panel1 = new Panel(default_directory);
 			panel2 = new Panel(default_directory);
-			panel1.other_panel = panel2;
-			panel2.other_panel = panel1;
+			panel1.OtherPanel = panel2;
+			panel2.OtherPanel = panel1;
 
 			hpaned.Add1(panel1);
 			hpaned.Add2(panel2);
 
 			ResizePanes();
-			panel1.SetActive(true);
+			panel1.Active = true;
 			main_window.ShowAll();
 		}
 
-		public Panel ActivePanel
-		{
+		public Panel ActivePanel {
 			get {
-				if (panel1.Activated)
+				if (panel1.Active)
 					return panel1;
 				else
 					return panel2;
@@ -76,7 +73,7 @@ namespace UltimateCommander {
 
 		void OnToolBarButtonEvent(object o, EventArgs args)
 		{
-			ActivePanel.SetActive(true);
+			ActivePanel.Active = true;
 		}
 
      	void OnWindowDeleteEvent(object o, DeleteEventArgs args)
