@@ -23,13 +23,19 @@ namespace UltimateCommander {
 			Glade.XML glade_xml = new Glade.XML(UltimateCommander.GladeFileName, "main_window", null);
 			glade_xml.Autoconnect(this);
 
-			panel1 = new Panel(default_directory);
-			panel2 = new Panel(default_directory);
+			Frame frame1 = new Frame();
+			Frame frame2 = new Frame();
+
+			panel1 = new Panel(default_directory, frame1);
+			panel2 = new Panel(default_directory, frame2);
 			panel1.OtherPanel = panel2;
 			panel2.OtherPanel = panel1;
 
-			hpaned.Add1(panel1);
-			hpaned.Add2(panel2);
+			frame1.SetChild(panel1);
+			frame2.SetChild(panel2);
+
+			hpaned.Add1(frame1);
+			hpaned.Add2(frame2);
 
 			ResizePanes();
 			panel1.Active = true;

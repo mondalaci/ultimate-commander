@@ -1,30 +1,21 @@
+using System;
 using Gdk;
 using Gtk;
 
 namespace UltimateCommander {
 
-	public class Frame: HBox {
+	public class Frame: GladeContainer {
 
 		const string active_header_colorstring = "#ffffff";
 		const string inactive_header_colorstring = "#000000";
 		
 		[Glade.Widget] Label header_label;
-		[Glade.Widget] Gtk.Window frame_window;
-		[Glade.Widget] EventBox eventbox;
-		[Glade.Widget] EventBox eventbox2;
 
 		bool active = false;
 		string title = "";
 
-		public Frame(): base()
+		public Frame(): base("frame_window")
 		{
-			PackGladeWidget();
-		}
-
-		public Frame(Widget child): base()
-		{
-			PackGladeWidget();
-			eventbox2.Add(child);
 		}
 
 		public string Title {
@@ -32,8 +23,10 @@ namespace UltimateCommander {
 				return title;
 			}
 			set {
-				title = value;
-				RefreshHeader();
+				if (this != null) {
+					title = value;
+					RefreshHeader();
+				}
 			}
 		}
 					
@@ -47,16 +40,10 @@ namespace UltimateCommander {
 			}
 		}
 
-		void PackGladeWidget()
-		{
-			Glade.XML glade_xml = new Glade.XML(UltimateCommander.GladeFileName, "frame_window", null);
-			glade_xml.Autoconnect(this);
-			frame_window.Remove(eventbox);
-			PackStart(eventbox, true, true, 0);
-		}
-		
 		void RefreshHeader()
 		{
+			Console.WriteLine("refreshheader");
+
 			string header_colorstring;
 			Color header_bgcolor;
 
@@ -69,7 +56,7 @@ namespace UltimateCommander {
 			}
 
 			header_label.Markup = GetFgPangoMarkup(header_colorstring, title);
-			eventbox.ModifyBg(StateType.Normal, header_bgcolor);
+			topwidget.ModifyBg(StateType.Normal, header_bgcolor);
 		}
 
 		string GetFgPangoMarkup(string color, string unescaped_text)

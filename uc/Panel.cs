@@ -7,17 +7,15 @@ using Gnome.Vfs;
 
 namespace UltimateCommander {
 
-	public class Panel: EventBox {
+	public class Panel: GladeWidget {
                 
 		const int STOREROW_FILE = 0;
 		static Gdk.Color selected_row_bgcolor = new Gdk.Color(224, 224, 0);
 
-		[Glade.Widget] Gtk.Window panel_window;
-		[Glade.Widget] Gtk.VBox child;
 		[Glade.Widget] TreeView view;
 		[Glade.Widget] Label statusbar;
 
-		Frame frame;
+		public Frame frame;
 		ListStore store = null;
 
     	string current_directory = null;
@@ -27,14 +25,9 @@ namespace UltimateCommander {
 		bool button3_pressed = false;
 		int prev_row_num;
 
-     	public Panel(): base()
-     	{              
-			InitWidget ();
-			SetCurrentDirectory(UnixDirectoryInfo.GetCurrentDirectory());
-     	}
-
-		public Panel (string path) : base()
+		public Panel(string path, Frame frame): base("panel_window")
 		{
+			this.frame = frame;
 			InitWidget();
 			SetCurrentDirectory(path);
 		}
@@ -100,10 +93,6 @@ namespace UltimateCommander {
 
 		void InitWidget ()
 		{
-			Glade.XML glade_xml = new Glade.XML(UltimateCommander.GladeFileName, "panel_window", null);
-			glade_xml.Autoconnect(this);
-			panel_window.Remove(child);
-			
 			CellRendererToggle cellrenderertoggle = new CellRendererToggle();
 			cellrenderertoggle.Toggled += new ToggledHandler(OnToggled);
 			TreeViewColumn column1 = new TreeViewColumn();
@@ -128,9 +117,6 @@ namespace UltimateCommander {
 			view.AppendColumn(column1);
 			view.AppendColumn(column2);
 			view.AppendColumn(column3);
-
-			frame = new Frame(child);
-			Add(frame);
 		}
 		
 		void SetCurrentDirectory(string path)
