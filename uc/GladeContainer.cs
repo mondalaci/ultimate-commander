@@ -6,7 +6,8 @@ namespace UltimateCommander {
 	public class GladeContainer: GladeWidget {
 
 		[Glade.Widget] protected EventBox containerwidget;
-
+		Widget child;
+		
 		public GladeContainer(string window_name): base(window_name)
 		{
 		}
@@ -18,6 +19,7 @@ namespace UltimateCommander {
 
 		public void SetChild(Widget child)
 		{
+			this.child = child;
 			containerwidget.Add(child);
 		}
 	}

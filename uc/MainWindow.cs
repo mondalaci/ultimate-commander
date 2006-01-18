@@ -23,19 +23,27 @@ namespace UltimateCommander {
 			Glade.XML glade_xml = new Glade.XML(UltimateCommander.GladeFileName, "main_window", null);
 			glade_xml.Autoconnect(this);
 
-			Frame frame1 = new Frame();
-			Frame frame2 = new Frame();
+			Slot slot1 = new Slot();
+			Slot slot2 = new Slot();
 
-			panel1 = new Panel(default_directory, frame1);
-			panel2 = new Panel(default_directory, frame2);
+			panel1 = new Panel(default_directory, slot1);
+			panel2 = new Panel(default_directory, slot2);
 			panel1.OtherPanel = panel2;
 			panel2.OtherPanel = panel1;
 
-			frame1.SetChild(panel1);
-			frame2.SetChild(panel2);
+			slot1.SetView(panel1);
+			slot2.SetView(panel2);
+
+			SetViewWidget panelviewconfig = new SetViewWidget();
+			Slot panelviewconfigslot = new Slot();
+			panelviewconfigslot.SetView(panelviewconfig);
+
+			Frame frame1 = new Frame();
+			frame1.AppendView(slot1);
+			frame1.AppendView(panelviewconfigslot);
 
 			hpaned.Add1(frame1);
-			hpaned.Add2(frame2);
+			hpaned.Add2(slot2);
 
 			ResizePanes();
 			panel1.Active = true;

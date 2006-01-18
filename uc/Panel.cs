@@ -7,7 +7,7 @@ using Gnome.Vfs;
 
 namespace UltimateCommander {
 
-	public class Panel: GladeWidget {
+	public class Panel: View {
                 
 		const int STOREROW_FILE = 0;
 		static Gdk.Color selected_row_bgcolor = new Gdk.Color(224, 224, 0);
@@ -15,7 +15,7 @@ namespace UltimateCommander {
 		[Glade.Widget] TreeView view;
 		[Glade.Widget] Label statusbar;
 
-		public Frame frame;
+		Slot slot;
 		ListStore store = null;
 
     	string current_directory = null;
@@ -25,9 +25,9 @@ namespace UltimateCommander {
 		bool button3_pressed = false;
 		int prev_row_num;
 
-		public Panel(string path, Frame frame): base("panel_window")
+		public Panel(string path, Slot slot): base("panel_window")
 		{
-			this.frame = frame;
+			this.slot = slot;
 			InitWidget();
 			SetCurrentDirectory(path);
 		}
@@ -37,12 +37,12 @@ namespace UltimateCommander {
 				return active;
 			}
 			set {
-				active = value;
-				frame.Active = active;
+				/*active = value;
+				slot.Active = active;
 
 				if (active) {
 					view.GrabFocus();
-				}
+				}*/
 			}
 		}        
 
@@ -126,7 +126,7 @@ namespace UltimateCommander {
 			string old_directory = current_directory;
 			path = UnixPath.GetFullPath(path);
 			current_directory = GetTopLevelAccessiblePath(path);
-			frame.Title = current_directory;
+			slot.Title = current_directory;
 			
 			string full_path = UnixPath.Combine(current_directory, "..");
 			File file = new File(full_path);
@@ -288,11 +288,11 @@ namespace UltimateCommander {
          	statusbar.Text = CurrentFile.FileName;
 		}		
 
-		void OnFrameFocusInEvent(object o, FocusInEventArgs args)
+		/*void OnFrameFocusInEvent(object o, FocusInEventArgs args)
 		{
 			other_panel.Active = false;
 			Active = true;
-		}
+		}*/
 
 		void OnToggled(object o, ToggledArgs args)
 		{
@@ -360,6 +360,18 @@ namespace UltimateCommander {
 		void OnToolBarButtonEvent(object o, EventArgs args)
 		{
 			UltimateCommander.MainWindow.ActivePanel.view.GrabFocus();
+		}
+
+		void OnSetViewButtonToggled(object o, EventArgs args)
+		{
+			ToggleToolButton button = (ToggleToolButton)o;
+			bool active = button.Active;
+			Console.WriteLine("Set View: {0}", active);
+		}
+
+		void OnSetSortingButtonToggled(object o, EventArgs args)
+		{
+			Console.WriteLine("Set Sorting.");
 		}
 
 		protected override bool OnButtonPressEvent(EventButton eventbutton)
