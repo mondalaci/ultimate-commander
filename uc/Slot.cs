@@ -14,12 +14,20 @@ namespace UltimateCommander {
 		
 		[Glade.Widget] Label header_label;
 
+		Frame frame;
+
 		bool active = false;
 		string title = "";
 
 		public Slot(): base("slot_window")
 		{
 			slots.Add(this);
+		}
+
+		public Slot(View view): base("slot_window")
+		{
+			slots.Add(this);
+			SetView(view);
 		}
 
 		~Slot()
@@ -31,6 +39,11 @@ namespace UltimateCommander {
 		{
 			SetChild(view);
 			view.Slot = this;
+		}
+
+		public void Select()
+		{
+			Active = true;
 		}
 
 		public string Title {
@@ -57,6 +70,11 @@ namespace UltimateCommander {
 				active = value;
 				RefreshHeader();
 			}
+		}
+
+		public Frame Frame {
+			get { return frame; }
+			set { frame = value; }
 		}
 
 		void RefreshHeader()

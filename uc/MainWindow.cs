@@ -9,8 +9,8 @@ namespace UltimateCommander {
 		[Glade.Widget] HPaned hpaned;
 		[Glade.Widget] Gtk.Window main_window;
 
-		Panel panel1;
-		Panel panel2;
+		//Panel panel1;
+		//Panel panel2;
 
 		float panel_ratio = 0.5f;
 		int width = 0;
@@ -18,46 +18,29 @@ namespace UltimateCommander {
 
 		public MainWindow()
 		{
-			string default_directory = ".";
-
 			Glade.XML glade_xml = new Glade.XML(UltimateCommander.GladeFileName, "main_window", null);
 			glade_xml.Autoconnect(this);
 
-			Slot slot1 = new Slot();
-			Slot slot2 = new Slot();
+			PanelFrame left_panel_frame = new PanelFrame(PanelFrame.PanelFramePosition.Left);
+			PanelFrame right_panel_frame = new PanelFrame(PanelFrame.PanelFramePosition.Right);
+			left_panel_frame.OtherFrame = right_panel_frame;
+			right_panel_frame.OtherFrame = left_panel_frame;
 
-			panel1 = new Panel(default_directory, slot1);
-			panel2 = new Panel(default_directory, slot2);
-			panel1.OtherPanel = panel2;
-			panel2.OtherPanel = panel1;
-
-			slot1.SetView(panel1);
-			slot2.SetView(panel2);
-
-			SetViewWidget panelviewconfig = new SetViewWidget();
-			Slot panelviewconfigslot = new Slot();
-			panelviewconfigslot.SetView(panelviewconfig);
-
-			Frame frame1 = new Frame();
-			frame1.AppendView(slot1);
-			frame1.AppendView(panelviewconfigslot);
-
-			hpaned.Add1(frame1);
-			hpaned.Add2(slot2);
+			hpaned.Add1(left_panel_frame);
+			hpaned.Add2(right_panel_frame);
 
 			ResizePanes();
-			panel1.Active = true;
 			main_window.ShowAll();
 		}
 
-		public Panel ActivePanel {
+		/*public Panel ActivePanel {
 			get {
 				if (panel1.Active)
 					return panel1;
 				else
 					return panel2;
 			}
-		}
+		}*/
 
 		void ResizePanes()
 		{
@@ -87,7 +70,7 @@ namespace UltimateCommander {
 
 		void OnToolBarButtonEvent(object o, EventArgs args)
 		{
-			ActivePanel.Active = true;
+			//ActivePanel.Active = true;
 		}
 
      	void OnWindowDeleteEvent(object o, DeleteEventArgs args)

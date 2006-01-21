@@ -15,7 +15,6 @@ namespace UltimateCommander {
 		[Glade.Widget] TreeView view;
 		[Glade.Widget] Label statusbar;
 
-		Slot slot;
 		ListStore store = null;
 
     	string current_directory = null;
@@ -25,9 +24,8 @@ namespace UltimateCommander {
 		bool button3_pressed = false;
 		int prev_row_num;
 
-		public Panel(string path, Slot slot): base("panel_window")
+		public Panel(string path): base("panel_window")
 		{
-			this.slot = slot;
 			InitWidget();
 			SetCurrentDirectory(path);
 		}
@@ -359,19 +357,33 @@ namespace UltimateCommander {
 
 		void OnToolBarButtonEvent(object o, EventArgs args)
 		{
-			UltimateCommander.MainWindow.ActivePanel.view.GrabFocus();
+			//UltimateCommander.MainWindow.ActivePanel.view.GrabFocus();
 		}
 
-		void OnSetViewButtonToggled(object o, EventArgs args)
+		void OnSetListingButtonToggled(object o, EventArgs args)
 		{
 			ToggleToolButton button = (ToggleToolButton)o;
 			bool active = button.Active;
-			Console.WriteLine("Set View: {0}", active);
+			PanelFrame current_frame = (PanelFrame)slot.Frame;
+			PanelFrame other_frame = current_frame.OtherFrame;
+
+			other_frame.ShowListing(active);
+
+			if (!active)
+				Select();
 		}
 
 		void OnSetSortingButtonToggled(object o, EventArgs args)
 		{
-			Console.WriteLine("Set Sorting.");
+			ToggleToolButton button = (ToggleToolButton)o;
+			bool active = button.Active;
+			PanelFrame current_frame = (PanelFrame)slot.Frame;
+			PanelFrame other_frame = current_frame.OtherFrame;
+
+			other_frame.ShowSorting(active);
+
+			if (!active)
+				Select();
 		}
 
 		protected override bool OnButtonPressEvent(EventButton eventbutton)
