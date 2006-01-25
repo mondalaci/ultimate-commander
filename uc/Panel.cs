@@ -129,7 +129,7 @@ namespace UltimateCommander {
 			string full_path = UnixPath.Combine(current_directory, "..");
 			File file = new File(full_path);
        		store.AppendValues(file);
-			number_of_files++;
+			number_of_files = 1;
 
 			// FIXME: When $MONO_EXTERNAL_ENCODINGS is not or inappropriately
 			//        set, GetFileSystemEntries() skips accentuated filenames.
@@ -321,6 +321,9 @@ namespace UltimateCommander {
 		void OnMotionNotifyEvent(object o, MotionNotifyEventArgs args)
 		{
 			int row_num = GetRowNumFromCoords(args.Event.X, args.Event.Y);
+
+			if (row_num >= number_of_files - 1)
+				row_num = number_of_files -1;
 
 			if (!(button3_pressed && row_num != prev_row_num))
 				return;

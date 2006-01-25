@@ -9,9 +9,6 @@ namespace UltimateCommander {
 		[Glade.Widget] HPaned hpaned;
 		[Glade.Widget] Gtk.Window main_window;
 
-		//Panel panel1;
-		//Panel panel2;
-
 		float panel_ratio = 0.5f;
 		int width = 0;
 		int old_width = 0;
