@@ -41,7 +41,7 @@ namespace UltimateCommander {
 			if (show) {
 				AppendView(sort_configurator, "Set " + OtherPanelName + " Panel Sorting");
 			} else {
-				RemoveView(listing_configurator);
+				RemoveView(sort_configurator);
 			}
 
 			ShowAll();
