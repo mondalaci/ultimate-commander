@@ -19,7 +19,6 @@ namespace UltimateCommander {
 
     	string current_directory = null;
 		int number_of_files = 0;
-		Panel other_panel;
 		bool active;
 		bool button3_pressed = false;
 		int prev_row_num;
@@ -43,12 +42,6 @@ namespace UltimateCommander {
 				}*/
 			}
 		}        
-
-		public Panel OtherPanel {
-			set {
-				other_panel = value;
-			}
-		}
 
 		File GetFile(TreeIter iter)
 		{
@@ -276,8 +269,6 @@ namespace UltimateCommander {
 			if (key == Gdk.Key.Insert)
 				SelectCurrentRow();
 			else if (key == Gdk.Key.Tab) {
-				Active = false;
-				other_panel.Active = true;
 			}
 		}
 
