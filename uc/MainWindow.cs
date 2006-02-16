@@ -1,6 +1,7 @@
 using System;
 using Gtk;
 using Glade;
+using Gnome.Vfs;
 
 namespace UltimateCommander {
 
@@ -15,6 +16,8 @@ namespace UltimateCommander {
 
 		public MainWindow()
 		{
+			Vfs.Initialize();			
+
 			Glade.XML glade_xml = new Glade.XML(UltimateCommander.GladeFileName, "main_window", null);
 			glade_xml.Autoconnect(this);
 
@@ -72,12 +75,12 @@ namespace UltimateCommander {
 
      	void OnWindowDeleteEvent(object o, DeleteEventArgs args)
      	{
-          	Application.Quit();
+          	Gtk.Application.Quit();
      	}
 
 		void OnQuitMenuItemActivated(object o, EventArgs args)
 		{
-			Application.Quit();
+			Gtk.Application.Quit();
 		}
 	}
 }

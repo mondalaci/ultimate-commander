@@ -4,6 +4,7 @@ using Mono.Unix;
 using Gdk;
 using Gtk;
 using Gnome.Vfs;
+using Gnome;
 
 namespace UltimateCommander {
 
@@ -17,7 +18,7 @@ namespace UltimateCommander {
 
 		ListStore store = null;
 
-    	string current_directory = null;
+    		string current_directory = null;
 		int number_of_files = 0;
 		bool active;
 		bool button3_pressed = false;
@@ -66,6 +67,20 @@ namespace UltimateCommander {
 			cellrenderertoggle.Activatable = !file.IsUpDirectory;
 		}
 
+		void CellDataIconFunc(TreeViewColumn column, CellRenderer renderer, TreeModel model, TreeIter iter)
+		{
+			CellRendererPixbuf cellrendererpixbuf = (CellRendererPixbuf)renderer;
+           	File file = GetFile(iter);
+			cellrendererpixbuf.Pixbuf = file.Icon;
+		}
+
+		void CellDataIconFunc2(TreeViewColumn column, CellRenderer renderer, TreeModel model, TreeIter iter)
+		{
+			CellRendererPixbuf cellrendererpixbuf = (CellRendererPixbuf)renderer;
+           	File file = GetFile(iter);
+			cellrendererpixbuf.Pixbuf = file.AttributeIcon;
+		}
+
 		void CellDataFilenameFunc(TreeViewColumn column, CellRenderer renderer, TreeModel model, TreeIter iter)
 		{
 			CellRendererText cellrenderertext = (CellRendererText)renderer;
@@ -79,7 +94,7 @@ namespace UltimateCommander {
 			CellRendererText cellrenderertext = (CellRendererText)renderer;
            	File file = GetFile(iter);
 			SetCellBackground(iter, cellrenderertext);
-			cellrenderertext.Text = ((long)file.stat.st_size).ToString();
+			cellrenderertext.Text = file.Size.ToString();
 		}
 
 		void InitWidget ()
@@ -90,22 +105,40 @@ namespace UltimateCommander {
 			column1.PackStart(cellrenderertoggle, false);
 			column1.SetCellDataFunc(cellrenderertoggle, CellDataToggleFunc);
 			column1.Resizable = true;
+			column1.Title = "S";
+			column1.Alignment = 0.5f;
+			
+			CellRendererPixbuf cellrendererpixbuf = new CellRendererPixbuf();
+			TreeViewColumn columnp = new TreeViewColumn();
+			columnp.PackStart(cellrendererpixbuf, true);
+			columnp.SetCellDataFunc(cellrendererpixbuf, CellDataIconFunc);
+			columnp.Title = "I";
+			columnp.Alignment = 0.5f;
+
+			CellRendererPixbuf cellrendererpixbuf2 = new CellRendererPixbuf();
+			TreeViewColumn columnp2 = new TreeViewColumn();
+			columnp2.PackStart(cellrendererpixbuf2, true);
+			columnp2.SetCellDataFunc(cellrendererpixbuf2, CellDataIconFunc2);
+			columnp2.Title = "A";
+			columnp2.Alignment = 0.5f;
 
 			CellRendererText cellrenderertext = new CellRendererText();
 			TreeViewColumn column2 = new TreeViewColumn();
 			column2.PackStart(cellrenderertext, true);
 			column2.SetCellDataFunc(cellrenderertext, CellDataFilenameFunc);
 			column2.Resizable = true;
-			column2.Title = "filename";
+			column2.Title = "Filename";
 
 			cellrenderertext = new CellRendererText();
 			TreeViewColumn column3 = new TreeViewColumn();
 			column3.PackStart(cellrenderertext, true);
 			column3.SetCellDataFunc(cellrenderertext, CellDataSizeFunc);
 			column3.Resizable = true;
-			column3.Title = "size";
+			column3.Title = "Size";
 
 			view.AppendColumn(column1);
+			view.AppendColumn(columnp2);
+			view.AppendColumn(columnp);
 			view.AppendColumn(column2);
 			view.AppendColumn(column3);
 		}
@@ -169,18 +202,9 @@ namespace UltimateCommander {
 
      	void ActivateRow()
      	{
-			File file = CurrentFile;
-			string filename = file.FileName;
-
-           	if (file.IsDirectory)
-           		SetCurrentDirectory(file.FullPath);
-           	else if (file.IsFile) {
-           		Console.WriteLine("{0} is a regular file.", filename);
-				string type = Mime.TypeFromName(filename);
-				string i = Mime.GetDescription(type);
-				Console.WriteLine("type: {0}, icon: {1}", type, i);
-           	} else
-           		Console.WriteLine("{0} is not a regular file nor a directory.", filename);
+           	if (CurrentFile.IsDirectory) {
+           		SetCurrentDirectory(CurrentFile.FullPath);
+           	}
      	}
 
 		void SelectCurrentRow()
@@ -238,11 +262,11 @@ namespace UltimateCommander {
 
 		TreeIter CurrentIter {
 			get {
-        		TreePath path;
+        			TreePath path;
 	           	TreeViewColumn column;
-    	       	TreeIter iter;
+    	       		TreeIter iter;
 
-        	   	view.GetCursor(out path, out column);
+        	   		view.GetCursor(out path, out column);
            		store.GetIter(out iter, path);
            		return iter;
 			}

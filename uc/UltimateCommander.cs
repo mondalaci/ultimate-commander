@@ -1,5 +1,6 @@
 using System;
 using Gtk;
+using Gnome.Vfs;
 
 namespace UltimateCommander {
 
@@ -10,9 +11,10 @@ namespace UltimateCommander {
 
      	public static void Main(string[] args)
      	{              
-          	Application.Init();
+			Gnome.Vfs.Vfs.Initialize();
+          	Gtk.Application.Init();
 			MainWindow = new MainWindow();
-          	Application.Run ();
+          	Gtk.Application.Run ();
 		}
 	}
 }
