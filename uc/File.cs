@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Text;
+using Mono.Unix;
 using MUN = Mono.Unix.Native;
 using Gnome.Vfs;
 using Gdk;
@@ -11,11 +12,15 @@ namespace UltimateCommander {
 
 	public class File {
 
-		// If the actual maximum path length is greater than this value, we may be in serious shit.
+		static int icon_size = 16;
+
+		// If the actual maximum path length is greater
+		// than this value, we're in some serious shit.
 		static int max_path_length = 512;  
 
 		static Hashtable mime_to_icon_hash = new Hashtable();
 		static AttributeIcons attribute_icons = new AttributeIcons();
+
 		static Gdk.Pixbuf updir_icon = LoadIcon(Gtk.Stock.GoUp);
 		static Gdk.Pixbuf directory_icon = LoadIcon("gnome-fs-directory");
 		static Gdk.Pixbuf fifo_icon = LoadIcon("gnome-fs-fifo");
@@ -27,10 +32,10 @@ namespace UltimateCommander {
 		string filename;
 		MUN.Stat stat;
 		MUN.Stat lstat;
+		string mimetype;
 		SymbolicLinkType linktype;
 		string linkpath = "";
 		bool selected;
-		string mimetype;
 		Gdk.Pixbuf icon;
 		
 		public File(string fullpath_arg) {
@@ -40,7 +45,7 @@ namespace UltimateCommander {
 			MUN.Syscall.lstat(fullpath, out lstat);
 			mimetype = Mime.TypeFromName(filename);
 
-			if (IsLink) {
+			if (IsSymbolicLink) {
 				StringBuilder dest_strbuilder = new StringBuilder(max_path_length);
 				MUN.Syscall.readlink(fullpath, dest_strbuilder);
 				string dest = dest_strbuilder.ToString();
@@ -74,7 +79,7 @@ namespace UltimateCommander {
 				Selected = !Selected;
 		}
 
-		public string FileName {
+		public string Name {
 			get { return filename; }
 		}
 
@@ -111,7 +116,7 @@ namespace UltimateCommander {
 						return fifo_icon;
 					} else if (IsSocket) {
 						return socket_icon;
-					} else if (IsCharDevice) {
+					} else if (IsCharacterDevice) {
 						return chardev_icon;
 					} else if (IsBlockDevice) {
 						return blockdev_icon;
@@ -142,8 +147,20 @@ namespace UltimateCommander {
 			}
 		}
 
+		public bool IsReadable {
+			get { return MUN.Syscall.access(FullPath, MUN.AccessModes.R_OK) == 0; }
+		}
+
+		public bool IsWritable {
+			get { return MUN.Syscall.access(FullPath, MUN.AccessModes.W_OK) == 0; }
+		}
+
+		public bool IsExecutable {
+			get { return IsFile && MUN.Syscall.access(FullPath, MUN.AccessModes.X_OK) == 0; }
+		}
+
 		public bool IsFile {
-			get { return (lstat.st_mode & MUN.FilePermissions.S_IFMT) == MUN.FilePermissions.S_IFREG; }
+			get { return (stat.st_mode & MUN.FilePermissions.S_IFMT) == MUN.FilePermissions.S_IFREG; }
 		}
 
 		public bool IsDirectory {
@@ -151,44 +168,32 @@ namespace UltimateCommander {
 		}
 
 		public bool IsFifo {
-			get { return (lstat.st_mode & MUN.FilePermissions.S_IFMT) == MUN.FilePermissions.S_IFIFO; }
+			get { return (stat.st_mode & MUN.FilePermissions.S_IFMT) == MUN.FilePermissions.S_IFIFO; }
 		}
 
 		public bool IsSocket {
-			get { return (lstat.st_mode & MUN.FilePermissions.S_IFMT) == MUN.FilePermissions.S_IFSOCK; }
+			get { return (stat.st_mode & MUN.FilePermissions.S_IFMT) == MUN.FilePermissions.S_IFSOCK; }
 		}
 
-		public bool IsCharDevice {
-			get { return (lstat.st_mode & MUN.FilePermissions.S_IFMT) == MUN.FilePermissions.S_IFCHR; }
+		public bool IsCharacterDevice {
+			get { return (stat.st_mode & MUN.FilePermissions.S_IFMT) == MUN.FilePermissions.S_IFCHR; }
 		}
 
 		public bool IsBlockDevice {
-			get { return (lstat.st_mode & MUN.FilePermissions.S_IFMT) == MUN.FilePermissions.S_IFBLK; }
+			get { return (stat.st_mode & MUN.FilePermissions.S_IFMT) == MUN.FilePermissions.S_IFBLK; }
 		}
-
-		public bool IsExecutable {
-			get { return IsFile && MUN.Syscall.access(FullPath, MUN.AccessModes.X_OK) == 0; }
-		}
-
-		public bool IsLink {
-			get { return (lstat.st_mode & MUN.FilePermissions.S_IFLNK) == MUN.FilePermissions.S_IFLNK; }
-		}
-
-		public bool IsWritable {
-			get { return MUN.Syscall.access(FullPath, MUN.AccessModes.W_OK) == 0; }
-		}
-
-		public bool IsReadable {
-			get { return MUN.Syscall.access(FullPath, MUN.AccessModes.R_OK) == 0; }
+		
+		public bool IsSymbolicLink {
+			get { return (lstat.st_mode & MUN.FilePermissions.S_IFMT) == MUN.FilePermissions.S_IFLNK; }
 		}
 
 		public bool IsUpDirectory {
-			get { return FileName == ".."; }
+			get { return Name == ".."; }
 		}
 
 		static Gdk.Pixbuf LoadIcon(string iconname)
 		{
-			return Gtk.IconTheme.Default.LoadIcon(iconname, 16, Gtk.IconLookupFlags.NoSvg);
+			return Gtk.IconTheme.Default.LoadIcon(iconname, icon_size, Gtk.IconLookupFlags.NoSvg);
 		}
 	}
 }

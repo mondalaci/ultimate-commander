@@ -56,17 +56,17 @@ namespace UltimateCommander {
 		}
 
 		public string GetContent(File file) {
-			switch (type) {
+/*			switch (type) {
 			case Type.FileType:
 				return "x";
 			case Type.Name:
 				if (arg == (int)NameArg.ShortName)
-					return file.FileName;
+					return file.Name;
 				else if (arg == (int)NameArg.FullPath)
-					return file.FullPath;
+					return file.FullName;
 				else {}
 				break;
-			}
+			}*/
 			return "unknown";
 		}
 	}

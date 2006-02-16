@@ -86,7 +86,7 @@ namespace UltimateCommander {
 			CellRendererText cellrenderertext = (CellRendererText)renderer;
            	File file = GetFile(iter);
 			SetCellBackground(iter, cellrenderertext);
-			cellrenderertext.Text = file.FileName;
+			cellrenderertext.Text = file.Name;
 		}
 
 		void CellDataSizeFunc(TreeViewColumn column, CellRenderer renderer, TreeModel model, TreeIter iter)
@@ -188,7 +188,7 @@ namespace UltimateCommander {
 				
 				while (has_next) {
 					File file2 = (File)store.GetValue(iter, STOREROW_FILE);
-					if (file2.FileName == filename) {
+					if (file2.Name == filename) {
 						view.SetCursor(store.GetPath(iter), view.GetColumn(1), false);
 						break;
 					}
@@ -298,7 +298,7 @@ namespace UltimateCommander {
 
      	void OnPanelCursorChanged(object o, EventArgs e)
      	{
-         	statusbar.Text = CurrentFile.FileName;
+         	statusbar.Text = CurrentFile.Name;
 		}		
 
 		/*void OnFrameFocusInEvent(object o, FocusInEventArgs args)

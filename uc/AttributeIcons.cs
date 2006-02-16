@@ -59,10 +59,11 @@ namespace UltimateCommander {
 			black_square.CopyArea(0, 0, square_size, square_size, stalled_icon, 0, square_size+1);
 			black_square.CopyArea(0, 0, square_size, square_size,
 								  stalled_icon, square_size+1, square_size+1);
-			icons[icons_num-1] = stalled_icon;													   
+			icons[icons_num-1] = stalled_icon;
    		}
 
-		public Gdk.Pixbuf GetIcon(bool executable, bool nowrite, bool noread, SymbolicLinkType linktype)
+		public Gdk.Pixbuf GetIcon(bool executable, bool nowrite,
+								  bool noread, SymbolicLinkType linktype)
 		{
 			if (linktype == SymbolicLinkType.StalledLink) {
 				return icons[16];
@@ -109,9 +110,11 @@ namespace UltimateCommander {
 			pixmap.DrawRectangle(gc, false, 0, 0, square_size-1, square_size-1);
 			pixmap.DrawRectangle(gc, false, 0, square_size+1, square_size-1, square_size-1);
 			pixmap.DrawRectangle(gc, false, square_size+1, 0, square_size-1, square_size-1);
-			pixmap.DrawRectangle(gc, false, square_size+1, square_size+1, square_size-1, square_size-1);
+			pixmap.DrawRectangle(gc, false, square_size+1,
+								 square_size+1, square_size-1, square_size-1);
 
-			return Gdk.Pixbuf.FromDrawable(pixmap, pixmap.Colormap, 0, 0, 0, 0, icon_size, icon_size);
+			return Gdk.Pixbuf.FromDrawable(pixmap, pixmap.Colormap,
+										   0, 0, 0, 0, icon_size, icon_size);
 		}
 
 		static Gdk.Pixbuf GetSquare(byte red, byte green, byte blue)
@@ -125,7 +128,8 @@ namespace UltimateCommander {
 			gc.RgbFgColor = new Gdk.Color(red, green, blue);
 			pixmap.DrawRectangle(gc, true, 1, 1, square_size-2, square_size-2);
 
-			return Gdk.Pixbuf.FromDrawable(pixmap, pixmap.Colormap, 0, 0, 0, 0, square_size, square_size);
+			return Gdk.Pixbuf.FromDrawable(pixmap, pixmap.Colormap,
+										   0, 0, 0, 0, square_size, square_size);
 		}
 	}
 }
