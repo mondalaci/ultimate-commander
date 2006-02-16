@@ -1,12 +1,18 @@
 using System;
 using System.Collections;
+using System.Text;
 using MUN = Mono.Unix.Native;
 using Gnome.Vfs;
 using Gdk;
 
 namespace UltimateCommander {
 
+	public enum SymbolicLinkType {NotLink, ValidLink, StalledLink};
+
 	public class File {
+
+		// If the actual maximum path length is greater than this value, we may be in serious shit.
+		static int max_path_length = 512;  
 
 		static Hashtable mime_to_icon_hash = new Hashtable();
 		static AttributeIcons attribute_icons = new AttributeIcons();
@@ -17,20 +23,43 @@ namespace UltimateCommander {
 		static Gdk.Pixbuf chardev_icon = LoadIcon("gnome-fs-chardev");
 		static Gdk.Pixbuf blockdev_icon = LoadIcon("gnome-fs-blockdev");
 
-		string full_path;
+		string fullpath;
 		string filename;
 		MUN.Stat stat;
 		MUN.Stat lstat;
+		SymbolicLinkType linktype;
+		string linkpath = "";
 		bool selected;
 		string mimetype;
 		Gdk.Pixbuf icon;
 		
-		public File(string full_path_arg) {
-			full_path = full_path_arg;
-			filename = System.IO.Path.GetFileName(full_path);
-			MUN.Syscall.stat(full_path, out stat);
-			MUN.Syscall.lstat(full_path, out lstat);
+		public File(string fullpath_arg) {
+			fullpath = fullpath_arg;
+			filename = System.IO.Path.GetFileName(fullpath);
+			MUN.Syscall.stat(fullpath, out stat);
+			MUN.Syscall.lstat(fullpath, out lstat);
 			mimetype = Mime.TypeFromName(filename);
+
+			if (IsLink) {
+				StringBuilder dest_strbuilder = new StringBuilder(max_path_length);
+				MUN.Syscall.readlink(fullpath, dest_strbuilder);
+				string dest = dest_strbuilder.ToString();
+
+				if (!System.IO.Path.IsPathRooted(dest)) {
+					string directoryname = System.IO.Path.GetDirectoryName(fullpath);
+					dest = System.IO.Path.Combine(directoryname, dest);
+				}
+
+				if (MUN.Syscall.access(dest, MUN.AccessModes.F_OK) == 0) {
+					linktype = SymbolicLinkType.ValidLink;
+					linkpath = dest;
+				} else {
+					linktype = SymbolicLinkType.StalledLink;
+				}
+			} else {
+				linktype = SymbolicLinkType.NotLink;
+			}
+
 			Selected = false;
 		}
 
@@ -50,11 +79,15 @@ namespace UltimateCommander {
 		}
 
 		public string FullPath {
-			get { return full_path; }
+			get { return fullpath; }
 		}
 
 		public long Size {
 			get { return lstat.st_size; }
+		}
+
+		public SymbolicLinkType LinkType {
+			get { return linktype; }
 		}
 
 		public string MimeType {
@@ -80,11 +113,14 @@ namespace UltimateCommander {
 						return socket_icon;
 					} else if (IsCharDevice) {
 						return chardev_icon;
-					} else /* IsBlockDevice */ {
+					} else if (IsBlockDevice) {
 						return blockdev_icon;
 					}
-				} else if (!mime_to_icon_hash.ContainsKey(MimeType)) {
-					// This is a regular file.  The mime icon is not cached yet, so it needs to be cached.
+				}
+				
+				// This is a regular file or a stalled link.
+				if (!mime_to_icon_hash.ContainsKey(MimeType)) {
+					// The mime icon is not cached yet, so it needs to be cached.
 					Gnome.IconLookupResultFlags result_flags;
 					string iconname = Gnome.Icon.Lookup(new Gnome.IconTheme(), null, "", null,
  												 		new Gnome.Vfs.FileInfo(), MimeType,
@@ -94,7 +130,7 @@ namespace UltimateCommander {
 					mime_to_icon_hash.Add(MimeType, icon);
 					return icon;
 				} else {
-					// This is a regular file and its mime icon is already cached.
+					// The mime icon is already cached.
 					return mime_to_icon_hash[MimeType] as Gdk.Pixbuf;
 				}
 			}
@@ -102,7 +138,7 @@ namespace UltimateCommander {
 		
 		public Gdk.Pixbuf AttributeIcon {
 			get {
-				return attribute_icons.GetIcon(IsExecutable, IsSymLink, !IsWritable, !IsReadable);
+				return attribute_icons.GetIcon(IsExecutable, !IsWritable, !IsReadable, LinkType);
 			}
 		}
 
@@ -134,7 +170,7 @@ namespace UltimateCommander {
 			get { return IsFile && MUN.Syscall.access(FullPath, MUN.AccessModes.X_OK) == 0; }
 		}
 
-		public bool IsSymLink {
+		public bool IsLink {
 			get { return (lstat.st_mode & MUN.FilePermissions.S_IFLNK) == MUN.FilePermissions.S_IFLNK; }
 		}
 
