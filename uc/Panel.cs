@@ -71,7 +71,7 @@ namespace UltimateCommander {
 		{
 			CellRendererPixbuf cellrendererpixbuf = (CellRendererPixbuf)renderer;
            	File file = GetFile(iter);
-			cellrendererpixbuf.Pixbuf = file.Icon;
+			cellrendererpixbuf.Pixbuf = file.MimeIcon;
 		}
 
 		void CellDataIconFunc2(TreeViewColumn column, CellRenderer renderer, TreeModel model, TreeIter iter)

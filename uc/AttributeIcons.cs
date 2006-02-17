@@ -51,7 +51,7 @@ namespace UltimateCommander {
 				icons[i] = icon;
 			}
 
-			// Construct stalled link icon.
+			// Construct dangling link icon.
 
 			Gdk.Pixbuf stalled_icon = GetBaseIcon();
 			black_square.CopyArea(0, 0, square_size, square_size, stalled_icon, 0, 0);
@@ -65,7 +65,7 @@ namespace UltimateCommander {
 		public Gdk.Pixbuf GetIcon(bool executable, bool nowrite,
 								  bool noread, SymbolicLinkType linktype)
 		{
-			if (linktype == SymbolicLinkType.StalledLink) {
+			if (linktype == SymbolicLinkType.DanglingLink) {
 				return icons[16];
 			}
 
