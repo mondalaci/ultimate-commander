@@ -194,8 +194,9 @@ namespace UltimateCommander {
 					}
 					has_next = store.IterNext(ref iter);
 				}
-			} else  // Not stepping up a level, but somewhere else.
+			} else {  // Not stepping up a level, but somewhere else.
    	      		view.SetCursor(new TreePath("0"), view.GetColumn(1), false);
+			}
      	}
 
 		// Secondary methods.

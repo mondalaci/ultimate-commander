@@ -33,6 +33,7 @@ namespace UltimateCommander {
 				bool noread = (i & 8) > 0;
 				
 				Gdk.Pixbuf icon = GetBaseIcon();
+				icon = icon.AddAlpha(true, 255, 255, 255);
 
 				if (executable) {
 					green_square.CopyArea(0, 0, square_size, square_size, icon, 0, 0);
@@ -53,13 +54,14 @@ namespace UltimateCommander {
 
 			// Construct dangling link icon.
 
-			Gdk.Pixbuf stalled_icon = GetBaseIcon();
-			black_square.CopyArea(0, 0, square_size, square_size, stalled_icon, 0, 0);
-			blue_square.CopyArea(0, 0, square_size, square_size, stalled_icon, square_size+1, 0);
-			black_square.CopyArea(0, 0, square_size, square_size, stalled_icon, 0, square_size+1);
+			Gdk.Pixbuf dangling_icon = GetBaseIcon();
+			dangling_icon = dangling_icon.AddAlpha(true, 255, 255, 255);
+			black_square.CopyArea(0, 0, square_size, square_size, dangling_icon, 0, 0);
+			blue_square.CopyArea(0, 0, square_size, square_size, dangling_icon, square_size+1, 0);
+			black_square.CopyArea(0, 0, square_size, square_size, dangling_icon, 0, square_size+1);
 			black_square.CopyArea(0, 0, square_size, square_size,
-								  stalled_icon, square_size+1, square_size+1);
-			icons[icons_num-1] = stalled_icon;
+								  dangling_icon, square_size+1, square_size+1);
+			icons[icons_num-1] = dangling_icon;
    		}
 
 		public Gdk.Pixbuf GetIcon(bool executable, bool nowrite,

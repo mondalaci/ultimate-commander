@@ -47,6 +47,7 @@ namespace UltimateCommander {
 			MUN.Syscall.stat(fullpath, out stat);
 			MUN.Syscall.lstat(fullpath, out lstat);
 			
+			// Set linktype and linkpath.
 			if (IsSymbolicLink) {
 				StringBuilder dest_strbuilder = new StringBuilder(max_path_length);
 				MUN.Syscall.readlink(fullpath, dest_strbuilder);
