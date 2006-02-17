@@ -49,14 +49,14 @@ namespace UltimateCommander {
 			return (File)store.GetValue(iter, STOREROW_FILE);
 		}
 
-		void SetCellBackground(TreeIter iter, CellRendererText cellrenderertext)
+		void SetCellBackground(TreeIter iter, CellRenderer cellrenderertext)
 		{
            	File file = GetFile(iter);
 
            	if (file.Selected)
-           		cellrenderertext.BackgroundGdk = selected_row_bgcolor;
+           		cellrenderertext.CellBackgroundGdk = selected_row_bgcolor;
            	else
-           		cellrenderertext.BackgroundGdk = Widget.DefaultStyle.BaseColors[(int)StateType.Normal];
+           		cellrenderertext.CellBackgroundGdk = Widget.DefaultStyle.BaseColors[(int)StateType.Normal];
 		}
 
 		void CellDataToggleFunc(TreeViewColumn column, CellRenderer renderer, TreeModel model, TreeIter iter)
@@ -65,6 +65,7 @@ namespace UltimateCommander {
            	File file = GetFile(iter);
 			cellrenderertoggle.Active = file.Selected;
 			cellrenderertoggle.Activatable = !file.IsUpDirectory;
+			SetCellBackground(iter, cellrenderertoggle);
 		}
 
 		void CellDataIconFunc(TreeViewColumn column, CellRenderer renderer, TreeModel model, TreeIter iter)
@@ -72,6 +73,7 @@ namespace UltimateCommander {
 			CellRendererPixbuf cellrendererpixbuf = (CellRendererPixbuf)renderer;
            	File file = GetFile(iter);
 			cellrendererpixbuf.Pixbuf = file.MimeIcon;
+			SetCellBackground(iter, cellrendererpixbuf);
 		}
 
 		void CellDataIconFunc2(TreeViewColumn column, CellRenderer renderer, TreeModel model, TreeIter iter)
@@ -79,6 +81,7 @@ namespace UltimateCommander {
 			CellRendererPixbuf cellrendererpixbuf = (CellRendererPixbuf)renderer;
            	File file = GetFile(iter);
 			cellrendererpixbuf.Pixbuf = file.AttributeIcon;
+			SetCellBackground(iter, cellrendererpixbuf);
 		}
 
 		void CellDataFilenameFunc(TreeViewColumn column, CellRenderer renderer, TreeModel model, TreeIter iter)
@@ -122,14 +125,14 @@ namespace UltimateCommander {
 			columnp2.Title = "A";
 			columnp2.Alignment = 0.5f;
 
-			CellRendererText cellrenderertext = new CellRendererText();
+			CellRendererText mycellrenderertext = new CellRendererText();
 			TreeViewColumn column2 = new TreeViewColumn();
-			column2.PackStart(cellrenderertext, true);
-			column2.SetCellDataFunc(cellrenderertext, CellDataFilenameFunc);
+			column2.PackStart(mycellrenderertext, true);
+			column2.SetCellDataFunc(mycellrenderertext, CellDataFilenameFunc);
 			column2.Resizable = true;
 			column2.Title = "Filename";
 
-			cellrenderertext = new CellRendererText();
+			CellRendererText cellrenderertext = new CellRendererText();
 			TreeViewColumn column3 = new TreeViewColumn();
 			column3.PackStart(cellrenderertext, true);
 			column3.SetCellDataFunc(cellrenderertext, CellDataSizeFunc);
