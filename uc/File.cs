@@ -23,6 +23,7 @@ namespace UltimateCommander {
 		static int max_path_length = 512;  
 
 		static string not_available = "N/A";
+		static string datetime_format = "yyyy-MM-dd HH:mm:ss";
 
 		static Hashtable mime_to_icon_hash = new Hashtable();
 		static AttributeIcons attribute_icons = new AttributeIcons();
@@ -428,7 +429,7 @@ namespace UltimateCommander {
 			if (IsDanglingLink) {
 				return not_available;
 			} else {
-				return MUN.NativeConvert.FromTimeT(time).ToString("yyyy-MM-dd HH:mm:ss");
+				return MUN.NativeConvert.FromTimeT(time).ToString(datetime_format);
 			}
 		}
 
