@@ -22,6 +22,8 @@ namespace UltimateCommander {
 		// than this value, we're in some serious shit.
 		static int max_path_length = 512;  
 
+		static string not_available = "N/A";
+
 		static Hashtable mime_to_icon_hash = new Hashtable();
 		static AttributeIcons attribute_icons = new AttributeIcons();
 
@@ -206,13 +208,13 @@ namespace UltimateCommander {
 
 		public string OwnerUser {
 			get {
-				if (linktype == SymbolicLinkType.DanglingLink) {
-					return "N/A";
+				if (IsDanglingLink) {
+					return not_available;
 				}
 	 			try {
 					return new Mono.Unix.UnixUserInfo(OwnerUserId).UserName;
 				} catch (ArgumentException e) {
-					return "N/A (UID: " + OwnerUserId.ToString() + ")";
+					return not_available + " (UID: " + OwnerUserId.ToString() + ")";
 				}
 			}
 		}
@@ -227,13 +229,13 @@ namespace UltimateCommander {
 
 		public string OwnerGroup {
 			get {
-				if (linktype == SymbolicLinkType.DanglingLink) {
-					return "N/A";
+				if (IsDanglingLink) {
+					return not_available;
 				}
 				try {
 					return new Mono.Unix.UnixGroupInfo(OwnerGroupId).GroupName;
 				} catch (ArgumentException e) {
-					return "N/A (GID:" + OwnerGroupId.ToString() + ")";
+					return not_available + " (GID:" + OwnerGroupId.ToString() + ")";
 				}
 			}
 		}
@@ -415,7 +417,7 @@ namespace UltimateCommander {
 		string CheckDanglingLink(object o)
 		{
 			if (IsDanglingLink) {
-				return "N/A";
+				return not_available;
 			} else {
 				return o.ToString();
 			}
@@ -424,7 +426,7 @@ namespace UltimateCommander {
 		string GetDateTimeString(long time)
 		{
 			if (IsDanglingLink) {
-				return "N/A";
+				return not_available;
 			} else {
 				return MUN.NativeConvert.FromTimeT(time).ToString("yyyy-MM-dd HH:mm:ss");
 			}
