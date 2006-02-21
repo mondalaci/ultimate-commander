@@ -88,7 +88,7 @@ namespace UltimateCommander {
 
 		public Gdk.Pixbuf MimeIcon {
 			get {
-				if (!IsFile && linktype != SymbolicLinkType.DanglingLink) {
+				if (!IsFile && !IsDanglingLink) {
 					// This is not a regular file, so a related filesystem icon needs to be returned.
 					if (IsDirectory) {
 						if (IsUpDirectory) {
@@ -142,7 +142,7 @@ namespace UltimateCommander {
 
 		public long Size {
 			get {
-				if (LinkType == SymbolicLinkType.DanglingLink) {
+				if (IsDanglingLink) {
 					return 0;
 				} else {
 					return stat.st_size;
@@ -151,13 +151,7 @@ namespace UltimateCommander {
 		}
 
 		public string SizeString {
-			get {
-				if (LinkType == SymbolicLinkType.DanglingLink) {
-					return "N/A";
-				} else {
-					return stat.st_size.ToString();
-				}
-			}
+			get { return CheckDanglingLink(stat.st_size); }
 		}
 
 		// Protection properties
@@ -168,7 +162,7 @@ namespace UltimateCommander {
 
 		public string SymbolicPermissions {
 			get {
-				if (linktype == SymbolicLinkType.DanglingLink) {
+				if (IsDanglingLink) {
 					return "l---------";
 				}
 
@@ -224,13 +218,7 @@ namespace UltimateCommander {
 		}
 
 		public string OwnerUserIdString {
-			get {
-				if (linktype == SymbolicLinkType.DanglingLink) {
-					return "N/A";
-				} else {
-					return stat.st_uid.ToString();
-				}
-			}
+			get { return CheckDanglingLink(stat.st_uid); }
 		}
 
 		public uint OwnerGroupId {
@@ -251,13 +239,7 @@ namespace UltimateCommander {
 		}
 
 		public string OwnerGroupIdString {
-			get {
-				if (linktype == SymbolicLinkType.DanglingLink) {
-					return "N/A";
-				} else {
-					return stat.st_gid.ToString();
-				}
-			}
+			get { return CheckDanglingLink(stat.st_gid); }
 		}
 
 		// Date properties
@@ -297,19 +279,17 @@ namespace UltimateCommander {
 		}
 		
 		public string InodeString {
-			get {
-				if (linktype == SymbolicLinkType.DanglingLink) {
-					return "N/A";
-				} else {
-					return stat.st_ino.ToString();
-				}
-			}
+			get { return CheckDanglingLink(stat.st_ino); }
 		}
 		
 		// Symbolic link related properties
 
 		public SymbolicLinkType LinkType {
 			get { return linktype; }
+		}
+
+		public bool IsDanglingLink {
+			get { return linktype == SymbolicLinkType.DanglingLink; }
 		}
 
 		public string LinkPath {
@@ -432,9 +412,18 @@ namespace UltimateCommander {
 
 		// Private methods
 
+		string CheckDanglingLink(object o)
+		{
+			if (IsDanglingLink) {
+				return "N/A";
+			} else {
+				return o.ToString();
+			}
+		}
+
 		string GetDateTimeString(long time)
 		{
-			if (linktype == SymbolicLinkType.DanglingLink) {
+			if (IsDanglingLink) {
 				return "N/A";
 			} else {
 				return MUN.NativeConvert.FromTimeT(time).ToString("yyyy-MM-dd HH:mm:ss");
