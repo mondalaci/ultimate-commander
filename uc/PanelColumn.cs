@@ -249,7 +249,7 @@ namespace UltimateCommander {
 
 		static void SetCellRendererLinkCount(CellRenderer cellrenderer, File file)
 		{
-			((CellRendererText)cellrenderer).Text = file.LinkCount.ToString();
+			((CellRendererText)cellrenderer).Text = file.LinkCountString;
 		}
 
 		static void SetCellRendererInode(CellRenderer cellrenderer, File file)

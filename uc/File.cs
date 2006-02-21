@@ -277,6 +277,10 @@ namespace UltimateCommander {
 			get { return stat.st_nlink; }
 		}
 
+		public string LinkCountString {
+			get { return CheckDanglingLink(stat.st_nlink); }
+		}
+		
 		public ulong Inode {
 			get { return stat.st_ino; }
 		}
