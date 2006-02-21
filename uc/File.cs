@@ -267,7 +267,7 @@ namespace UltimateCommander {
 		}
 
 		public string LastAccessTimeString {
-			get { return new DateTime(LastAccessTime).ToString(); }
+			get { return GetDateTimeString(LastAccessTime); }
 		}
 
 		public long LastStatusChangeTime {
@@ -275,7 +275,7 @@ namespace UltimateCommander {
 		}
 
 		public string LastStatusChangeTimeString {
-			get { return new DateTime(LastStatusChangeTime).ToString(); }
+			get { return GetDateTimeString(LastStatusChangeTime); }
 		}
 
 		public long LastWriteTime {
@@ -283,7 +283,7 @@ namespace UltimateCommander {
 		}
 
 		public string LastWriteTimeString {
-			get { return new DateTime(LastWriteTime).ToString(); }
+			get { return GetDateTimeString(LastWriteTime); }
 		}
 
 		// Rarely used VFS properties
@@ -431,6 +431,15 @@ namespace UltimateCommander {
 		}		
 
 		// Private methods
+
+		string GetDateTimeString(long time)
+		{
+			if (linktype == SymbolicLinkType.DanglingLink) {
+				return "N/A";
+			} else {
+				return MUN.NativeConvert.FromTimeT(time).ToString("yyyy-MM-dd HH:mm:ss");
+			}
+		}
 
 		static Gdk.Pixbuf LoadIcon(string iconname)
 		{
