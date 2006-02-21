@@ -8,7 +8,11 @@ using Gnome.Vfs;
 
 namespace UltimateCommander {
 
-	public enum SymbolicLinkType {NotLink, ValidLink, DanglingLink};
+	public enum SymbolicLinkType {
+		NotLink,
+		ValidLink,
+		DanglingLink
+	};
 
 	public class File {
 
@@ -30,25 +34,20 @@ namespace UltimateCommander {
 
 		bool selected;
 		string fullpath;
-		string filename;
 		MUN.Stat stat;
 		MUN.Stat lstat;
 		SymbolicLinkType linktype;
-		string linkpath = "";
-		string mimetype;
-		string description;
-		Gdk.Pixbuf mime_icon;
-		Gdk.Pixbuf attribute_icon;
+		string linkpath;
 		
 		public File(string fullpath_arg) {
 			Selected = false;
 			fullpath = fullpath_arg;
-			filename = System.IO.Path.GetFileName(fullpath);
-			MUN.Syscall.stat(fullpath, out stat);
 			MUN.Syscall.lstat(fullpath, out lstat);
-			
+
 			// Set linktype and linkpath.
 			if (IsSymbolicLink) {
+				MUN.Syscall.stat(fullpath, out stat);
+
 				StringBuilder dest_strbuilder = new StringBuilder(max_path_length);
 				MUN.Syscall.readlink(fullpath, dest_strbuilder);
 				string dest = dest_strbuilder.ToString();
@@ -58,21 +57,17 @@ namespace UltimateCommander {
 					dest = System.IO.Path.Combine(directoryname, dest);
 				}
 
+				linkpath = dest;
+
 				if (MUN.Syscall.access(dest, MUN.AccessModes.F_OK) == 0) {
 					linktype = SymbolicLinkType.ValidLink;
-					linkpath = dest;
 				} else {
 					linktype = SymbolicLinkType.DanglingLink;
 				}
 			} else {
+				stat = lstat;
 				linktype = SymbolicLinkType.NotLink;
 			}
-
-			mimetype = Mime.TypeFromName(filename);
-			description = Mime.GetDescription(MimeType);
-			mime_icon = GetMimeIcon();
-			attribute_icon =  attribute_icons.GetIcon(IsExecutable, !IsWritable,
-													  !IsReadable, LinkType);
 		}
 
 		// Selection handling
@@ -89,6 +84,52 @@ namespace UltimateCommander {
 			}
 		}
 
+		// Icon properties
+
+		public Gdk.Pixbuf MimeIcon {
+			get {
+				if (!IsFile && linktype != SymbolicLinkType.DanglingLink) {
+					// This is not a regular file, so a related filesystem icon needs to be returned.
+					if (IsDirectory) {
+						if (IsUpDirectory) {
+							return updir_icon;
+						}
+						return directory_icon;
+					} else if (IsFifo) {
+						return fifo_icon;
+					} else if (IsSocket) {
+						return socket_icon;
+					} else if (IsCharacterDevice) {
+						return chardev_icon;
+					} else if (IsBlockDevice) {
+						return blockdev_icon;
+					}
+				}
+			
+				// This is a regular file or a stalled link.
+				if (!mime_to_icon_hash.ContainsKey(MimeType)) {
+					// The mime icon is not cached yet, so it needs to be cached.
+					Gnome.IconLookupResultFlags result_flags;
+					string iconname = Gnome.Icon.Lookup(new Gnome.IconTheme(), null, "", null,
+											 		new Gnome.Vfs.FileInfo(), MimeType,
+											 		Gnome.IconLookupFlags.None,	out result_flags);
+					Gdk.Pixbuf icon = LoadIcon(iconname);
+					mime_to_icon_hash.Add(MimeType, icon);
+					return icon;
+				} else {
+					// The mime icon is already cached.
+					return mime_to_icon_hash[MimeType] as Gdk.Pixbuf;
+				}
+			}
+		}
+
+		public Gdk.Pixbuf AttributeIcon {
+			get {
+				 return attribute_icons.GetIcon(IsExecutable, !IsWritable,
+												!IsReadable, LinkType);
+			}
+		}
+
 		// Often used VFS properties
 
 		public string FullPath {
@@ -96,7 +137,7 @@ namespace UltimateCommander {
 		}
 
 		public string Name {
-			get { return filename; }
+			get { return System.IO.Path.GetFileName(fullpath); }
 		}
 
 		public long Size {
@@ -109,36 +150,140 @@ namespace UltimateCommander {
 			}
 		}
 
+		public string SizeString {
+			get {
+				if (LinkType == SymbolicLinkType.DanglingLink) {
+					return "N/A";
+				} else {
+					return stat.st_size.ToString();
+				}
+			}
+		}
+
 		// Protection properties
 
 		public MUN.FilePermissions Permissions {
 			get { return stat.st_mode; }
 		}
 
-		//OctalPermissions
+		public string SymbolicPermissions {
+			get {
+				if (linktype == SymbolicLinkType.DanglingLink) {
+					return "l---------";
+				}
 
-		//SymbolicPermissions
+				string perm = "";
+
+				if (IsDirectory) {
+					perm += "d";
+				} else if (IsSymbolicLink) {
+					perm += "l";
+				} else if (IsFifo) {
+					perm += "p";
+				} else if (IsSocket) {
+					perm += "s";
+				} else if (IsCharacterDevice) {
+					perm += "c";
+				} else if (IsBlockDevice) {
+					perm += "b";
+				} else /* if IsFile */ {
+					perm += "-";
+				}
+
+				perm += IsOwnerReadable ? "r" : "-";
+				perm += IsOwnerWritable ? "w" : "-";
+				perm += IsOwnerExecutable ? (IsSetGid ? "s" : "x") : (IsSetGid ? "S" : "-");
+				perm += IsGroupReadable ? "r" : "-";
+				perm += IsGroupWritable ? "w" : "-";
+				perm += IsGroupExecutable ? (IsSetUid ? "s" : "x") : (IsSetUid ? "S" : "-");
+				perm += IsOthersReadable ? "r" : "-";
+				perm += IsOthersWritable ? "w" : "-";
+				perm += IsOthersExecutable ? (IsSticky ? "t" : "x") : (IsSticky ? "T" : "-");
+
+				return perm;
+			}
+		}
 
 		// Owner / Group properties
 
-		//OwnerUser
+		public uint OwnerUserId {
+			get { return stat.st_uid; }
+		}
 
-		//OwnerUserId
+		public string OwnerUser {
+			get {
+				if (linktype == SymbolicLinkType.DanglingLink) {
+					return "N/A";
+				}
+	 			try {
+					return new Mono.Unix.UnixUserInfo(OwnerUserId).UserName;
+				} catch (ArgumentException e) {
+					return "N/A (UID: " + OwnerUserId.ToString() + ")";
+				}
+			}
+		}
 
-		//OwnerGroup
+		public string OwnerUserIdString {
+			get {
+				if (linktype == SymbolicLinkType.DanglingLink) {
+					return "N/A";
+				} else {
+					return stat.st_uid.ToString();
+				}
+			}
+		}
 
-		//OwnerGroupId
+		public uint OwnerGroupId {
+			get { return stat.st_gid; }
+		}
+
+		public string OwnerGroup {
+			get {
+				if (linktype == SymbolicLinkType.DanglingLink) {
+					return "N/A";
+				}
+				try {
+					return new Mono.Unix.UnixGroupInfo(OwnerGroupId).GroupName;
+				} catch (ArgumentException e) {
+					return "N/A (GID:" + OwnerGroupId.ToString() + ")";
+				}
+			}
+		}
+
+		public string OwnerGroupIdString {
+			get {
+				if (linktype == SymbolicLinkType.DanglingLink) {
+					return "N/A";
+				} else {
+					return stat.st_gid.ToString();
+				}
+			}
+		}
+
+		// Date properties
 
 		public long LastAccessTime {
 			get { return stat.st_atime; }
+		}
+
+		public string LastAccessTimeString {
+			get { return new DateTime(LastAccessTime).ToString(); }
 		}
 
 		public long LastStatusChangeTime {
 			get { return stat.st_mtime; }
 		}
 
-		public long LastWriteTimeTime {
+		public string LastStatusChangeTimeString {
+			get { return new DateTime(LastStatusChangeTime).ToString(); }
+		}
+
+		public long LastWriteTime {
 			get { return stat.st_ctime; }
+		}
+
+		public string LastWriteTimeString {
+			get { return new DateTime(LastWriteTime).ToString(); }
 		}
 
 		// Rarely used VFS properties
@@ -151,6 +296,16 @@ namespace UltimateCommander {
 			get { return stat.st_ino; }
 		}
 		
+		public string InodeString {
+			get {
+				if (linktype == SymbolicLinkType.DanglingLink) {
+					return "N/A";
+				} else {
+					return stat.st_ino.ToString();
+				}
+			}
+		}
+		
 		// Symbolic link related properties
 
 		public SymbolicLinkType LinkType {
@@ -158,27 +313,23 @@ namespace UltimateCommander {
 		}
 
 		public string LinkPath {
-			get { return linkpath; }
+			get {
+				if (linkpath == null) {
+					return "";
+				} else {
+					return linkpath;
+				}
+			}
 		}
 
 		// Mime properties
 
 		public string MimeType {
-			get { return mimetype; }
+			get { return Mime.TypeFromName(Name); }
 		}
 		
 		public string Description {
-			get { return description; }
-		}
-
-		// Icon properties
-
-		public Gdk.Pixbuf MimeIcon {
-			get { return mime_icon; }
-		}
-
-		public Gdk.Pixbuf AttributeIcon {
-			get { return attribute_icon; }
+			get { return Mime.GetDescription(MimeType); }
 		}
 
 		// Type properties
@@ -229,6 +380,56 @@ namespace UltimateCommander {
 			get { return IsFile && MUN.Syscall.access(FullPath, MUN.AccessModes.X_OK) == 0; }
 		}
 
+		// Unix properties
+		
+		public bool IsSetUid {
+			get { return (stat.st_mode & MUN.FilePermissions.S_ISUID) != 0; }
+		}
+		
+		public bool IsSetGid {
+			get { return (stat.st_mode & MUN.FilePermissions.S_ISGID) != 0; }
+		}
+		
+		public bool IsSticky {
+			get { return (stat.st_mode & MUN.FilePermissions.S_ISVTX) != 0; }
+		}
+
+		public bool IsOwnerReadable {
+			get { return (stat.st_mode & MUN.FilePermissions.S_IRUSR) != 0; }
+		}		
+
+		public bool IsOwnerWritable {
+			get { return (stat.st_mode & MUN.FilePermissions.S_IWUSR) != 0; }
+		}		
+
+		public bool IsOwnerExecutable {
+			get { return (stat.st_mode & MUN.FilePermissions.S_IXUSR) != 0; }
+		}		
+
+		public bool IsGroupReadable {
+			get { return (stat.st_mode & MUN.FilePermissions.S_IRGRP) != 0; }
+		}		
+
+		public bool IsGroupWritable {
+			get { return (stat.st_mode & MUN.FilePermissions.S_IWGRP) != 0; }
+		}		
+
+		public bool IsGroupExecutable {
+			get { return (stat.st_mode & MUN.FilePermissions.S_IXGRP) != 0; }
+		}		
+
+		public bool IsOthersReadable {
+			get { return (stat.st_mode & MUN.FilePermissions.S_IROTH) != 0; }
+		}		
+
+		public bool IsOthersWritable {
+			get { return (stat.st_mode & MUN.FilePermissions.S_IWOTH) != 0; }
+		}		
+
+		public bool IsOthersExecutable {
+			get { return (stat.st_mode & MUN.FilePermissions.S_IXOTH) != 0; }
+		}		
+
 		// Private methods
 
 		static Gdk.Pixbuf LoadIcon(string iconname)
@@ -239,42 +440,6 @@ namespace UltimateCommander {
 		static bool GetFlag(MUN.Stat st, MUN.FilePermissions perm)
 		{
 			return (st.st_mode & MUN.FilePermissions.S_IFMT) == perm;
-		}
-
-		Gdk.Pixbuf GetMimeIcon()
-		{
-			if (!IsFile && linktype != SymbolicLinkType.DanglingLink) {
-				// This is not a regular file, so a related filesystem icon needs to be returned.
-				if (IsDirectory) {
-					if (IsUpDirectory) {
-						return updir_icon;
-					}
-					return directory_icon;
-				} else if (IsFifo) {
-					return fifo_icon;
-				} else if (IsSocket) {
-					return socket_icon;
-				} else if (IsCharacterDevice) {
-					return chardev_icon;
-				} else if (IsBlockDevice) {
-					return blockdev_icon;
-				}
-			}
-			
-			// This is a regular file or a stalled link.
-			if (!mime_to_icon_hash.ContainsKey(MimeType)) {
-				// The mime icon is not cached yet, so it needs to be cached.
-				Gnome.IconLookupResultFlags result_flags;
-				string iconname = Gnome.Icon.Lookup(new Gnome.IconTheme(), null, "", null,
-											 		new Gnome.Vfs.FileInfo(), MimeType,
-											 		Gnome.IconLookupFlags.None,	out result_flags);
-				Gdk.Pixbuf icon = LoadIcon(iconname);
-				mime_to_icon_hash.Add(MimeType, icon);
-				return icon;
-			} else {
-				// The mime icon is already cached.
-				return mime_to_icon_hash[MimeType] as Gdk.Pixbuf;
-			}
 		}
 	}
 }
