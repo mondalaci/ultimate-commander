@@ -207,6 +207,7 @@ namespace UltimateCommander {
 		{
 			PanelColumnInfo columninfo = GetCurrentColumnInfo(used_store, used_view);
 			RemoveColumnInfo(columninfo);
+			avail_view.QueueDraw();
 		}
 		
 		void OnUsedTypesViewRowActivated(object o, RowActivatedArgs args)
