@@ -21,8 +21,10 @@ namespace UltimateCommander {
 			Glade.XML glade_xml = new Glade.XML(UltimateCommander.GladeFileName, "main_window", null);
 			glade_xml.Autoconnect(this);
 
-			PanelFrame left_panel_frame = new PanelFrame(PanelFrame.PanelFramePosition.Left);
-			PanelFrame right_panel_frame = new PanelFrame(PanelFrame.PanelFramePosition.Right);
+			string initial_path = ".";
+
+			PanelFrame left_panel_frame = new PanelFrame(initial_path, PanelFramePosition.Left);
+			PanelFrame right_panel_frame = new PanelFrame(initial_path, PanelFramePosition.Right);
 			left_panel_frame.OtherFrame = right_panel_frame;
 			right_panel_frame.OtherFrame = left_panel_frame;
 

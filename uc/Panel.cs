@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.IO;
 using Mono.Unix;
 using Gdk;
@@ -21,42 +22,40 @@ namespace UltimateCommander {
 		bool button3_pressed = false;
 		int prev_row_num;
 
+		PanelListingConfigurator listing_configurator;
+		PanelSortingConfigurator sorting_configurator;
+
 		public Panel(string path): base("panel_window")
 		{
+			listing_configurator = new PanelListingConfigurator(this);
+			sorting_configurator = new PanelSortingConfigurator(this);
+
 			PanelColumnType[] columntypes = {
 				PanelColumnType.Toggle,
 				PanelColumnType.AttributeIcon,
 				PanelColumnType.MimeIcon,
 				PanelColumnType.Filename,
-				PanelColumnType.Size,
-//				PanelColumnType.OwnerUser,
-//				PanelColumnType.OwnerUserId,
-//				PanelColumnType.OwnerGroup,
-//				PanelColumnType.OwnerGroupId,
-//				PanelColumnType.LastAccessTime,
-//				PanelColumnType.LastStatusChangeTime,
-//				PanelColumnType.LastWriteTime,
-//				PanelColumnType.SymbolicPermissions,
-//				PanelColumnType.LinkCount,
-//				PanelColumnType.Inode,
-//				PanelColumnType.LinkPath,
-//				PanelColumnType.MimeType,
-//				PanelColumnType.Description,
+				PanelColumnType.Size
 			};
 
-			SetColumns(columntypes);
+			ListingConfigurator.SetListing(columntypes);
 			SetCurrentDirectory(path);
 		}
 
-		public void SetColumns(PanelColumnType[] columntypes)
-		{
-			foreach (PanelColumnType columntype in columntypes) {
-				view.AppendColumn(new PanelColumn(columntype, this));
-			}
-		}
-		
 		public ListStore Store {
 			get { return store; }
+		}
+
+		public TreeView View {
+			get { return view; }
+		}
+
+		public PanelListingConfigurator ListingConfigurator {
+			get { return listing_configurator; }
+		}
+
+		public PanelSortingConfigurator SortConfigurator {
+			get { return sorting_configurator; }
 		}
 
 		public bool Active {
@@ -309,27 +308,23 @@ namespace UltimateCommander {
 			//UltimateCommander.MainWindow.ActivePanel.view.GrabFocus();
 		}
 
-		void OnSetListingButtonToggled(object o, EventArgs args)
+		void OnSetListingButtonToggled(object toggletoolbutton, EventArgs args)
 		{
-			ToggleToolButton button = (ToggleToolButton)o;
-			bool active = button.Active;
-			PanelFrame current_frame = (PanelFrame)slot.Frame;
-			PanelFrame other_frame = current_frame.OtherFrame;
-
-			other_frame.ShowListing(active);
-
-			if (!active)
-				Select();
+			ShowAndSelectConfigurator((ToggleToolButton)toggletoolbutton, ListingConfigurator);
 		}
 
-		void OnSetSortingButtonToggled(object o, EventArgs args)
+		void OnSetSortingButtonToggled(object toggletoolbutton, EventArgs args)
 		{
-			ToggleToolButton button = (ToggleToolButton)o;
-			bool active = button.Active;
+			ShowAndSelectConfigurator((ToggleToolButton)toggletoolbutton, SortConfigurator);
+		}
+
+		void ShowAndSelectConfigurator(ToggleToolButton toggletoolbutton,
+									   PanelConfigurator configurator)
+		{
 			PanelFrame current_frame = (PanelFrame)slot.Frame;
 			PanelFrame other_frame = current_frame.OtherFrame;
 
-			other_frame.ShowSorting(active);
+			other_frame.ShowConfigurator(configurator, toggletoolbutton.Active);
 
 			if (!active)
 				Select();

@@ -3,15 +3,9 @@ using Gtk;
 
 namespace UltimateCommander {
 
-	public class PanelSortConfigurator: PanelConfigurator {
+	public class PanelSortingConfigurator: PanelConfigurator {
 		
-		public PanelSortConfigurator(): base()
-		{
-			available_label.Markup = "<b>Available Sort Orders</b>";
-			used_label.Markup = "<b>Used Sort Orders</b>";
-		}
-
-		void OnAddButtonClicked(object o, EventArgs args)
+		public PanelSortingConfigurator(Panel other_panel): base(other_panel, "Sorting")
 		{
 		}
 
@@ -32,6 +26,10 @@ namespace UltimateCommander {
 		}
 
 		void OnDownButtonClicked(object o, EventArgs args)
+		{
+		}
+
+		void OnCursorChanged(object o, EventArgs args)
 		{
 		}
 	}

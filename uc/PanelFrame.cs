@@ -3,49 +3,48 @@ using Gtk;
 
 namespace UltimateCommander {
 
+	public enum PanelFramePosition {
+		Left,
+		Right
+	};
+
 	public class PanelFrame: Frame {
 
-		public enum PanelFramePosition {Left, Right};
-
 		Panel panel;
-		PanelListingConfigurator listing_configurator;
-		PanelSortConfigurator sort_configurator;
 		PanelFramePosition position;
-
 		PanelFrame other_frame;
 
-		public PanelFrame(PanelFramePosition position): base()
+		public PanelFrame(string path, PanelFramePosition position_arg): base()
 		{
-			this.position = position;
-			panel = new Panel(".");
-			listing_configurator = new PanelListingConfigurator();
-			sort_configurator = new PanelSortConfigurator();
-					
-			AppendView(panel, "Panel");
+			position = position_arg;
+			panel = new Panel(path);
+			AppendView(panel, FrameName + " Panel");
 		}
 
-		public void ShowListing(bool show)
+		public void ShowConfigurator(PanelConfigurator configurator, bool show)
 		{
 			if (show) {
-				AppendView(listing_configurator, "Set " + OtherPanelName + " Panel Listing");
+				string title = "Set " + OtherFrameName + " Panel " + configurator.Name;
+				AppendView(configurator, title);
 			} else {
-				RemoveView(listing_configurator);
+				RemoveView(configurator);
 			}
 
 			ShowAll();
 			SelectLastPage();
 		}
 
-		public void ShowSorting(bool show)
-		{
-			if (show) {
-				AppendView(sort_configurator, "Set " + OtherPanelName + " Panel Sorting");
-			} else {
-				RemoveView(sort_configurator);
-			}
+		public PanelFrame OtherFrame {
+			set { other_frame = value; }
+			get { return other_frame; }
+		}
 
-			ShowAll();
-			SelectLastPage();
+		public Panel Panel {
+			get { return panel; }
+		}
+
+		public Panel OtherPanel {
+			get { return OtherFrame.Panel; }
 		}
 
 		void SelectLastPage()
@@ -55,23 +54,24 @@ namespace UltimateCommander {
 			slot.Select();
 		}
 
-		string OtherPanelName {
+		string FrameName {
 			get {
-			if (position == PanelFramePosition.Left)
-				return "Right";
-			else
-				return "Left";
+				if (position == PanelFramePosition.Left) {
+					return "Left";
+				} else /* position == PanelFramePosition.Right */ {
+					return "Right";
+				}
 			}
 		}
 
-		public PanelFrame OtherFrame {
-			get { return other_frame; }
-			set { other_frame = value; }
+		string OtherFrameName {
+			get {
+				if (position == PanelFramePosition.Left) {
+					return "Right";
+				} else /* position == PanelFramePosition.Right */ {
+					return "Left";
+				}
+			}
 		}
-
-		public Panel Panel {
-			get { return panel; }
-		}
-
 	}
 }

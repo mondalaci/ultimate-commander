@@ -23,7 +23,7 @@ namespace UltimateCommander {
 		static int max_path_length = 512;  
 
 		static string not_available = "N/A";
-		static string datetime_format = "yyyy-MM-dd HH:mm:ss";
+		static string datetime_format = "yy-MM-dd HH:mm:ss";
 
 		static Hashtable mime_to_icon_hash = new Hashtable();
 		static AttributeIcons attribute_icons = new AttributeIcons();

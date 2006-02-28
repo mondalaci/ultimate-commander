@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using Gtk;
 
 namespace UltimateCommander {
@@ -29,23 +28,23 @@ namespace UltimateCommander {
 
 		static Gdk.Color selected_row_bgcolor = new Gdk.Color(224, 224, 0);
 
+		PanelColumnInfo columninfo;
 		CellRendererManipulator cellrenderermanipulator;
 		Panel panel;
 
 		public PanelColumn(PanelColumnType type, Panel panel_arg): base()
 		{
 			panel = panel_arg;
-			PanelColumnInfo column_info = null;
 
-			foreach (PanelColumnInfo column_info_i in PanelColumnInfo.AllColumnInfos) {
-				if (column_info_i.PanelColumnType == type) {
-					column_info = column_info_i;
+			foreach (PanelColumnInfo columninfo_i in PanelColumnInfo.AllColumnInfos) {
+				if (columninfo_i.ColumnType == type) {
+					columninfo = columninfo_i;
 					break;
 				}
 			}
 
 			CellRenderer cellrenderer;
-			switch (column_info.CellRendererType) {
+			switch (columninfo.CellRendererType) {
 			case CellRendererType.Toggle:
 				cellrenderer = new CellRendererToggle();
 				((CellRendererToggle)cellrenderer).Toggled += new ToggledHandler(OnToggled);
@@ -58,11 +57,15 @@ namespace UltimateCommander {
 				break;
 			}
 			
-			cellrenderermanipulator = column_info.CellRendererManipulator;
+			cellrenderermanipulator = columninfo.CellRendererManipulator;
 			PackStart(cellrenderer, true);
 			SetCellDataFunc(cellrenderer, CellDataFunc);
 			Resizable = true;
-			Title = (string)column_info.Name;
+			Title = (string)columninfo.ShortName;
+		}
+
+		public PanelColumnInfo ColumnInfo {
+			get { return columninfo; }
 		}
 
 		void CellDataFunc(TreeViewColumn column, CellRenderer cellrenderer,
