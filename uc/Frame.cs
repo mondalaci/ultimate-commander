@@ -27,10 +27,11 @@ namespace UltimateCommander {
 
 		void RefreshTabs()
 		{
-			if (NPages > 1)
+			if (NPages > 1) {
 				ShowTabs = true;
-			else
+			} else {
 				ShowTabs = false;
+			}
 		}
 
 		[GLib.ConnectBefore]

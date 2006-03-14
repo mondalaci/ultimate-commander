@@ -102,12 +102,13 @@ namespace UltimateCommander {
 			bool upper_level = false;
 			string old_updir = null;
 				
-			if (old_directory != null)
+			if (old_directory != null) {
 				if (!(old_directory.Equals("") || old_directory.Equals("/"))) {
 					old_updir = UnixPath.Combine(old_directory, "..");
 					old_updir = UnixPath.GetFullPath(old_updir);
 					upper_level = old_updir.Equals(current_directory);
 				}
+			}
 
 			if (upper_level) {  // Stepping up a level.
 				string filename = UnixPath.GetFileName(old_directory);
@@ -146,10 +147,11 @@ namespace UltimateCommander {
 			TreeViewColumn column = null;
 			view.GetCursor(out path, out column);
 
-			if (store.IterNext(ref iter))
+			if (store.IterNext(ref iter)) {
 				view.SetCursor(store.GetPath(iter), column, false);			
-			else
+			} else {
 				view.SetCursor(store.GetPath(CurrentIter), column, false);  // Refresh row.
+			}
 		}
 
 		int GetRowNumFromCoords(double x, double y)
@@ -158,12 +160,14 @@ namespace UltimateCommander {
 			view.GetPathAtPos((int)x, (int)y, out path);
 
 			if (path == null) {
-				if (y<0)
+				if (y<0) {
 					return 0;
-				else
+				} else {
 					return number_of_files - 1;
-			} else
+				}
+			} else {
 				return path.Indices[0];
+			}
 		}
 
 		void InvertRow(int row_num)
@@ -206,7 +210,7 @@ namespace UltimateCommander {
 			get {
 				TreeIter iter = CurrentIter;
 	           	File file = (File)store.GetValue(iter, 0);
-    	       	return file;
+    	       		return file;
 			}
         }
 
@@ -220,9 +224,9 @@ namespace UltimateCommander {
 		{
 			Gdk.Key key = args.Event.Key;
 
-			if (key == Gdk.Key.Insert)
+			if (key == Gdk.Key.Insert) {
 				SelectCurrentRow();
-			else if (key == Gdk.Key.Tab) {
+			} else if (key == Gdk.Key.Tab) {
 			}
 		}
 
@@ -258,8 +262,9 @@ namespace UltimateCommander {
 
 		void OnButtonReleaseEvent(object o, ButtonReleaseEventArgs args)
 		{
-			if (args.Event.Button == 3)
+			if (args.Event.Button == 3) {
 				button3_pressed = false;
+			}
 		}
 
 		[GLib.ConnectBefore]
@@ -267,19 +272,22 @@ namespace UltimateCommander {
 		{
 			int row_num = GetRowNumFromCoords(args.Event.X, args.Event.Y);
 
-			if (row_num >= number_of_files - 1)
+			if (row_num >= number_of_files - 1) {
 				row_num = number_of_files -1;
+			}
 
-			if (!(button3_pressed && row_num != prev_row_num))
+			if (!(button3_pressed && row_num != prev_row_num)) {
 				return;
+			}
 
 			int start = prev_row_num;
 			int end = row_num;
 
-			if (prev_row_num < row_num)
+			if (prev_row_num < row_num) {
 				start++;
-			else
+			} else {
 				start--;
+			}
 			
 			if (start > end) {
 				int tmp = start;
@@ -326,8 +334,9 @@ namespace UltimateCommander {
 
 			other_frame.ShowConfigurator(configurator, toggletoolbutton.Active);
 
-			if (!active)
+			if (!active) {
 				Select();
+			}
 		}
 
 		protected override bool OnButtonPressEvent(EventButton eventbutton)

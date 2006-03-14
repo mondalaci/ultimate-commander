@@ -42,7 +42,8 @@ namespace UltimateCommander {
 		SymbolicLinkType linktype;
 		string linkpath;
 		
-		public File(string fullpath_arg) {
+		public File(string fullpath_arg)
+		{
 			Selected = false;
 			fullpath = fullpath_arg;
 			MUN.Syscall.lstat(fullpath, out lstat);
@@ -92,7 +93,8 @@ namespace UltimateCommander {
 		public Gdk.Pixbuf MimeIcon {
 			get {
 				if (!IsFile && !IsDanglingLink) {
-					// This is not a regular file, so a related filesystem icon needs to be returned.
+					// This is not a regular file, so a related
+					// filesystem icon needs to be returned.
 					if (IsDirectory) {
 						if (IsUpDirectory) {
 							return updir_icon;
@@ -114,14 +116,15 @@ namespace UltimateCommander {
 					// The mime icon is not cached yet, so it needs to be cached.
 					Gnome.IconLookupResultFlags result_flags;
 					string iconname = Gnome.Icon.Lookup(new Gnome.IconTheme(), null, "", null,
-											 		new Gnome.Vfs.FileInfo(), MimeType,
-											 		Gnome.IconLookupFlags.None,	out result_flags);
+											 		    new Gnome.Vfs.FileInfo(), MimeType,
+											 		    Gnome.IconLookupFlags.None,
+											 		    	out result_flags);
 					Gdk.Pixbuf icon = LoadIcon(iconname);
 					mime_to_icon_hash.Add(MimeType, icon);
 					return icon;
 				} else {
 					// The mime icon is already cached.
-					return mime_to_icon_hash[MimeType] as Gdk.Pixbuf;
+					return (Gdk.Pixbuf)mime_to_icon_hash[MimeType];
 				}
 			}
 		}

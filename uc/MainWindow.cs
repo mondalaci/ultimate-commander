@@ -18,7 +18,8 @@ namespace UltimateCommander {
 		{
 			Vfs.Initialize();			
 
-			Glade.XML glade_xml = new Glade.XML(UltimateCommander.GladeFileName, "main_window", null);
+			Glade.XML glade_xml =
+				new Glade.XML(UltimateCommander.GladeFileName, "main_window", null);
 			glade_xml.Autoconnect(this);
 
 			string initial_path = ".";
@@ -51,8 +52,9 @@ namespace UltimateCommander {
 			if (width != old_width) {
 				PanelRatio = panel_ratio;
 				old_width = width;
-			} else
+			} else {
 				panel_ratio = PanelRatio;
+			}
 		}
 
 		float PanelRatio {
