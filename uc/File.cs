@@ -3,7 +3,6 @@ using System.Collections;
 using System.Text;
 using Mono.Unix;
 using MUN = Mono.Unix.Native;
-using Gdk;
 using Gnome.Vfs;
 
 namespace UltimateCommander {
@@ -15,6 +14,50 @@ namespace UltimateCommander {
 	};
 
 	public class File {
+
+		public static File[] ListDirectory(string path)
+		{
+			ArrayList files = new ArrayList();
+
+			// FIXME: When $MONO_EXTERNAL_ENCODINGS is not or inappropriately
+			//        set, GetFileSystemEntries() skips accentuated filenames.
+			IntPtr dir = MUN.Syscall.opendir(path);
+			MUN.Dirent nextentry;
+			
+			while ((nextentry = MUN.Syscall.readdir(dir)) != null) {
+				string filename = nextentry.d_name;
+				
+				if (filename == ".") {
+					continue;
+				}
+
+				string filepath = UnixPath.Combine(path, filename);
+				files.Add(new File(filepath));
+       		}
+       		
+			return (File[])(files.ToArray(typeof(File)));
+		}
+
+		public static bool IsFileNameEncodingValid(string filename)
+		{
+			foreach (char c in filename) {
+				if (c == UnixEncoding.EscapeByte) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		public static string StringifyInvalidFileNameEncoding(string filename)
+		{
+			StringBuilder stringbuilder = new StringBuilder();
+			foreach (char c in filename) {
+				if (c != UnixEncoding.EscapeByte) {
+					stringbuilder.Append(c);
+				}
+			}
+			return stringbuilder.ToString();
+		}
 
 		static int icon_size = 16;
 
@@ -54,16 +97,18 @@ namespace UltimateCommander {
 
 				StringBuilder dest_strbuilder = new StringBuilder(max_path_length);
 				MUN.Syscall.readlink(fullpath, dest_strbuilder);
-				string dest = dest_strbuilder.ToString();
+				linkpath = dest_strbuilder.ToString();
 
-				if (!System.IO.Path.IsPathRooted(dest)) {
-					string directoryname = System.IO.Path.GetDirectoryName(fullpath);
-					dest = System.IO.Path.Combine(directoryname, dest);
+				if (!UnixPath.IsPathRooted(linkpath)) {
+					string directoryname = UnixPath.GetDirectoryName(fullpath);
+					// EXTERNALBUG
+					if (directoryname == "") {
+						directoryname = "/";
+					}
+					linkpath = UnixPath.Combine(directoryname, linkpath);
 				}
 
-				linkpath = dest;
-
-				if (MUN.Syscall.access(dest, MUN.AccessModes.F_OK) == 0) {
+				if (MUN.Syscall.access(linkpath, MUN.AccessModes.F_OK) == 0) {
 					linktype = SymbolicLinkType.ValidLink;
 				} else {
 					linktype = SymbolicLinkType.DanglingLink;
@@ -143,9 +188,17 @@ namespace UltimateCommander {
 		}
 
 		public string Name {
-			get { return System.IO.Path.GetFileName(fullpath); }
+			get { return UnixPath.GetFileName(FullPath); }
 		}
 
+		public string NameString {
+			get { return StringifyInvalidFileNameEncoding(Name); }
+		}
+
+		public bool HasValidEncoding {
+			get { return IsFileNameEncodingValid(Name); }
+		}
+		
 		public long Size {
 			get {
 				if (IsDanglingLink) {

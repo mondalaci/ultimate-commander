@@ -26,8 +26,6 @@ namespace UltimateCommander {
 
 	public class PanelColumn: TreeViewColumn {
 
-		static Gdk.Color selected_row_bgcolor = new Gdk.Color(224, 224, 0);
-
 		PanelColumnInfo columninfo;
 		CellRendererManipulator cellrenderermanipulator;
 		Panel panel;
@@ -72,14 +70,9 @@ namespace UltimateCommander {
 						  TreeModel model, TreeIter iter)
 		{
            	File file = (File)model.GetValue(iter, 0);
-
-           	if (file.Selected) {
-           		cellrenderer.CellBackgroundGdk = selected_row_bgcolor;
-           	} else {
-           		cellrenderer.CellBackgroundGdk = 
-           			Widget.DefaultStyle.BaseColors[(int)StateType.Normal];
-			}
-
+			cellrenderer.CellBackgroundGdk =
+				file.Selected ? Panel.SelectedRowBgColor : 
+				Widget.DefaultStyle.BaseColors[(int)StateType.Normal];
 			cellrenderermanipulator(cellrenderer, file);
 		}
 

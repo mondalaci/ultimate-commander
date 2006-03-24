@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
-using System.IO;
 using Mono.Unix;
+using Mono.Unix.Native;
 using Gdk;
 using Gtk;
 using Gnome.Vfs;
@@ -11,10 +11,23 @@ namespace UltimateCommander {
 
 	public class Panel: View {
                 
+		static Gdk.Color selected_row_bgcolor = new Gdk.Color(224, 224, 0);
+		static Gdk.Color invalid_encoding_color = new Gdk.Color(255, 0, 0);
+
+		static public Gdk.Color SelectedRowBgColor {
+			get { return selected_row_bgcolor; }
+		}
+
+		static public Gdk.Color InvalidEncodingColor {
+			get { return invalid_encoding_color; }
+		}
+
 		[Glade.Widget] TreeView view;
 		[Glade.Widget] Label statusbar;
-
-		ListStore store = null;
+		[Glade.Widget] EventBox invalid_encoding_notifier_slot;
+		bool invalid_encoding_notifier_added;
+		
+		ListStore store = new ListStore(typeof(File));
 
     		string current_directory = null;
 		int number_of_files = 0;
@@ -24,11 +37,14 @@ namespace UltimateCommander {
 
 		PanelListingConfigurator listing_configurator;
 		PanelSortingConfigurator sorting_configurator;
+		InvalidEncodingNotifier invalid_encoding_notifier;
 
 		public Panel(string path): base("panel_window")
-		{
+		{			
+          	view.Model = store;
 			listing_configurator = new PanelListingConfigurator(this);
 			sorting_configurator = new PanelSortingConfigurator(this);
+			invalid_encoding_notifier = new InvalidEncodingNotifier();
 
 			PanelColumnType[] columntypes = {
 				PanelColumnType.Toggle,
@@ -74,31 +90,45 @@ namespace UltimateCommander {
 
 		void SetCurrentDirectory(string path)
 		{
-       		store = new ListStore(typeof(File));
-
-			string old_directory = current_directory;
-			path = UnixPath.GetFullPath(path);
+			int invalid_encodings_counter = 0;
+			store.Clear();
+			string prev_dir = CurrentDirectory;
 			current_directory = GetTopLevelAccessiblePath(path);
-			slot.Title = current_directory;
-			
-			string full_path = UnixPath.Combine(current_directory, "..");
-			File file = new File(full_path);
-       		store.AppendValues(file);
-			number_of_files = 1;
+			slot.Title = File.StringifyInvalidFileNameEncoding(CurrentDirectory);
+			File[] files = File.ListDirectory(CurrentDirectory);
 
-			// FIXME: When $MONO_EXTERNAL_ENCODINGS is not or inappropriately
-			//        set, GetFileSystemEntries() skips accentuated filenames.
-			string[] filenames = System.IO.Directory.GetFileSystemEntries(current_directory);
+			foreach (File file in files) {
+				if (!file.HasValidEncoding) {
+					invalid_encodings_counter += 1;
+				}
 
-			foreach (string filename in filenames) {
-				file = new File(filename);
-           	   	store.AppendValues(file);
-				number_of_files++;
-       		}
+				store.AppendValues(file);
+			}
 
-          	view.Model = store;
+			RefreshInvalidEncodingNotifier(invalid_encodings_counter);
+			SetCursor(prev_dir, CurrentDirectory);
+			number_of_files = files.Length;
+     	}
 
-			// Set the cursor.
+		void RefreshInvalidEncodingNotifier(int count)
+		{
+			if (count == 0 && invalid_encoding_notifier_added) {
+				invalid_encoding_notifier_slot.Remove(invalid_encoding_notifier);
+				invalid_encoding_notifier_added = false;
+			} else if (count > 0 && !invalid_encoding_notifier_added) {
+				invalid_encoding_notifier_slot.Add(invalid_encoding_notifier);
+				invalid_encoding_notifier_added = true;
+			}
+
+			if (invalid_encoding_notifier_added) {
+				invalid_encoding_notifier.SetText(count);
+			}
+
+			invalid_encoding_notifier_slot.Show();
+		}
+
+		void SetCursor(string old_directory, string current_directory)
+		{
 			bool upper_level = false;
 			string old_updir = null;
 				
@@ -118,6 +148,8 @@ namespace UltimateCommander {
 				
 				while (has_next) {
 					File file2 = (File)store.GetValue(iter, 0);
+//					Console.WriteLine(file2.Name);
+//					Console.WriteLine(filename);
 					if (file2.Name == filename) {
 						view.SetCursor(store.GetPath(iter), view.GetColumn(1), false);
 						break;
@@ -127,7 +159,7 @@ namespace UltimateCommander {
 			} else {  // Not stepping up a level, but somewhere else.
    	      		view.SetCursor(new TreePath("0"), view.GetColumn(1), false);
 			}
-     	}
+		}
 
 		// Secondary methods.
 
@@ -160,7 +192,7 @@ namespace UltimateCommander {
 			view.GetPathAtPos((int)x, (int)y, out path);
 
 			if (path == null) {
-				if (y<0) {
+				if (y < 0) {
 					return 0;
 				} else {
 					return number_of_files - 1;
@@ -180,8 +212,9 @@ namespace UltimateCommander {
 			file.InvertSelection();
 		}
 
-		string GetTopLevelAccessiblePath(string full_path)
+		string GetTopLevelAccessiblePath(string path)
 		{
+			string full_path = UnixPath.GetFullPath(path);
 			while (!new UnixDirectoryInfo(full_path).Exists) {
 				full_path = UnixPath.Combine(full_path, "..");
 				full_path = UnixPath.GetFullPath(full_path);
@@ -232,7 +265,7 @@ namespace UltimateCommander {
 
      	void OnPanelCursorChanged(object o, EventArgs e)
      	{
-         	statusbar.Text = CurrentFile.Name;
+         	statusbar.Text = CurrentFile.NameString;
 		}		
 
 		/*void OnFrameFocusInEvent(object o, FocusInEventArgs args)

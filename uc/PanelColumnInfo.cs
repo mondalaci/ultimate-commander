@@ -13,6 +13,16 @@ namespace UltimateCommander {
 
 	public class PanelColumnInfo {
 
+		static public PanelColumnInfo GetColumnInfo(PanelColumnType columntype)
+		{
+			foreach (PanelColumnInfo columninfo in AllColumnInfos) {
+				if (columntype == columninfo.ColumnType) {
+					return columninfo;
+				}
+			}
+			return null;
+		}
+
 		PanelColumnType columntype;
 		CellRendererType cellrenderertype;
 		CellRendererManipulator cellrenderermanipulator;
@@ -29,16 +39,6 @@ namespace UltimateCommander {
 			cellrenderermanipulator = cellrenderermanipulator_arg;
 			longname = longname_arg;
 			shortname = shortname_arg;
-		}
-
-		static public PanelColumnInfo GetColumnInfo(PanelColumnType columntype)
-		{
-			foreach (PanelColumnInfo columninfo in AllColumnInfos) {
-				if (columntype == columninfo.ColumnType) {
-					return columninfo;
-				}
-			}
-			return null;
 		}
 
 		public PanelColumnType ColumnType {
@@ -152,7 +152,10 @@ namespace UltimateCommander {
 
 		static void OnSetCellRendererFilename(CellRenderer cellrenderer, File file)
 		{
-			((CellRendererText)cellrenderer).Text = file.Name;
+			CellRendererText cellrenderertext = (CellRendererText)cellrenderer;
+			cellrenderertext.Text = file.NameString;
+			cellrenderertext.ForegroundGdk =
+				file.HasValidEncoding ? Widget.DefaultStyle.Black : Panel.InvalidEncodingColor;
 		}
 
 		static void OnSetCellRendererSize(CellRenderer cellrenderer, File file)
