@@ -1,10 +1,16 @@
 using System;
 using Gtk;
+using Gdk;
 using Gnome.Vfs;
 
 namespace UltimateCommander {
 
 	public class UltimateCommander {
+
+		static public Pixbuf LoadPixbuf(string filename)
+		{
+			return new Pixbuf(program_gui_path + "/" + filename);
+		}
 
 		static string program_gui_path;
 		public static string GladeFileName;

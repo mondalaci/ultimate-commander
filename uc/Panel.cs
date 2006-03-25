@@ -90,10 +90,19 @@ namespace UltimateCommander {
 
 		void SetCurrentDirectory(string path)
 		{
-			int invalid_encodings_counter = 0;
+			string tla_path = GetTopLevelAccessiblePath(path);
+
+			File directory = new File(tla_path);
+			if (!directory.IsSearchable) {
+				Console.WriteLine("canonot enter this directory");
+				return;
+			}
+
+			//view.Model = store = new ListStore(typeof(File));
 			store.Clear();
 			string prev_dir = CurrentDirectory;
-			current_directory = GetTopLevelAccessiblePath(path);
+			int invalid_encodings_counter = 0;
+			current_directory = tla_path;
 			slot.Title = File.StringifyInvalidFileNameEncoding(CurrentDirectory);
 			File[] files = File.ListDirectory(CurrentDirectory);
 
@@ -124,7 +133,7 @@ namespace UltimateCommander {
 				invalid_encoding_notifier.SetText(count);
 			}
 
-			invalid_encoding_notifier_slot.Show();
+			invalid_encoding_notifier_slot.ShowAll();
 		}
 
 		void SetCursor(string old_directory, string current_directory)
@@ -148,10 +157,10 @@ namespace UltimateCommander {
 				
 				while (has_next) {
 					File file2 = (File)store.GetValue(iter, 0);
-//					Console.WriteLine(file2.Name);
-//					Console.WriteLine(filename);
 					if (file2.Name == filename) {
-						view.SetCursor(store.GetPath(iter), view.GetColumn(1), false);
+						TreePath path = store.GetPath(iter);
+						view.SetCursor(path, view.GetColumn(1), false);
+						view.ScrollToCell(path, null, true, 0.5f, 0.5f);
 						break;
 					}
 					has_next = store.IterNext(ref iter);

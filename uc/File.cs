@@ -71,7 +71,8 @@ namespace UltimateCommander {
 		static Hashtable mime_to_icon_hash = new Hashtable();
 		static AttributeIcons attribute_icons = new AttributeIcons();
 
-		static Gdk.Pixbuf updir_icon = LoadIcon(Gtk.Stock.GoUp);
+		static Gdk.Pixbuf updir_icon = 
+			UltimateCommander.LoadPixbuf("panel-navigate-up-one-directory.png");
 		static Gdk.Pixbuf directory_icon = LoadIcon("gnome-fs-directory");
 		static Gdk.Pixbuf fifo_icon = LoadIcon("gnome-fs-fifo");
 		static Gdk.Pixbuf socket_icon = LoadIcon("gnome-fs-socket");
@@ -421,6 +422,10 @@ namespace UltimateCommander {
 
 		public bool IsExecutable {
 			get { return IsFile && MUN.Syscall.access(FullPath, MUN.AccessModes.X_OK) == 0; }
+		}
+
+		public bool IsSearchable {
+			get { return IsDirectory && MUN.Syscall.access(FullPath, MUN.AccessModes.X_OK) == 0; }
 		}
 
 		// Unix properties
