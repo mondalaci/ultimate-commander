@@ -29,7 +29,7 @@ namespace UltimateCommander {
 		
 		ListStore store = new ListStore(typeof(File));
 
-    		string current_directory = null;
+   		string current_directory = null;
 		int number_of_files = 0;
 		bool active;
 		bool button3_pressed = false;
@@ -113,6 +113,7 @@ namespace UltimateCommander {
 				store.AppendValues(file);
 			}
 
+			view.ColumnsAutosize();
 			RefreshInvalidEncodingNotifier(invalid_encodings_counter);
 			SetCursor(prev_dir, CurrentDirectory);
 			number_of_files = files.Length;

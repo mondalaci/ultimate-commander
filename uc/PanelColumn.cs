@@ -59,7 +59,6 @@ namespace UltimateCommander {
 			PackStart(cellrenderer, true);
 			SetCellDataFunc(cellrenderer, CellDataFunc);
 			Resizable = true;
-			Sizing = TreeViewColumnSizing.Autosize;
 			Title = (string)columninfo.ShortName;
 		}
 
