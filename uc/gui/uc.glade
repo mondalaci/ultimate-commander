@@ -91,7 +91,7 @@
 		      <property name="visible">True</property>
 		      <property name="label" translatable="yes">Copy</property>
 		      <property name="use_underline">True</property>
-		      <property name="stock_id">gtk-copy</property>
+		      <property name="icon">operation-copy.png</property>
 		      <property name="visible_horizontal">True</property>
 		      <property name="visible_vertical">True</property>
 		      <property name="is_important">True</property>
@@ -122,9 +122,9 @@
 		  <child>
 		    <widget class="GtkToolButton" id="toolbutton5">
 		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">Make Directory</property>
+		      <property name="label" translatable="yes">Create Directory</property>
 		      <property name="use_underline">True</property>
-		      <property name="icon">operation-make-directory.png</property>
+		      <property name="icon">operation-create-directory.png</property>
 		      <property name="visible_horizontal">True</property>
 		      <property name="visible_vertical">True</property>
 		      <property name="is_important">True</property>
@@ -156,7 +156,7 @@
 		      <property name="visible">True</property>
 		      <property name="label" translatable="yes">Delete</property>
 		      <property name="use_underline">True</property>
-		      <property name="stock_id">gtk-delete</property>
+		      <property name="icon">operation-delete.png</property>
 		      <property name="visible_horizontal">True</property>
 		      <property name="visible_vertical">True</property>
 		      <property name="is_important">True</property>
