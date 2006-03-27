@@ -1,4 +1,5 @@
 using System;
+using Mono.Unix;
 using Gtk;
 using Gdk;
 using Gnome.Vfs;
@@ -7,9 +8,10 @@ namespace UltimateCommander {
 
 	public class UltimateCommander {
 
-		static public Pixbuf LoadPixbuf(string filename)
+		public static Pixbuf LoadPixbuf(string filename)
 		{
-			return new Pixbuf(program_gui_path + "/" + filename);
+			string filepath = UnixPath.Combine(program_gui_path, filename);
+			return new Pixbuf(filepath);
 		}
 
 		static string program_gui_path;
@@ -24,7 +26,7 @@ namespace UltimateCommander {
 				program_gui_path = "gui";
 			}
 
-			GladeFileName = program_gui_path + "/uc.glade";
+			GladeFileName = UnixPath.Combine(program_gui_path, "uc.glade");
 
 			Gnome.Vfs.Vfs.Initialize();
           	Gtk.Application.Init();

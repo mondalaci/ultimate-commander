@@ -98,7 +98,6 @@ namespace UltimateCommander {
 				return;
 			}
 
-			//view.Model = store = new ListStore(typeof(File));
 			store.Clear();
 			string prev_dir = CurrentDirectory;
 			int invalid_encodings_counter = 0;

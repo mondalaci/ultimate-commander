@@ -73,7 +73,8 @@ namespace UltimateCommander {
 
 		static Gdk.Pixbuf updir_icon = 
 			UltimateCommander.LoadPixbuf("panel-navigate-up-one-directory.png");
-		static Gdk.Pixbuf directory_icon = LoadIcon("gnome-fs-directory");
+		static Gdk.Pixbuf directory_icon =
+			UltimateCommander.LoadPixbuf("folder.png");
 		static Gdk.Pixbuf fifo_icon = LoadIcon("gnome-fs-fifo");
 		static Gdk.Pixbuf socket_icon = LoadIcon("gnome-fs-socket");
 		static Gdk.Pixbuf chardev_icon = LoadIcon("gnome-fs-chardev");
