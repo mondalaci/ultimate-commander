@@ -10,23 +10,25 @@ namespace UltimateCommander {
 
 		public static Pixbuf LoadPixbuf(string filename)
 		{
-			string filepath = UnixPath.Combine(program_gui_path, filename);
+			string filepath = UnixPath.Combine(GuiPath, filename);
 			return new Pixbuf(filepath);
 		}
 
-		static string program_gui_path;
+		// Config variables
+		public static string GuiPath;
 		public static string GladeFileName;
+
 		public static MainWindow MainWindow;
 
      	public static void Main(string[] args)
      	{              
-			program_gui_path = Environment.GetEnvironmentVariable("UC_GUI_PATH");
+			GuiPath = Environment.GetEnvironmentVariable("UC_GUI_PATH");
 
-			if (program_gui_path == null) {
-				program_gui_path = "gui";
+			if (GuiPath == null) {
+				GuiPath = "gui";
 			}
 
-			GladeFileName = UnixPath.Combine(program_gui_path, "uc.glade");
+			GladeFileName = UnixPath.Combine(GuiPath, "uc.glade");
 
 			Gnome.Vfs.Vfs.Initialize();
           	Gtk.Application.Init();
