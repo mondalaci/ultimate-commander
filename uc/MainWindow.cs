@@ -7,8 +7,15 @@ namespace UltimateCommander {
 
 	public class MainWindow {
 
+		static InfoBar infobar = new InfoBar();
+
+		public static InfoBar InfoBar {
+			get { return infobar; }
+		}
+
 		[Glade.Widget] HPaned hpaned;
 		[Glade.Widget] Gtk.Window main_window;
+		[Glade.Widget] EventBox infobar_slot;
 
 		float panel_ratio = 0.5f;
 		int width = 0;
@@ -16,8 +23,6 @@ namespace UltimateCommander {
 
 		public MainWindow()
 		{
-			Vfs.Initialize();			
-
 			Glade.XML glade_xml =
 				new Glade.XML(UltimateCommander.GladeFileName, "main_window", null);
 			glade_xml.Autoconnect(this);
@@ -33,6 +38,10 @@ namespace UltimateCommander {
 			hpaned.Add2(right_panel_frame);
 
 			ResizePanes();
+
+			infobar_slot.Add(infobar);
+			InfoBar.Notice("Ultimate Commander started.");
+
 			main_window.ShowAll();
 		}
 
@@ -85,6 +94,26 @@ namespace UltimateCommander {
 		void OnQuitMenuItemActivated(object o, EventArgs args)
 		{
 			Gtk.Application.Quit();
+		}
+
+		void OnCopyButtonClicked(object sender, EventArgs args)
+		{
+		}
+
+		void OnMoveButtonClicked(object sender, EventArgs args)
+		{
+		}
+
+		void OnCreateDirectoryButtonClicked(object sender, EventArgs args)
+		{
+		}
+
+		void OnRenameButtonClicked(object sender, EventArgs args)
+		{
+		}
+
+		void OnDeleteButtonClicked(object sender, EventArgs args)
+		{
 		}
 	}
 }

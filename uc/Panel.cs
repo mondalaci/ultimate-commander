@@ -99,7 +99,7 @@ namespace UltimateCommander {
 			File directory = new File(tla_path);
 
 			if (!directory.IsSearchable) {
-				Console.WriteLine("You are not permitted to enter to this directory.  " +
+				InfoBar.Error("You are not permitted to enter to this directory.  " +
 					"It is not searchable.");
 				return;
 			}
@@ -385,6 +385,18 @@ namespace UltimateCommander {
 			//UltimateCommander.MainWindow.ActivePanel.view.GrabFocus();
 		}
 
+		void OnThumbnailViewButtonClicked(object sender, EventArgs args)
+		{
+		}
+
+		void OnZoomOutButtonClicked(object sender, EventArgs args)
+		{
+		}
+
+		void OnZoomInButtonClicked(object sender, EventArgs args)
+		{
+		}
+
 		void OnSetListingButtonToggled(object toggletoolbutton, EventArgs args)
 		{
 			ShowAndSelectConfigurator((ToggleToolButton)toggletoolbutton, ListingConfigurator);
@@ -393,6 +405,30 @@ namespace UltimateCommander {
 		void OnSetSortingButtonToggled(object toggletoolbutton, EventArgs args)
 		{
 			ShowAndSelectConfigurator((ToggleToolButton)toggletoolbutton, SortConfigurator);
+		}
+
+		void OnSetFilteringButtonToggled(object toggletoolbutton, EventArgs args)
+		{
+		}
+
+		void OnQuickCdButtonClicked(object sender, EventArgs args)
+		{
+		}
+
+		void OnUpOneDirectoryButtonClicked(object sender, EventArgs args)
+		{
+		}
+
+		void OnBackwardButtonClicked(object sender, EventArgs args)
+		{
+		}
+
+		void OnForwardButtonClicked(object sender, EventArgs args)
+		{
+		}
+
+		void OnGoToHomeButtonClicked(object sender, EventArgs args)
+		{
 		}
 
 		void ShowAndSelectConfigurator(ToggleToolButton toggletoolbutton,
