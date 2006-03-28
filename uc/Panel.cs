@@ -24,6 +24,7 @@ namespace UltimateCommander {
 
 		[Glade.Widget] TreeView view;
 		[Glade.Widget] ToolButton up_one_directory_button;
+		[Glade.Widget] ToolButton go_to_home_directory_button;
 		[Glade.Widget] Label statusbar;
 		[Glade.Widget] EventBox unreadable_directory_notifier_slot;
 		[Glade.Widget] EventBox invalid_encoding_notifier_slot;
@@ -139,6 +140,7 @@ namespace UltimateCommander {
 		void RefreshButtonStates()
 		{
 			up_one_directory_button.Sensitive = CurrentDirectory != "/";
+			go_to_home_directory_button.Sensitive = CurrentDirectory != Util.HomeDirectoryPath;
 		}
 
 		void RefreshUnreadableDirectoryNotifier(bool readable)
@@ -438,6 +440,7 @@ namespace UltimateCommander {
 
 		void OnGoToHomeButtonClicked(object sender, EventArgs args)
 		{
+			ChangeDirectory(Util.HomeDirectoryPath);
 		}
 
 		void ShowAndSelectConfigurator(ToggleToolButton toggletoolbutton,

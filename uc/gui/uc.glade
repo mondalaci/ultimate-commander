@@ -576,9 +576,8 @@
 		  </child>
 
 		  <child>
-		    <widget class="GtkToolButton" id="toolbutton11">
+		    <widget class="GtkToolButton" id="go_to_home_directory_button">
 		      <property name="visible">True</property>
-		      <property name="sensitive">False</property>
 		      <property name="label" translatable="yes"></property>
 		      <property name="use_underline">True</property>
 		      <property name="icon">panel-navigate-home.png</property>

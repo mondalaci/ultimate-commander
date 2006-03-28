@@ -31,6 +31,7 @@ namespace UltimateCommander {
 			GladeFileName = UnixPath.Combine(GuiPath, "uc.glade");
 
 			Gnome.Vfs.Vfs.Initialize();
+			Util.Initialize();
           	Gtk.Application.Init();
 			MainWindow = new MainWindow();
           	Gtk.Application.Run ();
