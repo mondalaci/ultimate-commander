@@ -24,7 +24,9 @@ namespace UltimateCommander {
 
 		[Glade.Widget] TreeView view;
 		[Glade.Widget] Label statusbar;
+		[Glade.Widget] EventBox unreadable_directory_notifier_slot;
 		[Glade.Widget] EventBox invalid_encoding_notifier_slot;
+		bool unreadable_directory_notifier_added;
 		bool invalid_encoding_notifier_added;
 		
 		ListStore store = new ListStore(typeof(File));
@@ -38,6 +40,7 @@ namespace UltimateCommander {
 		PanelListingConfigurator listing_configurator;
 		PanelSortingConfigurator sorting_configurator;
 		InvalidEncodingNotifier invalid_encoding_notifier;
+		UnreadableDirectoryNotifier unreadable_directory_notifier;
 
 		public Panel(string path): base("panel_window")
 		{			
@@ -45,6 +48,7 @@ namespace UltimateCommander {
 			listing_configurator = new PanelListingConfigurator(this);
 			sorting_configurator = new PanelSortingConfigurator(this);
 			invalid_encoding_notifier = new InvalidEncodingNotifier();
+			unreadable_directory_notifier = new UnreadableDirectoryNotifier();
 
 			PanelColumnType[] columntypes = {
 				PanelColumnType.Toggle,
@@ -93,8 +97,10 @@ namespace UltimateCommander {
 			string tla_path = GetTopLevelAccessiblePath(path);
 
 			File directory = new File(tla_path);
+
 			if (!directory.IsSearchable) {
-				Console.WriteLine("canonot enter this directory");
+				Console.WriteLine("You are not permitted to enter to this directory.  " +
+					"It is not searchable.");
 				return;
 			}
 
@@ -103,13 +109,21 @@ namespace UltimateCommander {
 			int invalid_encodings_counter = 0;
 			current_directory = tla_path;
 			slot.Title = File.StringifyInvalidFileNameEncoding(CurrentDirectory);
-			File[] files = File.ListDirectory(CurrentDirectory);
+			bool readable = directory.IsReadable;
+			RefreshUnreadableDirectoryNotifier(readable);
+			File[] files;
 
+			if (!readable) {
+				File updir = new File(UnixPath.Combine(CurrentDirectory, ".."));
+				files = new File[]{updir};
+			} else {
+				files = File.ListDirectory(CurrentDirectory);
+			}
+			
 			foreach (File file in files) {
 				if (!file.HasValidEncoding) {
 					invalid_encodings_counter += 1;
 				}
-
 				store.AppendValues(file);
 			}
 
@@ -118,6 +132,19 @@ namespace UltimateCommander {
 			SetCursor(prev_dir, CurrentDirectory);
 			number_of_files = files.Length;
      	}
+
+		void RefreshUnreadableDirectoryNotifier(bool readable)
+		{
+			if (readable && unreadable_directory_notifier_added) {
+				unreadable_directory_notifier_slot.Remove(unreadable_directory_notifier);
+				unreadable_directory_notifier_added = false;
+			} else if (!readable && !unreadable_directory_notifier_added) {
+				unreadable_directory_notifier_slot.Add(unreadable_directory_notifier);
+				unreadable_directory_notifier_added = true;
+			}
+
+			unreadable_directory_notifier_slot.ShowAll();
+		}
 
 		void RefreshInvalidEncodingNotifier(int count)
 		{

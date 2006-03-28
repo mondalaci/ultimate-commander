@@ -843,6 +843,23 @@
 	  </child>
 
 	  <child>
+	    <widget class="GtkEventBox" id="unreadable_directory_notifier_slot">
+	      <property name="visible">True</property>
+	      <property name="visible_window">True</property>
+	      <property name="above_child">False</property>
+
+	      <child>
+		<placeholder/>
+	      </child>
+	    </widget>
+	    <packing>
+	      <property name="padding">0</property>
+	      <property name="expand">False</property>
+	      <property name="fill">True</property>
+	    </packing>
+	  </child>
+
+	  <child>
 	    <widget class="GtkEventBox" id="invalid_encoding_notifier_slot">
 	      <property name="visible">True</property>
 	      <property name="visible_window">True</property>
@@ -2000,8 +2017,8 @@
   </child>
 </widget>
 
-<widget class="GtkWindow" id="invalid_encoding_notifier_window">
-  <property name="title" translatable="yes">InvalidEncodingNotifier</property>
+<widget class="GtkWindow" id="notifier_window">
+  <property name="title" translatable="yes">Notifier</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>
   <property name="modal">False</property>
@@ -2045,10 +2062,8 @@
 	      <property name="spacing">0</property>
 
 	      <child>
-		<widget class="GtkImage" id="image11">
+		<widget class="GtkImage" id="icon">
 		  <property name="visible">True</property>
-		  <property name="icon_size">4</property>
-		  <property name="icon_name">gtk-dialog-error</property>
 		  <property name="xalign">0.5</property>
 		  <property name="yalign">0</property>
 		  <property name="xpad">0</property>

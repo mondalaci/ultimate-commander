@@ -1,25 +1,13 @@
 using System;
 using Gtk;
-using Glade;
 
 namespace UltimateCommander {
 
-	public class InvalidEncodingNotifier: GladeWidget {
-		
-		[Glade.Widget] TextView textview;
-		TextTag bold_tag;
-		TextTag red_tag;
-		
-		public InvalidEncodingNotifier(): base("invalid_encoding_notifier_window")
+	public class InvalidEncodingNotifier: Notifier {
+
+		public InvalidEncodingNotifier(): base()
 		{
-			textview.ModifyBase(StateType.Normal,
-				Widget.DefaultStyle.BaseColors[(int)StateType.Insensitive]);
-			red_tag = new TextTag("red");
-			red_tag.ForegroundGdk = new Gdk.Color(255, 0, 0);
-			textview.Buffer.TagTable.Add(red_tag);
-			bold_tag = new TextTag("bold");
-			bold_tag.Weight = Pango.Weight.Bold;
-			textview.Buffer.TagTable.Add(bold_tag);
+			SetIcon("gtk-dialog-error");
 		}
 
 		public void SetText(int count)
@@ -38,12 +26,6 @@ namespace UltimateCommander {
 			AppendText("red color", red_tag);
 			AppendText(". You should correct this problem by renaming " + these + " file" + s +
 				" or setting the encoding of your file system properly.");
-		}
-
-		void AppendText(string text, params TextTag[] tags)
-		{
-			TextIter iter = textview.Buffer.EndIter;
-			textview.Buffer.InsertWithTags(ref iter, text, tags);
 		}
 	}
 }

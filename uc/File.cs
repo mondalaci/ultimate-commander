@@ -59,8 +59,6 @@ namespace UltimateCommander {
 			return stringbuilder.ToString();
 		}
 
-		static int icon_size = 16;
-
 		// If the actual maximum path length is greater
 		// than this value, we're in some serious shit.
 		static int max_path_length = 512;  
@@ -75,10 +73,10 @@ namespace UltimateCommander {
 			UltimateCommander.LoadPixbuf("panel-navigate-up-one-directory.png");
 		static Gdk.Pixbuf directory_icon =
 			UltimateCommander.LoadPixbuf("folder.png");
-		static Gdk.Pixbuf fifo_icon = LoadIcon("gnome-fs-fifo");
-		static Gdk.Pixbuf socket_icon = LoadIcon("gnome-fs-socket");
-		static Gdk.Pixbuf chardev_icon = LoadIcon("gnome-fs-chardev");
-		static Gdk.Pixbuf blockdev_icon = LoadIcon("gnome-fs-blockdev");
+		static Gdk.Pixbuf fifo_icon = Util.LoadIcon("gnome-fs-fifo");
+		static Gdk.Pixbuf socket_icon = Util.LoadIcon("gnome-fs-socket");
+		static Gdk.Pixbuf chardev_icon = Util.LoadIcon("gnome-fs-chardev");
+		static Gdk.Pixbuf blockdev_icon = Util.LoadIcon("gnome-fs-blockdev");
 
 		bool selected;
 		string fullpath;
@@ -165,8 +163,8 @@ namespace UltimateCommander {
 					string iconname = Gnome.Icon.Lookup(new Gnome.IconTheme(), null, "", null,
 											 		    new Gnome.Vfs.FileInfo(), MimeType,
 											 		    Gnome.IconLookupFlags.None,
-											 		    	out result_flags);
-					Gdk.Pixbuf icon = LoadIcon(iconname);
+										 		    	out result_flags);
+					Gdk.Pixbuf icon = Util.LoadIcon(iconname);
 					mime_to_icon_hash.Add(MimeType, icon);
 					return icon;
 				} else {
@@ -497,11 +495,6 @@ namespace UltimateCommander {
 			} else {
 				return MUN.NativeConvert.FromTimeT(time).ToString(datetime_format);
 			}
-		}
-
-		static Gdk.Pixbuf LoadIcon(string iconname)
-		{
-			return Gtk.IconTheme.Default.LoadIcon(iconname, icon_size, Gtk.IconLookupFlags.NoSvg);
 		}
 
 		static bool GetFlag(MUN.Stat st, MUN.FilePermissions perm)
