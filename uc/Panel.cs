@@ -23,6 +23,7 @@ namespace UltimateCommander {
 		}
 
 		[Glade.Widget] TreeView view;
+		[Glade.Widget] ToolButton up_one_directory_button;
 		[Glade.Widget] Label statusbar;
 		[Glade.Widget] EventBox unreadable_directory_notifier_slot;
 		[Glade.Widget] EventBox invalid_encoding_notifier_slot;
@@ -59,7 +60,8 @@ namespace UltimateCommander {
 			};
 
 			ListingConfigurator.SetListing(columntypes);
-			SetCurrentDirectory(path);
+			ChangeDirectory(path);
+			RefreshButtonStates();
 		}
 
 		public ListStore Store {
@@ -92,7 +94,7 @@ namespace UltimateCommander {
 			}
 		}        
 
-		void SetCurrentDirectory(string path)
+		void ChangeDirectory(string path)
 		{
 			string tla_path = GetTopLevelAccessiblePath(path);
 
@@ -131,7 +133,13 @@ namespace UltimateCommander {
 			RefreshInvalidEncodingNotifier(invalid_encodings_counter);
 			SetCursor(prev_dir, CurrentDirectory);
 			number_of_files = files.Length;
+			RefreshButtonStates();
      	}
+
+		void RefreshButtonStates()
+		{
+			up_one_directory_button.Sensitive = CurrentDirectory != "/";
+		}
 
 		void RefreshUnreadableDirectoryNotifier(bool readable)
 		{
@@ -202,7 +210,7 @@ namespace UltimateCommander {
      	void ActivateRow()
      	{
            	if (CurrentFile.IsDirectory) {
-           		SetCurrentDirectory(CurrentFile.FullPath);
+           		ChangeDirectory(CurrentFile.FullPath);
            	}
      	}
 
@@ -417,6 +425,7 @@ namespace UltimateCommander {
 
 		void OnUpOneDirectoryButtonClicked(object sender, EventArgs args)
 		{
+			ChangeDirectory(UnixPath.Combine(CurrentDirectory, ".."));
 		}
 
 		void OnBackwardButtonClicked(object sender, EventArgs args)
