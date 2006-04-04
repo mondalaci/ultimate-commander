@@ -14,11 +14,11 @@ namespace UltimateCommander {
 		static Gdk.Color selected_row_bgcolor = new Gdk.Color(224, 224, 0);
 		static Gdk.Color invalid_encoding_color = new Gdk.Color(255, 0, 0);
 
-		static public Gdk.Color SelectedRowBgColor {
+		public static Gdk.Color SelectedRowBgColor {
 			get { return selected_row_bgcolor; }
 		}
 
-		static public Gdk.Color InvalidEncodingColor {
+		public static Gdk.Color InvalidEncodingColor {
 			get { return invalid_encoding_color; }
 		}
 
@@ -41,26 +41,18 @@ namespace UltimateCommander {
 
 		PanelListingConfigurator listing_configurator;
 		PanelSortingConfigurator sorting_configurator;
+		FileComparer comparer = new FileComparer();
 		InvalidEncodingNotifier invalid_encoding_notifier;
 		UnreadableDirectoryNotifier unreadable_directory_notifier;
 
 		public Panel(string path): base("panel_window")
 		{			
-          	view.Model = store;
+			view.Model = store;
 			listing_configurator = new PanelListingConfigurator(this);
 			sorting_configurator = new PanelSortingConfigurator(this);
 			invalid_encoding_notifier = new InvalidEncodingNotifier();
 			unreadable_directory_notifier = new UnreadableDirectoryNotifier();
 
-			PanelColumnType[] columntypes = {
-				PanelColumnType.Toggle,
-				PanelColumnType.AttributeIcon,
-				PanelColumnType.MimeIcon,
-				PanelColumnType.Filename,
-				PanelColumnType.Size
-			};
-
-			ListingConfigurator.SetListing(columntypes);
 			ChangeDirectory(path);
 			RefreshButtonStates();
 		}
@@ -77,8 +69,12 @@ namespace UltimateCommander {
 			get { return listing_configurator; }
 		}
 
-		public PanelSortingConfigurator SortConfigurator {
+		public PanelSortingConfigurator SortingConfigurator {
 			get { return sorting_configurator; }
+		}
+
+		public FileComparer Comparer {
+			get { return comparer; }
 		}
 
 		public bool Active {
@@ -95,7 +91,7 @@ namespace UltimateCommander {
 			}
 		}        
 
-		void ChangeDirectory(string path)
+		public void ChangeDirectory(string path)
 		{
 			string tla_path = GetTopLevelAccessiblePath(path);
 
@@ -123,6 +119,8 @@ namespace UltimateCommander {
 				files = File.ListDirectory(CurrentDirectory);
 			}
 			
+			Array.Sort(files, 1, files.Length-1, comparer);
+
 			foreach (File file in files) {
 				if (!file.HasValidEncoding) {
 					invalid_encodings_counter += 1;
@@ -269,17 +267,17 @@ namespace UltimateCommander {
 			return full_path;
 		}
 
-     	string CurrentDirectory {
+     	public string CurrentDirectory {
 			get { return current_directory; }
 		}
 
 		TreeIter CurrentIter {
 			get {
-        			TreePath path;
+       			TreePath path;
 	           	TreeViewColumn column;
-    	       		TreeIter iter;
+   	       		TreeIter iter;
 
-        	   		view.GetCursor(out path, out column);
+       	   		view.GetCursor(out path, out column);
            		store.GetIter(out iter, path);
            		return iter;
 			}
@@ -289,7 +287,7 @@ namespace UltimateCommander {
 			get {
 				TreeIter iter = CurrentIter;
 	           	File file = (File)store.GetValue(iter, 0);
-    	       		return file;
+   	       		return file;
 			}
         }
 
@@ -414,7 +412,7 @@ namespace UltimateCommander {
 
 		void OnSetSortingButtonToggled(object toggletoolbutton, EventArgs args)
 		{
-			ShowAndSelectConfigurator((ToggleToolButton)toggletoolbutton, SortConfigurator);
+			ShowAndSelectConfigurator((ToggleToolButton)toggletoolbutton, SortingConfigurator);
 		}
 
 		void OnSetFilteringButtonToggled(object toggletoolbutton, EventArgs args)

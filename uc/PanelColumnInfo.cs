@@ -3,25 +3,9 @@ using Gtk;
 
 namespace UltimateCommander {
 
-	public enum CellRendererType {
-		Toggle,
-		Pixbuf,
-		Text
-	}
-
 	public delegate void CellRendererManipulator(CellRenderer cellrenderer, File file);
 
-	public class PanelColumnInfo {
-
-		static public PanelColumnInfo GetColumnInfo(PanelColumnType columntype)
-		{
-			foreach (PanelColumnInfo columninfo in AllColumnInfos) {
-				if (columntype == columninfo.ColumnType) {
-					return columninfo;
-				}
-			}
-			return null;
-		}
+	public class PanelColumnInfo: PanelConfiguratorInfo {
 
 		PanelColumnType columntype;
 		CellRendererType cellrenderertype;
@@ -30,9 +14,9 @@ namespace UltimateCommander {
 		string shortname;
 
 		public PanelColumnInfo(PanelColumnType columntype_arg,
-						  CellRendererType cellrenderertype_arg,
-					      CellRendererManipulator cellrenderermanipulator_arg,
-					      string longname_arg, string shortname_arg)
+							   CellRendererType cellrenderertype_arg,
+							   CellRendererManipulator cellrenderermanipulator_arg,
+							   string longname_arg, string shortname_arg)
 		{
 			columntype = columntype_arg;
 			cellrenderertype = cellrenderertype_arg;
@@ -61,13 +45,23 @@ namespace UltimateCommander {
 			get { return shortname; }
 		}
 
-		static public PanelColumnInfo[] AllColumnInfos {
-			get { return column_infos; }
+		public static PanelColumnInfo GetInfo(PanelColumnType columntype)
+		{
+			foreach (PanelColumnInfo info in AllColumnInfos) {
+				if (columntype == info.ColumnType) {
+					return info;
+				}
+			}
+			return null;
 		}
 
-		// The list of all ColumnInfos, the most used one first
+		public static PanelColumnInfo[] AllColumnInfos {
+			get { return all_infos; }
+		}
 
-		static PanelColumnInfo[] column_infos = {
+		// The PanelColumnInfo instances
+
+		static PanelColumnInfo[] all_infos = {
 			// Toggle
 			new PanelColumnInfo(PanelColumnType.Toggle, CellRendererType.Toggle,
 				new CellRendererManipulator(OnSetCellRendererToggle),
@@ -142,7 +136,7 @@ namespace UltimateCommander {
 				"Inode", "Inode")
 		};
 
-		// CellRendererManipulator delegates
+		// The CellRendererManipulator delegates
 
 		static void OnSetCellRendererToggle(CellRenderer cellrenderer, File file)
 		{

@@ -26,23 +26,23 @@ namespace UltimateCommander {
 
 	public class PanelColumn: TreeViewColumn {
 
-		PanelColumnInfo columninfo;
-		CellRendererManipulator cellrenderermanipulator;
+		CellRendererManipulator manipulator;
 		Panel panel;
 
 		public PanelColumn(PanelColumnType type, Panel panel_arg): base()
 		{
 			panel = panel_arg;
+			PanelColumnInfo info = null;
 
-			foreach (PanelColumnInfo columninfo_i in PanelColumnInfo.AllColumnInfos) {
-				if (columninfo_i.ColumnType == type) {
-					columninfo = columninfo_i;
+			foreach (PanelColumnInfo info_i in PanelColumnInfo.AllColumnInfos) {
+				if (info_i.ColumnType == type) {
+					info = info_i;
 					break;
 				}
 			}
 
 			CellRenderer cellrenderer;
-			switch (columninfo.CellRendererType) {
+			switch (info.CellRendererType) {
 			case CellRendererType.Toggle:
 				cellrenderer = new CellRendererToggle();
 				((CellRendererToggle)cellrenderer).Toggled += new ToggledHandler(OnToggled);
@@ -55,32 +55,28 @@ namespace UltimateCommander {
 				break;
 			}
 			
-			cellrenderermanipulator = columninfo.CellRendererManipulator;
+			manipulator = info.CellRendererManipulator;
 			PackStart(cellrenderer, true);
 			SetCellDataFunc(cellrenderer, CellDataFunc);
 			Resizable = true;
-			Title = (string)columninfo.ShortName;
+			Title = (string)info.ShortName;
 		}
 
-		public PanelColumnInfo ColumnInfo {
-			get { return columninfo; }
-		}
-
-		void CellDataFunc(TreeViewColumn column, CellRenderer cellrenderer,
+		void CellDataFunc(TreeViewColumn column, CellRenderer renderer,
 						  TreeModel model, TreeIter iter)
 		{
            	File file = (File)model.GetValue(iter, 0);
-			cellrenderer.CellBackgroundGdk =
+			renderer.CellBackgroundGdk =
 				file.Selected ? Panel.SelectedRowBgColor : 
 				Widget.DefaultStyle.BaseColors[(int)StateType.Normal];
-			cellrenderermanipulator(cellrenderer, file);
+			manipulator(renderer, file);
 		}
 
 		void OnToggled(object o, ToggledArgs args)
 		{
 			TreeIter iter;
 			if (panel.Store.GetIter(out iter, new TreePath(args.Path))) {
-	           	File file = (File)panel.Store.GetValue(iter, 0);
+				File file = (File)panel.Store.GetValue(iter, 0);
 				file.Selected = !file.Selected;
 			}
 		}

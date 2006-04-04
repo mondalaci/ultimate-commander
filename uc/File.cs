@@ -83,7 +83,7 @@ namespace UltimateCommander {
 		MUN.Stat stat;
 		MUN.Stat lstat;
 		SymbolicLinkType linktype;
-		string linkpath;
+		string linkpath = null;
 		
 		public File(string fullpath_arg)
 		{
@@ -112,6 +112,11 @@ namespace UltimateCommander {
 					linktype = SymbolicLinkType.ValidLink;
 				} else {
 					linktype = SymbolicLinkType.DanglingLink;
+					stat.st_size = 0;
+					stat.st_uid = 0;
+					stat.st_gid = 0;
+					stat.st_nlink = 0;
+					stat.st_ino = 0;
 				}
 			} else {
 				stat = lstat;
@@ -181,7 +186,7 @@ namespace UltimateCommander {
 			}
 		}
 
-		// Often used VFS properties
+		// Often used properties
 
 		public string FullPath {
 			get { return fullpath; }
@@ -210,10 +215,31 @@ namespace UltimateCommander {
 		}
 
 		public string SizeString {
-			get { return CheckDanglingLink(stat.st_size); }
+			get {
+				long size = stat.st_size;
+				string postfix = "";
+
+				if (size > 999999999) {
+					postfix = "M";
+					size /= 1024 * 1024;
+				} else if (size > 9999999) {
+					postfix = "K";
+					size /= 1024;
+				}
+				
+				string size_str = size.ToString();
+				string triplet_str = "";
+				int length = size_str.Length;
+				for (int i=length; i>0; i-=3) {
+					triplet_str = size_str.Substring(i-3 < 0 ? 0 : i-3, i>3 ? 3 : i) +
+						(i == length ? "" : " ") + triplet_str;
+				}
+
+				return CheckDanglingLink(triplet_str + postfix);
+			}
 		}
 
-		// Protection properties
+		// Permission properties
 
 		public MUN.FilePermissions Permissions {
 			get { return stat.st_mode; }
@@ -257,7 +283,7 @@ namespace UltimateCommander {
 			}
 		}
 
-		// Owner / Group properties
+		// Owner and Group properties
 
 		public uint OwnerUserId {
 			get { return stat.st_uid; }
@@ -301,7 +327,7 @@ namespace UltimateCommander {
 			get { return CheckDanglingLink(stat.st_gid); }
 		}
 
-		// Date properties
+		// Time properties
 
 		public long LastAccessTime {
 			get { return stat.st_atime; }
@@ -327,7 +353,7 @@ namespace UltimateCommander {
 			get { return GetDateTimeString(LastWriteTime); }
 		}
 
-		// Rarely used VFS properties
+		// Rarely used properties
 
 		public ulong LinkCount {
 			get { return stat.st_nlink; }
