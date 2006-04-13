@@ -17,6 +17,7 @@ namespace UltimateCommander {
 		// Config variables
 		public static string GuiPath;
 		public static string GladeFileName;
+
 		public static MainWindow MainWindow;
 
      	public static void Main(string[] args)
