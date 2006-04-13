@@ -10,17 +10,20 @@ namespace UltimateCommander {
 		PanelColumnType columntype;
 		CellRendererType cellrenderertype;
 		CellRendererManipulator cellrenderermanipulator;
+        float alignment;
 		string longname;
 		string shortname;
 
 		public PanelColumnInfo(PanelColumnType columntype_arg,
 							   CellRendererType cellrenderertype_arg,
 							   CellRendererManipulator cellrenderermanipulator_arg,
+                               float alignment_arg,
 							   string longname_arg, string shortname_arg)
 		{
 			columntype = columntype_arg;
 			cellrenderertype = cellrenderertype_arg;
 			cellrenderermanipulator = cellrenderermanipulator_arg;
+			alignment = alignment_arg;
 			longname = longname_arg;
 			shortname = shortname_arg;
 		}
@@ -37,6 +40,10 @@ namespace UltimateCommander {
 			get { return cellrenderermanipulator; }
 		}
 
+		public float Alignment {
+		    get { return alignment; }
+		}
+		
 		public string LongName {
 			get { return longname; }
 		}
@@ -64,75 +71,75 @@ namespace UltimateCommander {
 		static PanelColumnInfo[] all_infos = {
 			// Toggle
 			new PanelColumnInfo(PanelColumnType.Toggle, CellRendererType.Toggle,
-				new CellRendererManipulator(OnSetCellRendererToggle),
+				new CellRendererManipulator(OnSetCellRendererToggle), 0,
 				"Selected Toggle", "S"),
 			// Mime Icon
 			new PanelColumnInfo(PanelColumnType.MimeIcon, CellRendererType.Pixbuf,
-				new CellRendererManipulator(OnSetCellRendererMimeIcon),
+				new CellRendererManipulator(OnSetCellRendererMimeIcon), 0,
 				"Mime Icon", "M"),
 			// Attribute Icon
 			new PanelColumnInfo(PanelColumnType.AttributeIcon, CellRendererType.Pixbuf,
-				new CellRendererManipulator(OnSetCellRendererAttributeIcon),
+				new CellRendererManipulator(OnSetCellRendererAttributeIcon), 0,
 				"Attribute Icon", "A"),
 			// Filename
 			new PanelColumnInfo(PanelColumnType.Filename, CellRendererType.Text,
-				new CellRendererManipulator(OnSetCellRendererFilename),
+				new CellRendererManipulator(OnSetCellRendererFilename), 0,
 				"Filename", "Filename"),
 			// Size
 			new PanelColumnInfo(PanelColumnType.Size, CellRendererType.Text,
-				new CellRendererManipulator(OnSetCellRendererSize),
+				new CellRendererManipulator(OnSetCellRendererSize), 1,
 				"Size", "Size"),
 			// Permissions
 			new PanelColumnInfo(PanelColumnType.SymbolicPermissions, CellRendererType.Text,
-				new CellRendererManipulator(OnSetCellRendererSymbolicPermissions),
+				new CellRendererManipulator(OnSetCellRendererSymbolicPermissions), 0,
 				"Permissions", "Permissions"),
 			// Owner User
 			new PanelColumnInfo(PanelColumnType.OwnerUser, CellRendererType.Text,
-				new CellRendererManipulator(OnSetCellRendererOwnerUser),
+				new CellRendererManipulator(OnSetCellRendererOwnerUser), 0,
 				"Owner Name", "Owner"),
 			// Owner User ID
 			new PanelColumnInfo(PanelColumnType.OwnerUserId, CellRendererType.Text,
-				new CellRendererManipulator(OnSetCellRendererOwnerUserId),
+				new CellRendererManipulator(OnSetCellRendererOwnerUserId), 1,
 				"Owner ID", "UID"),
 			// Owner Group
 			new PanelColumnInfo(PanelColumnType.OwnerGroup, CellRendererType.Text,
-				new CellRendererManipulator(OnSetCellRendererOwnerGroup),
+				new CellRendererManipulator(OnSetCellRendererOwnerGroup), 0,
 				"Group Name", "Group"),
 			// Owner Group ID
 			new PanelColumnInfo(PanelColumnType.OwnerGroupId, CellRendererType.Text,
-				new CellRendererManipulator(OnSetCellRendererOwnerGroupId),
+				new CellRendererManipulator(OnSetCellRendererOwnerGroupId), 1,
 				"Group ID", "GID"),
 			// Last Access Time
 			new PanelColumnInfo(PanelColumnType.LastAccessTime, CellRendererType.Text,
-				new CellRendererManipulator(OnSetCellRendererLastAccessTime),
+				new CellRendererManipulator(OnSetCellRendererLastAccessTime), 0,
 				"Last Access Time", "Last Access Time"),
 			// Last Status Change Time
 			new PanelColumnInfo(PanelColumnType.LastStatusChangeTime, CellRendererType.Text,
-				new CellRendererManipulator(OnSetCellRendererLastStatusChangeTime),
+				new CellRendererManipulator(OnSetCellRendererLastStatusChangeTime), 0,
 				"Last Status Change Time", "Last Change Time"),
 			// Last Write Time
 			new PanelColumnInfo(PanelColumnType.LastWriteTime, CellRendererType.Text,
-				new CellRendererManipulator(OnSetCellRendererLastWriteTime),
+				new CellRendererManipulator(OnSetCellRendererLastWriteTime), 0,
 				"Last Write Time", "Last Write Time"),
 			// Mime Type
 			new PanelColumnInfo(PanelColumnType.MimeType, CellRendererType.Text,
-				new CellRendererManipulator(OnSetCellRendererMimeType),
+				new CellRendererManipulator(OnSetCellRendererMimeType), 0,
 				"Mime Type", "Mime Type"),
 			// Description
 			new PanelColumnInfo(PanelColumnType.Description, CellRendererType.Text,
-				new CellRendererManipulator(OnSetCellRendererDescription),
+				new CellRendererManipulator(OnSetCellRendererDescription), 0,
 				"Description", "Description"),
 			// Link Path
 			new PanelColumnInfo(PanelColumnType.LinkPath, CellRendererType.Text,
-				new CellRendererManipulator(OnSetCellRendererLinkPath),
+				new CellRendererManipulator(OnSetCellRendererLinkPath), 0,
 				"Link Path", "Link Path"),
 			// Link Count
 			new PanelColumnInfo(PanelColumnType.LinkCount, CellRendererType.Text,
-				new CellRendererManipulator(OnSetCellRendererLinkCount),
+				new CellRendererManipulator(OnSetCellRendererLinkCount), 1,
 				"Link Count", "Link Count"),
 			// Inode
 			new PanelColumnInfo(PanelColumnType.Inode, CellRendererType.Text,
-				new CellRendererManipulator(OnSetCellRendererInode),
+				new CellRendererManipulator(OnSetCellRendererInode), 1,
 				"Inode", "Inode")
 		};
 

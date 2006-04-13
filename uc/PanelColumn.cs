@@ -32,16 +32,9 @@ namespace UltimateCommander {
 		public PanelColumn(PanelColumnType type, Panel panel_arg): base()
 		{
 			panel = panel_arg;
-			PanelColumnInfo info = null;
-
-			foreach (PanelColumnInfo info_i in PanelColumnInfo.AllColumnInfos) {
-				if (info_i.ColumnType == type) {
-					info = info_i;
-					break;
-				}
-			}
-
+			PanelColumnInfo info = PanelColumnInfo.GetInfo(type);
 			CellRenderer cellrenderer;
+
 			switch (info.CellRendererType) {
 			case CellRendererType.Toggle:
 				cellrenderer = new CellRendererToggle();
@@ -56,6 +49,7 @@ namespace UltimateCommander {
 			}
 			
 			manipulator = info.CellRendererManipulator;
+            cellrenderer.Xalign = info.Alignment;
 			PackStart(cellrenderer, true);
 			SetCellDataFunc(cellrenderer, CellDataFunc);
 			Resizable = true;
