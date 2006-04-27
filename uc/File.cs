@@ -59,6 +59,11 @@ namespace UltimateCommander {
 			return stringbuilder.ToString();
 		}
 
+        public static bool IsFilePathExists(string path)
+        {
+            return MUN.Syscall.access(path, MUN.AccessModes.F_OK) == 0;
+        }
+
 		// If the actual maximum path length is greater
 		// than this value, we're in some serious shit.
 		static int max_path_length = 512;  
@@ -70,13 +75,13 @@ namespace UltimateCommander {
 		static AttributeIcons attribute_icons = new AttributeIcons();
 
 		static Gdk.Pixbuf updir_icon = 
-			UltimateCommander.LoadPixbuf("panel-navigate-up-one-directory.png");
+			Util.LoadIcon("panel-navigate-up-one-directory.png");
 		static Gdk.Pixbuf directory_icon =
-			UltimateCommander.LoadPixbuf("folder.png");
-		static Gdk.Pixbuf fifo_icon = Util.LoadIcon("gnome-fs-fifo");
-		static Gdk.Pixbuf socket_icon = Util.LoadIcon("gnome-fs-socket");
-		static Gdk.Pixbuf chardev_icon = Util.LoadIcon("gnome-fs-chardev");
-		static Gdk.Pixbuf blockdev_icon = Util.LoadIcon("gnome-fs-blockdev");
+			Util.LoadIcon("folder.png");
+		static Gdk.Pixbuf fifo_icon = Util.LoadGtkIcon("gnome-fs-fifo");
+		static Gdk.Pixbuf socket_icon = Util.LoadGtkIcon("gnome-fs-socket");
+		static Gdk.Pixbuf chardev_icon = Util.LoadGtkIcon("gnome-fs-chardev");
+		static Gdk.Pixbuf blockdev_icon = Util.LoadGtkIcon("gnome-fs-blockdev");
 
 		bool selected;
 		string fullpath;
@@ -169,7 +174,7 @@ namespace UltimateCommander {
 											 		    new Gnome.Vfs.FileInfo(), MimeType,
 											 		    Gnome.IconLookupFlags.None,
 										 		    	out result_flags);
-					Gdk.Pixbuf icon = Util.LoadIcon(iconname);
+					Gdk.Pixbuf icon = Util.LoadGtkIcon(iconname);
 					mime_to_icon_hash.Add(MimeType, icon);
 					return icon;
 				} else {
@@ -190,6 +195,10 @@ namespace UltimateCommander {
 
 		public string FullPath {
 			get { return fullpath; }
+		}
+
+		public string DirectoryName {
+			get { return UnixPath.GetDirectoryName(fullpath); }
 		}
 
 		public string Name {
@@ -451,6 +460,18 @@ namespace UltimateCommander {
 
 		public bool IsSearchable {
 			get { return IsDirectory && MUN.Syscall.access(FullPath, MUN.AccessModes.X_OK) == 0; }
+		}
+
+		public bool IsDirectoryReadable {
+			get { return MUN.Syscall.access(DirectoryName, MUN.AccessModes.R_OK) == 0; }
+		}
+
+		public bool IsDirectoryWritable {
+			get { return MUN.Syscall.access(DirectoryName, MUN.AccessModes.W_OK) == 0; }
+		}
+
+		public bool IsDirectorySearchable {
+			get { return MUN.Syscall.access(DirectoryName, MUN.AccessModes.X_OK) == 0; }
 		}
 
 		// Unix properties

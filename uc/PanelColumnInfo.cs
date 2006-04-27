@@ -82,7 +82,7 @@ namespace UltimateCommander {
 				new CellRendererManipulator(OnSetCellRendererAttributeIcon), 0,
 				"Attribute Icon", "A"),
 			// Filename
-			new PanelColumnInfo(PanelColumnType.Filename, CellRendererType.Text,
+			new PanelColumnInfo(PanelColumnType.FileName, CellRendererType.Text,
 				new CellRendererManipulator(OnSetCellRendererFilename), 0,
 				"Filename", "Filename"),
 			// Size
@@ -155,8 +155,8 @@ namespace UltimateCommander {
 		{
 			CellRendererText cellrenderertext = (CellRendererText)cellrenderer;
 			cellrenderertext.Text = file.NameString;
-			cellrenderertext.ForegroundGdk =
-				file.HasValidEncoding ? Widget.DefaultStyle.Black : Panel.InvalidEncodingColor;
+			cellrenderertext.ForegroundGdk = file.HasValidEncoding ?
+			    Widget.DefaultStyle.Black : Config.InvalidFileNameEncodingColor;
 		}
 
 		static void OnSetCellRendererSize(CellRenderer cellrenderer, File file)

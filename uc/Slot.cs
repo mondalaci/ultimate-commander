@@ -5,70 +5,33 @@ using Gtk;
 
 namespace UltimateCommander {
 
-	public class Slot: GladeContainer {
+	public class Slot: GladeWidget {
 
-		const string active_header_colorstring = "#ffffff";
-		const string inactive_header_colorstring = "#000000";
-		
-		static ArrayList slots = new ArrayList();
-		
-		[Glade.Widget] Label header_label;
+		[Glade.Widget] Label header;
+		[Glade.Widget] EventBox view_slot;
 
 		Frame frame;
-
-		bool active = false;
-		string title = "";
-
-		public Slot(): base("slot_window")
+        View view;
+        
+		public Slot(View view_arg): base("slot_widget")
 		{
-			slots.Add(this);
-		}
-
-		public Slot(View view): base("slot_window")
-		{
-			slots.Add(this);
-			SetView(view);
-		}
-
-		~Slot()
-		{
-			slots.Remove(this);
-		}
-
-		public void SetView(View view)
-		{
-			SetChild(view);
+            view = view_arg;
+			view_slot.Add(view);
 			view.Slot = this;
 		}
 
 		public void Select()
 		{
-			Active = true;
+            view.Select();
 		}
 
 		public string Title {
-			get {
-				return title;
-			}
+			get { return header.Text; }
 			set {
 				if (this != null) {
-					title = value;
-					RefreshHeader();
+					header.Text = value;
+					Redraw();
 				}
-			}
-		}
-					
-		public bool Active {
-			get {
-				return active;
-			}
-			set {
-				if (value == true)
-					foreach (Slot slot in slots)
-						slot.Active = false;
-				
-				active = value;
-				RefreshHeader();
 			}
 		}
 
@@ -77,20 +40,24 @@ namespace UltimateCommander {
 			set { frame = value; }
 		}
 
-		void RefreshHeader()
+		public View View {
+			get { return view; }
+		}
+
+		public void Redraw()
 		{
 			string header_colorstring;
 			Color header_bgcolor;
 
-			if (active) {
-				header_colorstring = active_header_colorstring;
+			if (frame != null && frame.Selected) {
+				header_colorstring = Config.ActiveSlotHeaderColorString;
 				header_bgcolor = Widget.DefaultStyle.BaseColors[(int)StateType.Selected];
 			} else {
-				header_colorstring = inactive_header_colorstring;
+				header_colorstring = Config.InactiveSlotHeaderColorString;
 				header_bgcolor = Widget.DefaultStyle.BaseColors[(int)StateType.Insensitive];
 			}
 
-			header_label.Markup = GetFgPangoMarkup(header_colorstring, title);
+			header.Markup = GetFgPangoMarkup(header_colorstring, header.Text);
 			topwidget.ModifyBg(StateType.Normal, header_bgcolor);
 		}
 
@@ -115,7 +82,7 @@ namespace UltimateCommander {
 
 		void OnButtonPressEvent(object o, ButtonPressEventArgs args)
 		{
-			Active = true;
+			Select();
 		}
 	}
 }

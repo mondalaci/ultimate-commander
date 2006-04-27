@@ -8,13 +8,13 @@ namespace UltimateCommander {
 		
 		[Glade.Widget] protected TextView textview;
 		[Glade.Widget] protected Image icon;
+
 		protected TextTag bold_tag;
 		protected TextTag red_tag;
 		
-		public Notifier(): base("notifier_window")
+		public Notifier(): base("notifier_widget")
 		{
-			textview.ModifyBase(StateType.Normal,
-				Widget.DefaultStyle.BaseColors[(int)StateType.Insensitive]);
+            Util.PaintWidgetBackgroundGray(textview);
 			red_tag = new TextTag("red");
 			red_tag.ForegroundGdk = new Gdk.Color(255, 0, 0);
 			textview.Buffer.TagTable.Add(red_tag);

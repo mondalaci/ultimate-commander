@@ -15,7 +15,7 @@ namespace UltimateCommander {
 				PanelColumnType.Toggle,
 				PanelColumnType.AttributeIcon,
 				PanelColumnType.MimeIcon,
-				PanelColumnType.Filename,
+				PanelColumnType.FileName,
 				PanelColumnType.Size
 			};
 

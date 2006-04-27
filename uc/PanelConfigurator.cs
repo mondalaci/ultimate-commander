@@ -19,7 +19,7 @@ namespace UltimateCommander {
 		string name;
 		
 		public PanelConfigurator(Panel panel_arg, string name_arg):
-			base("panel_configurator_window")
+			base("panel_configurator_widget")
 		{
 			panel = panel_arg;
 			name = name_arg;

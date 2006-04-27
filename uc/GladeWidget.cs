@@ -1,5 +1,6 @@
 using System;
 using Gtk;
+using Glade;
 
 namespace UltimateCommander {
 
@@ -9,7 +10,7 @@ namespace UltimateCommander {
 
 		public GladeWidget(string window_name): base()
 		{
-			Glade.XML glade_xml = new Glade.XML(UltimateCommander.GladeFileName, window_name, null);
+			Glade.XML glade_xml = new Glade.XML(Config.GladeFileName, window_name, null);
 			glade_xml.Autoconnect(this);
 			Gtk.Window window = (Gtk.Window)glade_xml.GetWidget(window_name);
 			window.Remove(topwidget);

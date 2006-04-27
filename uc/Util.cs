@@ -1,25 +1,34 @@
 using System;
+using Mono.Unix;
 using Gdk;
+using Gtk;
 
 namespace UltimateCommander {
 
 	public static class Util {
 
-		static string home_directory_path;
-		static int icon_size = 16;
-
-		public static void Initialize()
+		public static Gdk.Pixbuf LoadGtkIcon(string iconname)
 		{
-			home_directory_path = Environment.GetEnvironmentVariable("HOME");
+			return Gtk.IconTheme.Default.LoadIcon(iconname,
+			    Config.IconSize, Gtk.IconLookupFlags.NoSvg);
 		}
 
-		public static Gdk.Pixbuf LoadIcon(string iconname)
+		public static Pixbuf LoadIcon(string filename)
 		{
-			return Gtk.IconTheme.Default.LoadIcon(iconname, icon_size, Gtk.IconLookupFlags.NoSvg);
+			string filepath = UnixPath.Combine(Config.GuiPath, filename);
+			return new Pixbuf(filepath);
 		}
 
-		public static string HomeDirectoryPath {
-			get { return home_directory_path; }
-		}
+        public static void PaintWidgetBackgroundGray(Widget widget)
+        {
+            widget.ModifyBase(StateType.Normal,
+                Widget.DefaultStyle.BaseColors[(int)StateType.Insensitive]);
+        }
+
+        public static void PaintWidgetBackgroundWhite(Widget widget)
+        {
+            widget.ModifyBase(StateType.Normal,
+                Widget.DefaultStyle.BaseColors[(int)StateType.Normal]);
+        }
 	}
 }

@@ -12,6 +12,13 @@ namespace UltimateCommander {
 
 	public class InfoBar: GladeWidget {
 
+		[Glade.Widget] Image icon;
+		[Glade.Widget] Label label;
+
+		public InfoBar(): base("infobar_widget")
+		{
+		}
+
 		public static void Notice(string notice)
 		{
 			MainWindow.InfoBar.PrintInfo(InfoType.Notice, notice);
@@ -27,40 +34,21 @@ namespace UltimateCommander {
 			MainWindow.InfoBar.PrintInfo(InfoType.Error, error);
 		}
 
-		[Glade.Widget] Image icon;
-		[Glade.Widget] Label label;
-
-		public InfoBar(): base("infobar_window")
-		{
-		}
-
 		void PrintInfo(InfoType type, string info)
 		{
-			string icon_name = "gtk-info";
-
 			switch (type) {
 			case InfoType.Warning:
-				icon_name = "gtk-dialog-warning";
+	   		    icon.Pixbuf = Util.LoadGtkIcon("gtk-dialog-warning");
 				break;
 			case InfoType.Error:
-				icon_name = "gtk-dialog-error";
+	   		    icon.Pixbuf = Util.LoadGtkIcon("gtk-dialog-error");
 				break;
+            default:  // InfoType.Notice
+	   		    icon.Pixbuf = Util.LoadGtkIcon("gtk-info");
+			    break;
 			}
 
-			icon.Pixbuf = Util.LoadIcon(icon_name);
 			label.Text = info;
-		}
-	
-		void OnForwardHistoryButtonClicked(object sender, EventArgs args)
-		{
-		}
-
-		void OnBackwardHistoryButtonClicked(object sender, EventArgs args)
-		{
-		}
-
-		void OnExpanderButtonClicked(object sender, EventArgs args)
-		{
 		}
 	}
 }

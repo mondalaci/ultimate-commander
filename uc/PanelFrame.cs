@@ -3,40 +3,15 @@ using Gtk;
 
 namespace UltimateCommander {
 
-	public enum PanelFramePosition {
-		Left,
-		Right
-	};
-
 	public class PanelFrame: Frame {
 
 		Panel panel;
-		PanelFramePosition position;
-		PanelFrame other_frame;
 
-		public PanelFrame(string path, PanelFramePosition position_arg): base()
+		public PanelFrame(string path): base()
 		{
-			position = position_arg;
 			panel = new Panel(path);
-			AppendView(panel, FrameName + " Panel");
-		}
-
-		public void ShowConfigurator(PanelConfigurator configurator, bool show)
-		{
-			if (show) {
-				string title = "Set " + OtherFrameName + " Panel " + configurator.Name;
-				AppendView(configurator, title);
-			} else {
-				RemoveView(configurator);
-			}
-
-			ShowAll();
-			SelectLastPage();
-		}
-
-		public PanelFrame OtherFrame {
-			set { other_frame = value; }
-			get { return other_frame; }
+			string title = String.Format("{0} Panel", FrameSide);
+			AppendView(panel, title);
 		}
 
 		public Panel Panel {
@@ -44,7 +19,34 @@ namespace UltimateCommander {
 		}
 
 		public Panel OtherPanel {
-			get { return OtherFrame.Panel; }
+			get { return OtherPanelFrame.Panel; }
+		}
+
+		public string FrameSide {
+			get { return MainWindow.LeftPanelFrame == this ? "Left" : "Right"; }
+		}
+
+		public string OtherFrameSide {
+			get { return MainWindow.LeftPanelFrame == this ? "Right" : "Left"; }
+		}
+
+        public PanelFrame OtherPanelFrame {
+            get {
+                return MainWindow.LeftPanelFrame == this ?
+                    MainWindow.RightPanelFrame : MainWindow.LeftPanelFrame;
+            }
+        }
+		public void ShowConfigurator(PanelConfigurator configurator, bool show)
+		{
+			if (show) {
+				string title = String.Format("{0} Panel {1}", OtherFrameSide, configurator.Name);
+				AppendView(configurator, title);
+			    ShowAll();
+			    SelectLastPage();
+			} else {
+				RemoveView(configurator);
+                OtherPanelFrame.Select();
+			}
 		}
 
 		void SelectLastPage()
@@ -52,26 +54,6 @@ namespace UltimateCommander {
 			Page = NPages -1;
 			Slot slot = (Slot)GetNthPage(NPages-1);
 			slot.Select();
-		}
-
-		string FrameName {
-			get {
-				if (position == PanelFramePosition.Left) {
-					return "Left";
-				} else /* position == PanelFramePosition.Right */ {
-					return "Right";
-				}
-			}
-		}
-
-		string OtherFrameName {
-			get {
-				if (position == PanelFramePosition.Left) {
-					return "Right";
-				} else /* position == PanelFramePosition.Right */ {
-					return "Left";
-				}
-			}
 		}
 	}
 }

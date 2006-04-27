@@ -1,17 +1,10 @@
 using System;
 using Gtk;
 using Glade;
-using Gnome.Vfs;
 
 namespace UltimateCommander {
 
 	public class MainWindow {
-
-		static InfoBar infobar = new InfoBar();
-
-		public static InfoBar InfoBar {
-			get { return infobar; }
-		}
 
 		[Glade.Widget] HPaned hpaned;
 		[Glade.Widget] Gtk.Window main_window;
@@ -21,38 +14,53 @@ namespace UltimateCommander {
 		int width = 0;
 		int old_width = 0;
 
+        static PanelFrame left_panel_frame;
+        static PanelFrame right_panel_frame;
+		static InfoBar infobar = new InfoBar();
+        static Frame active_frame;
+
 		public MainWindow()
 		{
-			Glade.XML glade_xml =
-				new Glade.XML(UltimateCommander.GladeFileName, "main_window", null);
+			Glade.XML glade_xml = new Glade.XML(Config.GladeFileName, "main_window", null);
 			glade_xml.Autoconnect(this);
 
-			string initial_path = ".";
-
-			PanelFrame left_panel_frame = new PanelFrame(initial_path, PanelFramePosition.Left);
-			PanelFrame right_panel_frame = new PanelFrame(initial_path, PanelFramePosition.Right);
-			left_panel_frame.OtherFrame = right_panel_frame;
-			right_panel_frame.OtherFrame = left_panel_frame;
-
+			left_panel_frame = new PanelFrame(Config.InitialPath);
 			hpaned.Add1(left_panel_frame);
+
+			right_panel_frame = new PanelFrame(Config.InitialPath);
 			hpaned.Add2(right_panel_frame);
 
 			ResizePanes();
-
 			infobar_slot.Add(infobar);
 			InfoBar.Notice("Ultimate Commander started.");
 
 			main_window.ShowAll();
 		}
 
-		/*public Panel ActivePanel {
-			get {
-				if (panel1.Active)
-					return panel1;
-				else
-					return panel2;
-			}
-		}*/
+        public static PanelFrame LeftPanelFrame {
+            get { return left_panel_frame; }
+        }
+
+        public static PanelFrame RightPanelFrame {
+            get { return right_panel_frame; }
+        }
+
+        public static Frame ActiveFrame {
+            get { return active_frame; }
+            set { active_frame = value; }
+        }
+
+        public static Panel LeftPanel {
+            get { return left_panel_frame.Panel; }
+        }
+
+        public static Panel RightPanel {
+            get { return right_panel_frame.Panel; }
+        }
+
+		public static InfoBar InfoBar {
+			get { return infobar; }
+		}
 
 		void ResizePanes()
 		{
@@ -76,44 +84,35 @@ namespace UltimateCommander {
 			}
 		}
 
-		void OnWindowCheckResize(object o, EventArgs args)
+		// Rename signal handlers
+		
+		void OnRenameButtonClicked(object sender, EventArgs args)
 		{
-			ResizePanes();
+            ((PanelFrame)ActiveFrame).Panel.StartRename();
 		}
 
-		void OnToolBarButtonEvent(object o, EventArgs args)
+		void OnRenameMenuItemActivate(object o, EventArgs args)
 		{
-			//ActivePanel.Active = true;
+            ((PanelFrame)ActiveFrame).Panel.StartRename();
 		}
 
+     	// Quit signal handers
+     	
      	void OnWindowDeleteEvent(object o, DeleteEventArgs args)
      	{
           	Gtk.Application.Quit();
      	}
 
-		void OnQuitMenuItemActivated(object o, EventArgs args)
+		void OnQuitMenuItemActivate(object o, EventArgs args)
 		{
 			Gtk.Application.Quit();
 		}
 
-		void OnCopyButtonClicked(object sender, EventArgs args)
+		// Other signal handlers
+		
+		void OnWindowCheckResize(object o, EventArgs args)
 		{
-		}
-
-		void OnMoveButtonClicked(object sender, EventArgs args)
-		{
-		}
-
-		void OnCreateDirectoryButtonClicked(object sender, EventArgs args)
-		{
-		}
-
-		void OnRenameButtonClicked(object sender, EventArgs args)
-		{
-		}
-
-		void OnDeleteButtonClicked(object sender, EventArgs args)
-		{
+			ResizePanes();
 		}
 	}
 }

@@ -18,22 +18,20 @@ namespace UltimateCommander {
 			set { slot = value; }
 		}
 
-		protected void Select()
+        public Frame Frame {
+            get { return slot.Frame; }
+        }
+        
+		public virtual void Select()
 		{
-			slot.Active = true;
+            slot.Frame.Select();
+		    slot.Redraw();
 		}
 
 		[GLib.ConnectBefore]
-		void OnViewButtonPressEvent(object o, ButtonPressEventArgs args)
+		void OnViewButtonPressEvent(object sender, ButtonPressEventArgs args)
 		{
 			Select();
 		}
-
-		[GLib.ConnectBefore]
-		void OnViewClicked(object o, EventArgs args)
-		{
-			//Select();
-		}
-		
 	}
 }
