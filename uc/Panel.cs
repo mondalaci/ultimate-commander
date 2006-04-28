@@ -370,9 +370,7 @@ namespace UltimateCommander {
         [GLib.ConnectBefore]
 		void OnPanelViewKeyPressEvent(object sender, KeyPressEventArgs args)
 		{
-            Gdk.EventKey evnt = args.Event;
-			Gdk.Key key = evnt.Key;
-            Gdk.ModifierType state = evnt.State;
+            Gdk.Key key = args.Event.Key;
 
 			if (key == Gdk.Key.Insert) {
 				InvertCurrentRow();
@@ -412,7 +410,7 @@ namespace UltimateCommander {
 
 		void OnSetSortingButtonToggled(object toggletoolbutton, EventArgs args)
 		{
-			OtherPanelFrame.ShowConfigurator(listing_configurator,
+			OtherPanelFrame.ShowConfigurator(sorting_configurator,
 			    ((ToggleToolButton)toggletoolbutton).Active);
 		}
 
