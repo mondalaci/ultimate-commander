@@ -3,12 +3,12 @@ using Gtk;
 
 namespace UltimateCommander {
 
-	public enum CellRendererType {
-		Toggle,
-		Pixbuf,
-		Text
-	}
+    public enum CellRendererType {
+        Toggle,
+        Pixbuf,
+        Text
+    }
 
-	public abstract class PanelConfiguratorInfo {
-	}
+    public abstract class PanelConfiguratorInfo {
+    }
 }

@@ -4,16 +4,16 @@ using Gtk;
 
 namespace UltimateCommander {
 
-	public class Frame: Notebook {
+    public class Frame: Notebook {
 
-		static ArrayList frames = new ArrayList();
+        static ArrayList frames = new ArrayList();
 
-		Frame(): base()
-		{
+        Frame(): base()
+        {
             frames.Add(this);
             SwitchPage += new SwitchPageHandler(OnSwitchPage);
-			ButtonPressEvent += new ButtonPressEventHandler(OnButtonPressEvent);
-		}
+            ButtonPressEvent += new ButtonPressEventHandler(OnButtonPressEvent);
+        }
 
         ~Frame()
         {
@@ -26,9 +26,9 @@ namespace UltimateCommander {
 
         public void Select()
         {
-			MainWindow.ActiveFrame = this;
-			foreach (Frame frame in frames) {
-				frame.Redraw();
+            MainWindow.ActiveFrame = this;
+            foreach (Frame frame in frames) {
+                frame.Redraw();
             }
         }
 
@@ -37,13 +37,13 @@ namespace UltimateCommander {
             CurrentView.Slot.Redraw();
         }
 
-		public void AppendView(View view, string text)
-		{
-			view.Slot.Frame = this;
-			Label label = new Label(text);
-			AppendPage(view.Slot, label);
-			RefreshTabs();
-		}
+        public void AppendView(View view, string text)
+        {
+            view.Slot.Frame = this;
+            Label label = new Label(text);
+            AppendPage(view.Slot, label);
+            RefreshTabs();
+        }
 
         public void SelectView(View view)
         {
@@ -52,33 +52,33 @@ namespace UltimateCommander {
             slot.Select();
         }
 
-		public void RemoveView(View view)
-		{
-			RemovePage(PageNum(view.Slot));
-			RefreshTabs();
-		}
+        public void RemoveView(View view)
+        {
+            RemovePage(PageNum(view.Slot));
+            RefreshTabs();
+        }
 
         View CurrentView {
             get { return ((Slot)GetNthPage(CurrentPage)).View; }
         }
 
-		void RefreshTabs()
-		{
-			ShowTabs = NPages > 1 ? true : false;
-		}
+        void RefreshTabs()
+        {
+            ShowTabs = NPages > 1 ? true : false;
+        }
 
-		[GLib.ConnectBefore]
-		void OnSwitchPage(object sender, SwitchPageArgs args)
-		{
-			int current_page = (int)args.PageNum;
-			Slot slot = (Slot)GetNthPage(current_page);
-			slot.Select();
-		}
+        [GLib.ConnectBefore]
+        void OnSwitchPage(object sender, SwitchPageArgs args)
+        {
+            int current_page = (int)args.PageNum;
+            Slot slot = (Slot)GetNthPage(current_page);
+            slot.Select();
+        }
 
-		[GLib.ConnectBefore]
-		void OnButtonPressEvent(object sender, ButtonPressEventArgs args)
-		{
-			CurrentView.Select();
-		}
-	}
+        [GLib.ConnectBefore]
+        void OnButtonPressEvent(object sender, ButtonPressEventArgs args)
+        {
+            CurrentView.Select();
+        }
+    }
 }

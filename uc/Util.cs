@@ -5,19 +5,19 @@ using Gtk;
 
 namespace UltimateCommander {
 
-	public static class Util {
+    public static class Util {
 
-		public static Gdk.Pixbuf LoadGtkIcon(string iconname)
-		{
-			return Gtk.IconTheme.Default.LoadIcon(iconname,
-			    Config.IconSize, Gtk.IconLookupFlags.NoSvg);
-		}
+        public static Gdk.Pixbuf LoadGtkIcon(string iconname)
+        {
+            return Gtk.IconTheme.Default.LoadIcon(iconname,
+                Config.IconSize, Gtk.IconLookupFlags.NoSvg);
+        }
 
-		public static Pixbuf LoadIcon(string filename)
-		{
-			string filepath = UnixPath.Combine(Config.GuiPath, filename);
-			return new Pixbuf(filepath);
-		}
+        public static Pixbuf LoadIcon(string filename)
+        {
+            string filepath = UnixPath.Combine(Config.GuiPath, filename);
+            return new Pixbuf(filepath);
+        }
 
         public static void PaintWidgetBackgroundGray(Widget widget)
         {
@@ -30,5 +30,5 @@ namespace UltimateCommander {
             widget.ModifyBase(StateType.Normal,
                 Widget.DefaultStyle.BaseColors[(int)StateType.Normal]);
         }
-	}
+    }
 }
