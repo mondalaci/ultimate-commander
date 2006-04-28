@@ -69,7 +69,7 @@ namespace UltimateCommander {
             Store.Clear();
             string prev_dir = CurrentDirectory;
             current_directory = path;
-            slot.Title = File.StringifyInvalidFileNameEncoding(CurrentDirectory);
+            Title = File.StringifyInvalidFileNameEncoding(CurrentDirectory);
             bool readable = pathdir.IsReadable;
             File[] files;
 

@@ -22,6 +22,11 @@ namespace UltimateCommander {
             get { return slot.Frame; }
         }
         
+        public string Title {
+            get { return Slot.Title; }
+            set { Slot.Title = value; }
+        }
+
         public virtual void Select()
         {
             slot.Frame.Select();

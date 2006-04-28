@@ -24,6 +24,8 @@ namespace UltimateCommander {
             AppendColumn(avail_view, CellRendererType.Toggle, OnSetAvailableCellToggle);
             AppendColumn(avail_view, CellRendererType.Text, OnSetAvailableCellColumnName);
             AppendColumn(used_view, CellRendererType.Text, OnSetUsedCellColumnName);
+        
+            Title = "Current listing preset: Default";
         }
 
         public void SetTypes(PanelColumnType[] types)
