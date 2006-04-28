@@ -13,6 +13,8 @@ namespace UltimateCommander {
 
     public class Panel: View {
                 
+        [Glade.Widget] ToggleToolButton listing_toggletoolbutton;
+        [Glade.Widget] ToggleToolButton sorting_toggletoolbutton;
         [Glade.Widget] ToolButton up_directory_button;
         [Glade.Widget] ToolButton home_directory_button;
         [Glade.Widget] EventBox view_slot;
@@ -120,6 +122,16 @@ namespace UltimateCommander {
 
         public FileComparer Comparer {
             get { return comparer; }
+        }
+
+        public void DisableListing()
+        {
+            listing_toggletoolbutton.Active = false;
+        }
+
+        public void DisableSorting()
+        {
+            sorting_toggletoolbutton.Active = false;
         }
 
         public override void Select()

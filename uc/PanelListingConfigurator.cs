@@ -84,6 +84,7 @@ namespace UltimateCommander {
 
         protected override void OnOkButtonClicked(object sender, EventArgs args)
         {
+            PanelFrame.OtherPanel.DisableListing();
         }
     }
 }

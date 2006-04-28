@@ -33,6 +33,10 @@ namespace UltimateCommander {
             get { return name; }
         }
 
+        public PanelFrame PanelFrame {
+            get { return (PanelFrame)Frame; }
+        }
+
         protected abstract void Synchronize();
 
         protected void AppendColumn(TreeView view, CellRendererType cellrenderertype,
