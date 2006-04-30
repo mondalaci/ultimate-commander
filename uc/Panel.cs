@@ -311,9 +311,9 @@ namespace UltimateCommander {
                 statusbar.CursorVisible = value;
                 
                 if (value) {
-                    Util.PaintWidgetBackgroundWhite(statusbar);
+                    Util.SetWidgetBaseColorNormal(statusbar);
                 } else {
-                    Util.PaintWidgetBackgroundGray(statusbar);
+                    Util.SetWidgetBaseColorInsensitive(statusbar);
                 }
             }
         }

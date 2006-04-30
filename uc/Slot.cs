@@ -7,17 +7,22 @@ namespace UltimateCommander {
 
     public class Slot: GladeWidget {
 
-        [Glade.Widget] Label header;
+        [Glade.Widget] TextView header;
         [Glade.Widget] EventBox view_slot;
 
         Frame frame;
         View view;
+        TextTag white_tag;
         
         public Slot(View view_arg): base("slot_widget")
         {
             view = view_arg;
             view_slot.Add(view);
             view.Slot = this;
+        
+            white_tag = new TextTag("white");
+            white_tag.ForegroundGdk = Widget.DefaultStyle.White;
+            header.Buffer.TagTable.Add(white_tag);
         }
 
         public void Select()
@@ -26,10 +31,10 @@ namespace UltimateCommander {
         }
 
         public string Title {
-            get { return header.Text; }
+            get { return header.Buffer.Text; }
             set {
                 if (this != null) {
-                    header.Text = value;
+                    header.Buffer.Text = value;
                     Redraw();
                 }
             }
@@ -46,38 +51,17 @@ namespace UltimateCommander {
 
         public void Redraw()
         {
-            string header_colorstring;
-            Color header_bgcolor;
-
+            TextBuffer buffer = header.Buffer;
+            buffer.RemoveAllTags(buffer.StartIter, buffer.EndIter);
+            
             if (frame != null && frame.Selected) {
-                header_colorstring = Config.ActiveSlotHeaderColorString;
-                header_bgcolor = Widget.DefaultStyle.BaseColors[(int)StateType.Selected];
+                buffer.ApplyTag(white_tag, buffer.StartIter, buffer.EndIter);
+                Util.SetWidgetBaseColorSelected(header);
+                Util.SetWidgetBgColorSelected(topwidget);
             } else {
-                header_colorstring = Config.InactiveSlotHeaderColorString;
-                header_bgcolor = Widget.DefaultStyle.BaseColors[(int)StateType.Insensitive];
+                Util.SetWidgetBaseColorInsensitive(header);
+                Util.SetWidgetBgColorInsensitive(topwidget);
             }
-
-            header.Markup = GetFgPangoMarkup(header_colorstring, header.Text);
-            topwidget.ModifyBg(StateType.Normal, header_bgcolor);
-        }
-
-        string GetFgPangoMarkup(string color, string unescaped_text)
-        {
-            string escaped_text = EscapeText(unescaped_text, "<>");
-            return "<span foreground=\"" + color + "\">" + escaped_text + "</span>";
-        }
-
-        string EscapeText(string unescaped_text, string chars_to_escape)
-        {
-            string escaped_text = "";
-
-            foreach (char c in unescaped_text)
-                if (chars_to_escape.IndexOf(c) != -1)
-                    escaped_text += "\\" + c;
-                else
-                    escaped_text += c;
-
-            return escaped_text;
         }
 
         void OnButtonPressEvent(object o, ButtonPressEventArgs args)

@@ -19,16 +19,40 @@ namespace UltimateCommander {
             return new Pixbuf(filepath);
         }
 
-        public static void PaintWidgetBackgroundGray(Widget widget)
+        public static void SetWidgetBaseColorInsensitive(Widget widget)
         {
             widget.ModifyBase(StateType.Normal,
                 Widget.DefaultStyle.BaseColors[(int)StateType.Insensitive]);
         }
 
-        public static void PaintWidgetBackgroundWhite(Widget widget)
+        public static void SetWidgetBaseColorNormal(Widget widget)
         {
             widget.ModifyBase(StateType.Normal,
                 Widget.DefaultStyle.BaseColors[(int)StateType.Normal]);
+        }
+
+        public static void SetWidgetBaseColorSelected(Widget widget)
+        {
+            widget.ModifyBase(StateType.Normal,
+                Widget.DefaultStyle.BaseColors[(int)StateType.Selected]);
+        }
+
+        public static void SetWidgetBgColorInsensitive(Widget widget)
+        {
+            widget.ModifyBg(StateType.Normal,
+                Widget.DefaultStyle.BaseColors[(int)StateType.Insensitive]);
+        }
+
+        public static void SetWidgetBgColorNormal(Widget widget)
+        {
+            widget.ModifyBg(StateType.Normal,
+                Widget.DefaultStyle.BaseColors[(int)StateType.Normal]);
+        }
+
+        public static void SetWidgetBgColorSelected(Widget widget)
+        {
+            widget.ModifyBg(StateType.Normal,
+                Widget.DefaultStyle.BaseColors[(int)StateType.Selected]);
         }
     }
 }

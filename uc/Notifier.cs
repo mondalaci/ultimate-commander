@@ -14,7 +14,7 @@ namespace UltimateCommander {
         
         public Notifier(): base("notifier_widget")
         {
-            Util.PaintWidgetBackgroundGray(textview);
+            Util.SetWidgetBaseColorInsensitive(textview);
             red_tag = new TextTag("red");
             red_tag.ForegroundGdk = new Gdk.Color(255, 0, 0);
             textview.Buffer.TagTable.Add(red_tag);
