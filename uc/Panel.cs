@@ -344,7 +344,7 @@ namespace UltimateCommander {
         void CancelRename()
         {
             FinishRename();
-            InfoBar.Error("Rename cancelled by user.");
+            InfoBar.Notice("Rename cancelled by user.");
         }
 
         void DoRename()
