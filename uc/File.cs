@@ -61,7 +61,12 @@ namespace UltimateCommander {
 
         public static bool IsFilePathExists(string path)
         {
-            return MUN.Syscall.access(path, MUN.AccessModes.F_OK) == 0;
+            if (MUN.Syscall.access(path, MUN.AccessModes.F_OK) == 0) {
+                return true;
+            }
+            
+            MUN.Stat stat;
+            return MUN.Syscall.lstat(path, out stat) == 0;
         }
 
         // If the actual maximum path length is greater

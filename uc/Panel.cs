@@ -337,7 +337,7 @@ namespace UltimateCommander {
                 return;
             }
 
-            if (!CurrentFile.IsWritable) {
+            if (!CurrentFile.IsWritable && !CurrentFile.IsSymbolicLink) {
                 InfoBar.Error("Rename failed: this file is not writable.");
                 return;
             }
