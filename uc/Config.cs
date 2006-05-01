@@ -24,7 +24,7 @@ namespace UltimateCommander {
 
         // Timing attributes
         
-        public static uint WaitInterval = 750;  // msec
+        public static uint WaitInterval = 500;  // msec
         public static uint FlashInterval = 250;  // msec
 
         public static void Initialize()

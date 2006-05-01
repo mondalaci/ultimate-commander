@@ -71,6 +71,7 @@ namespace UltimateCommander {
                 GLib.Source.Remove(timeout_handler);
             }
             
+            ShowBell(true);
             timeout_running = true;
             timer = 0;
             timeout_handler = GLib.Timeout.Add(Config.FlashInterval, ProgressHandler);
@@ -79,7 +80,7 @@ namespace UltimateCommander {
         bool ProgressHandler()
         {
             if (type == InfoType.Error || type == InfoType.Warning) {
-                bool show = timer / Config.FlashInterval % 2 == 0;
+                bool show = timer / Config.FlashInterval % 2 != 0;
                 ShowBell(show);
             }
 
@@ -99,7 +100,7 @@ namespace UltimateCommander {
             if (show) {
                 if (type == InfoType.Error) {
                     message.ModifyBase(StateType.Normal, Config.ErrorColor);
-                } else {
+                } else if (type == InfoType.Warning) {
                     message.ModifyBase(StateType.Normal, Config.WarningColor);
                 }
             } else {
