@@ -85,10 +85,8 @@ namespace UltimateCommander {
         static Hashtable mime_to_icon_hash = new Hashtable();
         static AttributeIcons attribute_icons = new AttributeIcons();
 
-        static Gdk.Pixbuf updir_icon = 
-            Util.LoadIcon("panel-navigate-up-one-directory.png");
-        static Gdk.Pixbuf directory_icon =
-            Util.LoadIcon("folder.png");
+        static Gdk.Pixbuf updir_icon = Util.LoadIcon("panel-navigate-up-one-directory.png");
+        static Gdk.Pixbuf directory_icon = Util.LoadIcon("folder.png");
         static Gdk.Pixbuf fifo_icon = Util.LoadGtkIcon("gnome-fs-fifo");
         static Gdk.Pixbuf socket_icon = Util.LoadGtkIcon("gnome-fs-socket");
         static Gdk.Pixbuf chardev_icon = Util.LoadGtkIcon("gnome-fs-chardev");

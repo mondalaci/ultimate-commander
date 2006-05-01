@@ -31,7 +31,7 @@ namespace UltimateCommander {
             warning = Util.LoadGtkIcon("gtk-dialog-warning");
             notice = Util.LoadGtkIcon("gtk-info");
 
-            Util.SetWidgetBaseColorInsensitive(message);
+            Util.ModifyWidgetBase(message, StateType.Insensitive);
         }
 
         public static void Notice(string text, params object[] args)
@@ -104,7 +104,7 @@ namespace UltimateCommander {
                     message.ModifyBase(StateType.Normal, Config.WarningColor);
                 }
             } else {
-                Util.SetWidgetBaseColorInsensitive(message);
+                Util.ModifyWidgetBase(message, StateType.Insensitive);
             }
         }
     }

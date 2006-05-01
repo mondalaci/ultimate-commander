@@ -84,6 +84,18 @@ namespace UltimateCommander {
             }
         }
 
+        // Create directory signal handlers
+        
+        void OnCreateDirectoryButtonClicked(object sender, EventArgs args)
+        {
+            ((PanelFrame)ActiveFrame).Panel.StartCreateDirectory();
+        }
+
+        void OnCreateDirectoryMenuItemActivate(object sender, EventArgs args)
+        {
+            ((PanelFrame)ActiveFrame).Panel.StartCreateDirectory();
+        }
+
         // Rename signal handlers
         
         void OnRenameButtonClicked(object sender, EventArgs args)
@@ -91,26 +103,26 @@ namespace UltimateCommander {
             ((PanelFrame)ActiveFrame).Panel.StartRename();
         }
 
-        void OnRenameMenuItemActivate(object o, EventArgs args)
+        void OnRenameMenuItemActivate(object sender, EventArgs args)
         {
             ((PanelFrame)ActiveFrame).Panel.StartRename();
         }
 
         // Quit signal handers
         
-        void OnWindowDeleteEvent(object o, DeleteEventArgs args)
+        void OnWindowDeleteEvent(object sender, DeleteEventArgs args)
         {
             Gtk.Application.Quit();
         }
 
-        void OnQuitMenuItemActivate(object o, EventArgs args)
+        void OnQuitMenuItemActivate(object sender, EventArgs args)
         {
             Gtk.Application.Quit();
         }
 
         // Other signal handlers
         
-        void OnWindowCheckResize(object o, EventArgs args)
+        void OnWindowCheckResize(object sender, EventArgs args)
         {
             ResizePanes();
         }

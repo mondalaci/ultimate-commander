@@ -19,40 +19,16 @@ namespace UltimateCommander {
             return new Pixbuf(filepath);
         }
 
-        public static void SetWidgetBaseColorInsensitive(Widget widget)
+        public static void ModifyWidgetBase(Widget widget, StateType statetype)
         {
             widget.ModifyBase(StateType.Normal,
-                Widget.DefaultStyle.BaseColors[(int)StateType.Insensitive]);
+                Widget.DefaultStyle.BaseColors[(int)statetype]);
         }
 
-        public static void SetWidgetBaseColorNormal(Widget widget)
-        {
-            widget.ModifyBase(StateType.Normal,
-                Widget.DefaultStyle.BaseColors[(int)StateType.Normal]);
-        }
-
-        public static void SetWidgetBaseColorSelected(Widget widget)
-        {
-            widget.ModifyBase(StateType.Normal,
-                Widget.DefaultStyle.BaseColors[(int)StateType.Selected]);
-        }
-
-        public static void SetWidgetBgColorInsensitive(Widget widget)
+        public static void ModifyWidgetBg(Widget widget, StateType statetype)
         {
             widget.ModifyBg(StateType.Normal,
-                Widget.DefaultStyle.BaseColors[(int)StateType.Insensitive]);
-        }
-
-        public static void SetWidgetBgColorNormal(Widget widget)
-        {
-            widget.ModifyBg(StateType.Normal,
-                Widget.DefaultStyle.BaseColors[(int)StateType.Normal]);
-        }
-
-        public static void SetWidgetBgColorSelected(Widget widget)
-        {
-            widget.ModifyBg(StateType.Normal,
-                Widget.DefaultStyle.BaseColors[(int)StateType.Selected]);
+                Widget.DefaultStyle.BaseColors[(int)statetype]);
         }
     }
 }

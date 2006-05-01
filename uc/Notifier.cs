@@ -23,7 +23,7 @@ namespace UltimateCommander {
             bold_tag = new TextTag("bold");
             bold_tag.Weight = Pango.Weight.Bold;
             textview.Buffer.TagTable.Add(bold_tag);
-            Util.SetWidgetBaseColorInsensitive(textview);
+            Util.ModifyWidgetBase(textview, StateType.Insensitive);
         }
 
         protected void AppendText(string text, params TextTag[] tags)

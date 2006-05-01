@@ -56,11 +56,11 @@ namespace UltimateCommander {
             
             if (frame != null && frame.Selected) {
                 buffer.ApplyTag(white_tag, buffer.StartIter, buffer.EndIter);
-                Util.SetWidgetBaseColorSelected(header);
-                Util.SetWidgetBgColorSelected(topwidget);
+                Util.ModifyWidgetBase(header, StateType.Selected);
+                Util.ModifyWidgetBg(topwidget, StateType.Selected);
             } else {
-                Util.SetWidgetBaseColorInsensitive(header);
-                Util.SetWidgetBgColorInsensitive(topwidget);
+                Util.ModifyWidgetBase(header, StateType.Insensitive);
+                Util.ModifyWidgetBg(topwidget, StateType.Insensitive);
             }
         }
 
