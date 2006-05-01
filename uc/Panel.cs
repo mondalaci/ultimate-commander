@@ -224,6 +224,11 @@ namespace UltimateCommander {
         {
             if (CurrentFile.IsDirectory) {
                 ChangeDirectory(CurrentFile.FullPath);
+            } else if (CurrentFile.IsFile) {
+                InfoBar.Error("File type to application association is not implemented yet.");
+            } else {
+                InfoBar.Error("This file is a " + CurrentFile.TypeName + ". " +
+                "It is not possible to associate actions to this file type.");
             }
         }
 

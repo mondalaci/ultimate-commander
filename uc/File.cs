@@ -412,6 +412,28 @@ namespace UltimateCommander {
 
         // Type properties
 
+        public string TypeName {
+            get {
+                if (IsFile) {
+                    return "regular file";
+                } else if (IsDirectory) {
+                    return "directory";
+                } else if (IsFifo) {
+                    return "fifo";
+                } else if (IsSocket) {
+                    return "socket";
+                } else if (IsCharacterDevice) {
+                    return "character device";
+                } else if (IsBlockDevice) {
+                    return "block device";
+                } else if (IsDanglingLink) {
+                    return "dangling link";
+                } else {
+                    return "unknown type";
+                }
+            }
+        }
+
         public bool IsFile {
             get { return GetFlag(stat, MUN.FilePermissions.S_IFREG); }
         }
