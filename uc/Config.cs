@@ -19,9 +19,13 @@ namespace UltimateCommander {
         public static int IconSize = 16;
         public static Gdk.Color SelectedFileBgColor = new Gdk.Color(224, 224, 0);
         public static Gdk.Color InvalidFileNameEncodingColor = new Gdk.Color(255, 0, 0);
-        public static string ActiveSlotHeaderColorString = "#ffffff";
-        public static string InactiveSlotHeaderColorString = "#000000";
+        public static Gdk.Color ErrorColor = new Gdk.Color(255, 0, 0);
+        public static Gdk.Color WarningColor = new Gdk.Color(255, 192, 0);
+
+        // Timing attributes
         
+        public static uint WaitInterval = 750;  // msec
+        public static uint FlashInterval = 250;  // msec
 
         public static void Initialize()
         {
