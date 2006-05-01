@@ -35,6 +35,8 @@ namespace UltimateCommander {
         {			
             view = new PanelView(this);
             ScrolledWindow sw = new ScrolledWindow();
+            sw.VScrollbar.ButtonPressEvent += new ButtonPressEventHandler(OnButtonPressEvent);
+            sw.HScrollbar.ButtonPressEvent += new ButtonPressEventHandler(OnButtonPressEvent);
             sw.Add(view);
             view_slot.Add(sw);
 
@@ -409,6 +411,7 @@ namespace UltimateCommander {
             ActivateRow();
         }
 
+        [GLib.ConnectBefore]
         void OnButtonPressEvent(object sender, ButtonPressEventArgs args)
         {
             Select();
