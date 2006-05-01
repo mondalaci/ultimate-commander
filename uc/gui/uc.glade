@@ -662,6 +662,7 @@
 		  <property name="indent">0</property>
 		  <property name="text" translatable="yes">filename</property>
 		  <signal name="key_press_event" handler="OnStatusBarKeyPressEvent" last_modification_time="Tue, 25 Apr 2006 13:43:29 GMT"/>
+		  <signal name="button_press_event" handler="OnButtonPressEvent" last_modification_time="Mon, 01 May 2006 19:35:40 GMT"/>
 		</widget>
 	      </child>
 	    </widget>
