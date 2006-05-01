@@ -1927,6 +1927,7 @@
 		  <property name="right_margin">0</property>
 		  <property name="indent">0</property>
 		  <property name="text" translatable="yes"></property>
+		  <signal name="button_press_event" handler="OnButtonPressEvent" last_modification_time="Mon, 01 May 2006 19:55:06 GMT"/>
 		</widget>
 		<packing>
 		  <property name="padding">2</property>

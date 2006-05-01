@@ -59,6 +59,8 @@ namespace UltimateCommander {
         [GLib.ConnectBefore]
         void OnButtonPressEvent(object sender, ButtonPressEventArgs args)
         {
+            panel.Select();
+
             if (args.Event.Button == 3) {
                 button3_pressed = true;
                 prev_row_num = GetRowNumFromCoords(args.Event.X, args.Event.Y);

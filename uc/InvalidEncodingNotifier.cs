@@ -5,7 +5,7 @@ namespace UltimateCommander {
 
     public class InvalidEncodingNotifier: Notifier {
 
-        public InvalidEncodingNotifier(): base()
+        public InvalidEncodingNotifier(Panel panel): base(panel)
         {
             SetIcon("gtk-dialog-error");
         }

@@ -12,15 +12,18 @@ namespace UltimateCommander {
         protected TextTag bold_tag;
         protected TextTag red_tag;
         
-        public Notifier(): base("notifier_widget")
+        Panel panel;
+        
+        public Notifier(Panel panel_arg): base("notifier_widget")
         {
-            Util.SetWidgetBaseColorInsensitive(textview);
+            panel = panel_arg;
             red_tag = new TextTag("red");
             red_tag.ForegroundGdk = new Gdk.Color(255, 0, 0);
             textview.Buffer.TagTable.Add(red_tag);
             bold_tag = new TextTag("bold");
             bold_tag.Weight = Pango.Weight.Bold;
             textview.Buffer.TagTable.Add(bold_tag);
+            Util.SetWidgetBaseColorInsensitive(textview);
         }
 
         protected void AppendText(string text, params TextTag[] tags)
@@ -32,6 +35,12 @@ namespace UltimateCommander {
         protected void SetIcon(string icon_name)
         {
             icon.Pixbuf = icon.RenderIcon(icon_name, IconSize.SmallToolbar, "");
+        }
+        
+        [GLib.ConnectBefore]
+        void OnButtonPressEvent(object sender, ButtonPressEventArgs args)
+        {
+            panel.Select();
         }
     }
 }

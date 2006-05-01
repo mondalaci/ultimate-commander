@@ -42,8 +42,8 @@ namespace UltimateCommander {
 
             listing_configurator = new PanelListingConfigurator(this);
             sorting_configurator = new PanelSortingConfigurator(this);
-            invalid_encoding_notifier = new InvalidEncodingNotifier();
-            unreadable_directory_notifier = new UnreadableDirectoryNotifier();
+            invalid_encoding_notifier = new InvalidEncodingNotifier(this);
+            unreadable_directory_notifier = new UnreadableDirectoryNotifier(this);
 
             view.KeyPressEvent += new KeyPressEventHandler(OnPanelViewKeyPressEvent);
             view.RowActivated += new RowActivatedHandler(OnRowActivated);

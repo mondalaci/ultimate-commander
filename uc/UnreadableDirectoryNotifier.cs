@@ -5,7 +5,7 @@ namespace UltimateCommander {
 
     public class UnreadableDirectoryNotifier: Notifier {
 
-        public UnreadableDirectoryNotifier(): base()
+        public UnreadableDirectoryNotifier(Panel panel): base(panel)
         {
             SetIcon("gtk-dialog-warning");
 
