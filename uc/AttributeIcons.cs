@@ -6,7 +6,7 @@ namespace UltimateCommander {
 
     public class AttributeIcons {
 
-        static int icons_num = 17;
+        static int icons_num = 49;
         static int icon_size = 16;
         static int square_size = 7;
 
@@ -14,7 +14,7 @@ namespace UltimateCommander {
         static Gdk.Color lightgray_color = new Gdk.Color(192, 192, 192);
         static Gdk.Color white_color = new Gdk.Color(255, 255, 255);
 
-        Gdk.Pixbuf[] icons = new Gdk.Pixbuf[17];
+        Gdk.Pixbuf[] icons = new Gdk.Pixbuf[icons_num];
 
         public AttributeIcons()
         {
@@ -30,7 +30,7 @@ namespace UltimateCommander {
                 bool executable = (i & 1) > 0;
                 bool validsymlink = (i & 2) > 0;
                 bool nowrite = (i & 4) > 0;
-                bool noread = (i & 8) > 0;
+                FileReadability readability = ValueToFileReadability((i & 24) >> 3); 
                 
                 Gdk.Pixbuf icon = GetBaseIcon();
                 icon = icon.AddAlpha(true, 255, 255, 255);
@@ -41,12 +41,17 @@ namespace UltimateCommander {
                 if (validsymlink) {
                     blue_square.CopyArea(0, 0, square_size, square_size, icon, square_size+1, 0);
                 }
-                if (noread) {
-                    orange_square.CopyArea(0, 0, square_size, square_size, icon, 0, square_size+1);
-                }
                 if (nowrite) {
                     red_square.CopyArea(0, 0, square_size, square_size,
                                         icon, square_size+1, square_size+1);
+                }
+                switch (readability) {
+                case FileReadability.NotReadable:
+                    red_square.CopyArea(0, 0, square_size, square_size, icon, 0, square_size+1);
+                    break;
+                case FileReadability.OnlySearchableDirectory:
+                    orange_square.CopyArea(0, 0, square_size, square_size, icon, 0, square_size+1);
+                    break;                              
                 }
                 
                 icons[i] = icon;
@@ -65,28 +70,42 @@ namespace UltimateCommander {
         }
 
         public Gdk.Pixbuf GetIcon(bool executable, bool nowrite,
-                                  bool noread, SymbolicLinkType linktype)
+                                  FileReadability readability, SymbolicLinkType linktype)
         {
             if (linktype == SymbolicLinkType.DanglingLink) {
-                return icons[16];
+                return icons[icons_num-1];
             }
+            
+            int idx = (executable ? 1 : 0) +
+                      (linktype == SymbolicLinkType.ValidLink ? 2 : 0) +
+                      (nowrite ? 4 : 0) +
+                      (FileReadabilityToValue(readability) << 3);
 
-            int i = 0;
+            return icons[idx];
+        }
 
-            if (executable) {
-                i += 1;
+        int FileReadabilityToValue(FileReadability readability)
+        {
+            switch (readability) {
+            case FileReadability.NotReadable:
+                return 0;
+            case FileReadability.OnlySearchableDirectory:
+                return 1;
+            default:  // FileReadability.Readable
+                return 2;
             }
-            if (linktype == SymbolicLinkType.ValidLink) {
-                i += 2;
-            }
-            if (nowrite) {
-                i += 4;
-            }
-            if (noread) {
-                i += 8;
-            }
+        }
 
-            return icons[i];
+        FileReadability ValueToFileReadability(int value)
+        {
+            switch (value) {
+            case 0:
+                return FileReadability.NotReadable;
+            case 1:
+                return FileReadability.OnlySearchableDirectory;
+            default:  // 2
+                return FileReadability.Readable;
+            }
         }
 
         static void GetDrawableAndGC(int width, int height, out Gdk.GC gc, out Gdk.Pixmap pixmap)

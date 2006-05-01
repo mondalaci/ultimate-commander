@@ -13,6 +13,12 @@ namespace UltimateCommander {
         DanglingLink
     };
 
+    public enum FileReadability {
+        Readable,
+        OnlySearchableDirectory,
+        NotReadable
+    };
+
     public class File {
 
         public static File[] ListDirectory(string path)
@@ -192,7 +198,7 @@ namespace UltimateCommander {
         public Gdk.Pixbuf AttributeIcon {
             get {
                  return attribute_icons.GetIcon(IsExecutable, !IsWritable,
-                                                !IsReadable, LinkType);
+                                                Readability, LinkType);
             }
         }
 
@@ -501,6 +507,21 @@ namespace UltimateCommander {
             get { return MUN.Syscall.access(DirectoryName, MUN.AccessModes.X_OK) == 0; }
         }
 
+        public FileReadability Readability {
+            get {
+                if (IsDirectory) {
+                    if (IsSearchable) {
+                        return IsReadable ? FileReadability.Readable :
+                            FileReadability.OnlySearchableDirectory;
+                    } else {
+                        return FileReadability.NotReadable;
+                    }
+                } else {
+                    return IsReadable ? FileReadability.Readable : FileReadability.NotReadable;
+                }
+            }
+        }
+        
         // Unix properties
         
         public bool IsSetUid {
