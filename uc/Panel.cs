@@ -227,8 +227,8 @@ namespace UltimateCommander {
             } else if (CurrentFile.IsFile) {
                 InfoBar.Error("File type to application association is not implemented yet.");
             } else {
-                InfoBar.Error("This file is a " + CurrentFile.TypeName + ". " +
-                "It is not possible to associate actions to this file type.");
+                InfoBar.Error("This file is a {0}. It is not possible to associate actions to " +
+                              " this file type.", CurrentFile.TypeName);
             }
         }
 
@@ -373,7 +373,7 @@ namespace UltimateCommander {
                 SelectFileName(dest_filename);
                 InfoBar.Notice("File successfully renamed.");
             } else {
-                InfoBar.Error("Rename failed: " + MUN.Stdlib.strerror(MUN.Stdlib.GetLastError()));
+                InfoBar.Error("Rename failed: {0}", MUN.Stdlib.strerror(MUN.Stdlib.GetLastError()));
             }
         }
         

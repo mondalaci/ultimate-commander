@@ -34,25 +34,25 @@ namespace UltimateCommander {
             Util.SetWidgetBaseColorInsensitive(message);
         }
 
-        public static void Notice(string notice)
+        public static void Notice(string text, params object[] args)
         {
-            MainWindow.InfoBar.PrintInfo(InfoType.Notice, notice);
+            MainWindow.InfoBar.PrintInfo(InfoType.Notice, text, args);
         }
 
-        public static void Warning(string warning)
+        public static void Warning(string text, params object[] args)
         {
-            MainWindow.InfoBar.PrintInfo(InfoType.Warning, warning);
+            MainWindow.InfoBar.PrintInfo(InfoType.Warning, text, args);
         }
 
-        public static void Error(string error)
+        public static void Error(string text, params object[] args)
         {
-            MainWindow.InfoBar.PrintInfo(InfoType.Error, error);
+            MainWindow.InfoBar.PrintInfo(InfoType.Error, text, args);
         }
 
-        void PrintInfo(InfoType type_arg, string info)
+        void PrintInfo(InfoType type_arg, string text, params object[] args)
         {
             type = type_arg;
-            message.Buffer.Text = info;
+            message.Buffer.Text = String.Format(text, args);
 
             switch (type) {
             case InfoType.Error:
