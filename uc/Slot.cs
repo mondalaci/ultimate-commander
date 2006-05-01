@@ -64,9 +64,11 @@ namespace UltimateCommander {
             }
         }
 
-        void OnButtonPressEvent(object o, ButtonPressEventArgs args)
+        [GLib.ConnectBefore]
+        void OnButtonPressEvent(object sender, ButtonPressEventArgs args)
         {
             Select();
+            args.RetVal = true;
         }
     }
 }
