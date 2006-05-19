@@ -306,7 +306,7 @@ namespace UltimateCommander {
             case Gdk.Key.Return:
             case Gdk.Key.KP_Enter:
                 args.RetVal = true;
-                DoDirectoryCreate();
+                DoCreateDirectory();
                 break;
             case Gdk.Key.Escape:
                 CancelCreateDirectory();
@@ -326,7 +326,7 @@ namespace UltimateCommander {
             create_directory_widget.TextView.GrabFocus();
         }
 
-        void DoDirectoryCreate()
+        public void DoCreateDirectory()
         {
             string dest_filename = create_directory_widget.TextView.Buffer.Text;
             string dest_filepath = UnixPath.Combine(CurrentDirectory, dest_filename); 
@@ -350,7 +350,7 @@ namespace UltimateCommander {
                     MUN.Stdlib.strerror(MUN.Stdlib.GetLastError()));
             }
         }
-        void CancelCreateDirectory()
+        public void CancelCreateDirectory()
         {
             FinishCreateDirectory();
             InfoBar.Notice("Directory creation cancelled by user.");

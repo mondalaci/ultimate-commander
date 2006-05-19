@@ -22,6 +22,16 @@ namespace UltimateCommander {
             get { return textview; }
         }
         
+        void OnOkButtonClicked(object sender, EventArgs args)
+        {
+            panel.DoCreateDirectory();
+        }
+
+        void OnCancelButtonClicked(object sender, EventArgs args)
+        {
+            panel.CancelCreateDirectory();
+        }
+
         [GLib.ConnectBefore]
         void OnButtonPressEvent(object sender, ButtonPressEventArgs args)
         {
