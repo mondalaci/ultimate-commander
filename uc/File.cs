@@ -195,8 +195,36 @@ namespace UltimateCommander {
 
         public Gdk.Pixbuf AttributeIcon {
             get {
-                 return attribute_icons.GetIcon(IsExecutable, !IsWritable,
-                                                Readability, LinkType);
+                FileAttribute attr = 0;
+                 
+                if (IsExecutable) {
+                    if (IsSetUid && IsSetGid) {
+                        attr |= FileAttribute.SetUidExecutable | FileAttribute.SetGidExecutable;
+                    } else if (IsSetUid) {
+                        attr |= FileAttribute.SetUidExecutable;
+                    } else if (IsSetGid) {
+                        attr |= FileAttribute.SetGidExecutable;
+                    } else {
+                        attr |= FileAttribute.NormalExecutable;
+                    }
+                }
+
+                if (IsValidLink) {
+                    attr |= FileAttribute.ValidSymlink;
+                } else if (IsDanglingLink) {
+                    attr |= FileAttribute.DanglingSymlink;
+                }
+
+                FileReadability readability = Readability;
+                if (readability == FileReadability.OnlySearchableDirectory) {
+                    attr |= FileAttribute.OnlySearchableDirectory;
+                } else if (readability == FileReadability.Readable) {
+                    attr |= FileAttribute.Readable;
+                }
+                 
+                attr |= IsWritable ? FileAttribute.Writable : 0;
+
+                return attribute_icons.GetIcon(attr);
             }
         }
 
@@ -393,6 +421,10 @@ namespace UltimateCommander {
 
         public SymbolicLinkType LinkType {
             get { return linktype; }
+        }
+
+        public bool IsValidLink {
+            get { return linktype == SymbolicLinkType.ValidLink; }
         }
 
         public bool IsDanglingLink {

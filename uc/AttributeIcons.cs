@@ -4,9 +4,21 @@ using Gtk;
 
 namespace UltimateCommander {
 
+    [Flags]
+    public enum FileAttribute {
+        NormalExecutable = 1,
+        SetUidExecutable = 2,
+        SetGidExecutable = 4,
+        ValidSymlink = 8,
+        Readable = 16,
+        OnlySearchableDirectory = 32,
+        Writable = 64,
+        DanglingSymlink = 128,
+    }
+    
     public class AttributeIcons {
 
-        static int icons_num = 49;
+        static int icons_num = (int)FileAttribute.DanglingSymlink + 1;
         static int icon_size = 16;
         static int square_size = 7;
 
@@ -14,115 +26,108 @@ namespace UltimateCommander {
         static Gdk.Color lightgray_color = new Gdk.Color(192, 192, 192);
         static Gdk.Color white_color = new Gdk.Color(255, 255, 255);
 
-        Gdk.Pixbuf[] icons = new Gdk.Pixbuf[icons_num];
+        Pixbuf[] icons = new Gdk.Pixbuf[icons_num];
 
+        Pixbuf green_square;
+        Pixbuf light_red_square;
+        Pixbuf light_orange_square;
+        Pixbuf yellow_square;
+        Pixbuf blue_square;
+        Pixbuf orange_square;
+        Pixbuf red_square;
+        Pixbuf black_square;
+        
         public AttributeIcons()
         {
-            Gdk.Pixbuf green_square = GetSquare(0, 192, 0);
-            Gdk.Pixbuf blue_square = GetSquare(0, 128, 192);
-            Gdk.Pixbuf orange_square = GetSquare(255, 128, 0);
-            Gdk.Pixbuf red_square = GetSquare(255, 0, 0);
-            Gdk.Pixbuf black_square = GetSquare(0, 0, 0);
-            
-            // Construct regular icons.
-
-            for (int i=0; i<icons_num-1; i++) {
-                bool executable = (i & 1) > 0;
-                bool validsymlink = (i & 2) > 0;
-                bool nowrite = (i & 4) > 0;
-                FileReadability readability = ValueToFileReadability((i & 24) >> 3); 
-                
-                Gdk.Pixbuf icon = GetBaseIcon();
-                icon = icon.AddAlpha(true, 255, 255, 255);
-
-                if (executable) {
-                    green_square.CopyArea(0, 0, square_size, square_size, icon, 0, 0);
-                }
-                if (validsymlink) {
-                    blue_square.CopyArea(0, 0, square_size, square_size, icon, square_size+1, 0);
-                }
-                if (nowrite) {
-                    red_square.CopyArea(0, 0, square_size, square_size,
-                                        icon, square_size+1, square_size+1);
-                }
-                switch (readability) {
-                case FileReadability.NotReadable:
-                    red_square.CopyArea(0, 0, square_size, square_size, icon, 0, square_size+1);
-                    break;
-                case FileReadability.OnlySearchableDirectory:
-                    orange_square.CopyArea(0, 0, square_size, square_size, icon, 0, square_size+1);
-                    break;                              
-                }
-                
-                icons[i] = icon;
-            }
-
-            // Construct dangling link icon.
-
-            Gdk.Pixbuf dangling_icon = GetBaseIcon();
-            dangling_icon = dangling_icon.AddAlpha(true, 255, 255, 255);
-            black_square.CopyArea(0, 0, square_size, square_size, dangling_icon, 0, 0);
-            blue_square.CopyArea(0, 0, square_size, square_size, dangling_icon, square_size+1, 0);
-            black_square.CopyArea(0, 0, square_size, square_size, dangling_icon, 0, square_size+1);
-            black_square.CopyArea(0, 0, square_size, square_size,
-                                  dangling_icon, square_size+1, square_size+1);
-            icons[icons_num-1] = dangling_icon;
+            green_square = CreateSquare(0, 192, 0);
+            light_red_square = CreateSquare(255, 128, 128);
+            light_orange_square = CreateSquare(255, 192, 0);
+            yellow_square = CreateSquare(255, 255, 0);
+            blue_square = CreateSquare(0, 128, 192);
+            orange_square = CreateSquare(255, 128, 0);
+            red_square = CreateSquare(255, 0, 0);
+            black_square = CreateSquare(0, 0, 0);
         }
 
-        public Gdk.Pixbuf GetIcon(bool executable, bool nowrite,
-                                  FileReadability readability, SymbolicLinkType linktype)
+        public Gdk.Pixbuf GetIcon(FileAttribute attributes) {
+            int index = (int)attributes;
+            if (icons[index] == null) {
+                icons[index] = CreateIcon(attributes);
+            }
+            return icons[index];
+        }
+        
+        public Gdk.Pixbuf CreateIcon(FileAttribute attributes)
         {
-            if (linktype == SymbolicLinkType.DanglingLink) {
-                return icons[icons_num-1];
+            if (attributes == FileAttribute.DanglingSymlink) {
+                return ConstructIcon(black_square, blue_square, black_square, black_square);
             }
             
-            int idx = (executable ? 1 : 0) +
-                      (linktype == SymbolicLinkType.ValidLink ? 2 : 0) +
-                      (nowrite ? 4 : 0) +
-                      (FileReadabilityToValue(readability) << 3);
-
-            return icons[idx];
-        }
-
-        int FileReadabilityToValue(FileReadability readability)
-        {
-            switch (readability) {
-            case FileReadability.NotReadable:
-                return 0;
-            case FileReadability.OnlySearchableDirectory:
-                return 1;
-            default:  // FileReadability.Readable
-                return 2;
+            Pixbuf executable_square;
+            if (((attributes & FileAttribute.SetUidExecutable) != 0) &&
+                ((attributes & FileAttribute.SetGidExecutable) != 0)) {
+                executable_square = yellow_square;
+            } else if ((attributes & FileAttribute.SetUidExecutable) != 0) {
+                executable_square = light_red_square;
+            } else if ((attributes & FileAttribute.SetGidExecutable) != 0) {
+                executable_square = light_orange_square;
+            } else if ((attributes & FileAttribute.NormalExecutable) != 0) {
+                executable_square = green_square;
+            } else {
+                executable_square = null;
             }
-        }
-
-        FileReadability ValueToFileReadability(int value)
-        {
-            switch (value) {
-            case 0:
-                return FileReadability.NotReadable;
-            case 1:
-                return FileReadability.OnlySearchableDirectory;
-            default:  // 2
-                return FileReadability.Readable;
+            
+            Pixbuf symlink_square = (attributes & FileAttribute.ValidSymlink) != 0 ?
+                                    blue_square : null;
+            
+            
+            Pixbuf readable_square;
+            if ((attributes & FileAttribute.Readable) != 0) {
+                readable_square = null;
+            } else if ((attributes & FileAttribute.OnlySearchableDirectory) != 0) {
+                readable_square = orange_square;
+            } else {
+                readable_square = red_square;
             }
+            
+            Pixbuf writable_square = (attributes & FileAttribute.Writable) != 0 ?
+                                     null : red_square;
+            
+            return ConstructIcon(executable_square, symlink_square,
+                                 readable_square, writable_square);
         }
 
-        static void GetDrawableAndGC(int width, int height, out Gdk.GC gc, out Gdk.Pixmap pixmap)
+        static Pixbuf ConstructIcon(Pixbuf upper_left_square, Pixbuf upper_right_square,
+                                    Pixbuf bottom_left_square, Pixbuf bottom_right_square)
         {
-            Gtk.Window gtkwin = new Gtk.Window(Gtk.WindowType.Toplevel);
-            gtkwin.Realize();
-            Gdk.Window gdkwin = gtkwin.GdkWindow;
-
-            gc = new Gdk.GC(gdkwin);
-            pixmap = new Gdk.Pixmap(gdkwin, width, height);
+            Pixbuf icon = CreateBaseIcon();
+            icon = icon.AddAlpha(true, 255, 255, 255);
+            
+            if (upper_left_square != null) {
+                upper_left_square.CopyArea(0, 0, square_size, square_size, icon, 0, 0);
+            }
+            
+            if (upper_right_square != null) {
+                upper_right_square.CopyArea(0, 0, square_size, square_size, icon, square_size+1, 0);
+            }
+            
+            if (bottom_left_square != null) {
+                bottom_left_square.CopyArea(0, 0, square_size, square_size, icon, 0, square_size+1);
+            }
+            
+            if (bottom_right_square != null) {
+                bottom_right_square.CopyArea(0, 0, square_size, square_size,
+                                         icon, square_size+1, square_size+1);
+            }
+            
+            return icon;
         }
 
-        static Gdk.Pixbuf GetBaseIcon()
+        static Pixbuf CreateBaseIcon()
         {
 
             Gdk.GC gc;
-            Gdk.Pixmap pixmap;
+            Pixmap pixmap;
             GetDrawableAndGC(icon_size, icon_size, out gc, out pixmap);
 
             gc.RgbFgColor = white_color;
@@ -134,11 +139,11 @@ namespace UltimateCommander {
             pixmap.DrawRectangle(gc, false, square_size+1,
                                  square_size+1, square_size-1, square_size-1);
 
-            return Gdk.Pixbuf.FromDrawable(pixmap, pixmap.Colormap,
-                                           0, 0, 0, 0, icon_size, icon_size);
+            return Pixbuf.FromDrawable(pixmap, pixmap.Colormap,
+                                       0, 0, 0, 0, icon_size, icon_size);
         }
 
-        static Gdk.Pixbuf GetSquare(byte red, byte green, byte blue)
+        static Pixbuf CreateSquare(byte red, byte green, byte blue)
         {
             Gdk.GC gc;
             Gdk.Pixmap pixmap;
@@ -149,8 +154,18 @@ namespace UltimateCommander {
             gc.RgbFgColor = new Gdk.Color(red, green, blue);
             pixmap.DrawRectangle(gc, true, 1, 1, square_size-2, square_size-2);
 
-            return Gdk.Pixbuf.FromDrawable(pixmap, pixmap.Colormap,
+            return Pixbuf.FromDrawable(pixmap, pixmap.Colormap,
                                            0, 0, 0, 0, square_size, square_size);
+        }
+
+        static void GetDrawableAndGC(int width, int height, out Gdk.GC gc, out Gdk.Pixmap pixmap)
+        {
+            Gtk.Window gtkwin = new Gtk.Window(Gtk.WindowType.Toplevel);
+            gtkwin.Realize();
+            Gdk.Window gdkwin = gtkwin.GdkWindow;
+
+            gc = new Gdk.GC(gdkwin);
+            pixmap = new Gdk.Pixmap(gdkwin, width, height);
         }
     }
 }
