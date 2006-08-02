@@ -126,5 +126,11 @@ namespace UltimateCommander {
         {
             ResizePanes();
         }
+
+        void OnHPanedCycleChildFocus(object sender, CycleChildFocusArgs args)
+        {
+            args.RetVal = true;
+            ((PanelFrame)MainWindow.ActiveFrame).Panel.Select();
+        }
     }
 }
