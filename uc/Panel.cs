@@ -433,7 +433,7 @@ namespace UltimateCommander {
 
             TextBuffer buffer = statusbar.Buffer;
             RenameActive = true;
-            buffer.SelectRange(buffer.StartIter, buffer.EndIter);
+            buffer.SelectRange(buffer.EndIter, buffer.StartIter);
             statusbar.GrabFocus();
         }
 
