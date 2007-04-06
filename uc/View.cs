@@ -33,6 +33,10 @@ namespace UltimateCommander {
             slot.Redraw();
         }
 
+        public virtual void OnSelect()
+        {
+        }
+        
         [GLib.ConnectBefore]
         void OnViewButtonPressEvent(object sender, ButtonPressEventArgs args)
         {

@@ -6,37 +6,121 @@ namespace UltimateCommander {
 
     public class MainWindow {
 
-        [Glade.Widget] HPaned hpaned;
         [Glade.Widget] Gtk.Window main_window;
+        [Glade.Widget] MenuBar menubar;
+        [Glade.Widget] HandleBox handlebox;
+        [Glade.Widget] EventBox dialog_frame_slot;
+        [Glade.Widget] HPaned hpaned;
+        [Glade.Widget] HBox command_hbox;
         [Glade.Widget] EventBox infobar_slot;
+        
+        // static Glade widgets
+        static Gtk.Window main_window_static;
+        static MenuBar menubar_static;
+        static HandleBox handlebox_static;
+        static HPaned hpaned_static;
+        static HBox command_hbox_static;
+        static EventBox infobar_slot_static;
+
+        static Frame dialog_frame;
+        static PanelFrame left_panel_frame;
+        static PanelFrame right_panel_frame;
+        static InfoBar infobar = new InfoBar();
+        static Frame active_frame;
+        static Panel active_panel;
 
         float panel_ratio = 0.5f;
         int width = 0;
         int old_width = 0;
 
-        static PanelFrame left_panel_frame;
-        static PanelFrame right_panel_frame;
-        static InfoBar infobar = new InfoBar();
-        static Frame active_frame;
-
         public MainWindow()
         {
             Glade.XML glade_xml = new Glade.XML(Config.GladeFileName, "main_window", null);
             glade_xml.Autoconnect(this);
+            
+            // these sigleton variables are meant to be static,
+            // but Glade can only bind to non-static variables
+            main_window_static = main_window;
+            menubar_static = menubar;
+            handlebox_static = handlebox;
+            hpaned_static = hpaned;
+            command_hbox_static = command_hbox;
 
+            // set up the dialog frame
+            dialog_frame = new Frame();
+            dialog_frame_slot.Add(dialog_frame);
+            
+            // set up the panels
             left_panel_frame = new PanelFrame(Config.InitialPath);
             hpaned.Add1(left_panel_frame);
-
             right_panel_frame = new PanelFrame(Config.InitialPath);
             hpaned.Add2(right_panel_frame);
-
             ResizePanes();
+            SetActivePanel();
+            
+            // set up the infobar
             infobar_slot.Add(infobar);
             InfoBar.Notice("Ultimate Commander started.");
 
             main_window.ShowAll();
         }
 
+        // File operations
+        
+        void CreateDirectory()
+        {
+            SetDialog(new CreateDirectoryDialog(), "Create Directory");
+        }
+
+        void Rename()
+        {
+            ActivePanel.StartRename();
+        }
+        
+        // Dialog handling
+
+        static void SetDialog(Dialog dialog, string title)
+        {
+            SetWindowSensitive(dialog == null);
+        
+            if (dialog != null) {
+                DialogFrame.AppendView(dialog, title);
+                DialogFrame.ShowAll();
+            } else {
+                RemoveDialog();
+            }
+        }
+
+        public static void RemoveDialog()
+        {
+            DialogFrame.ClearViews();
+            SetWindowSensitive(true);
+            MainWindow.ActivePanel.Select();
+        }
+
+        static void SetWindowSensitive(bool sensitive)
+        {
+            Widget[] widgets = {
+                menubar_static,
+                handlebox_static,
+                hpaned_static,
+                command_hbox_static,
+            };
+            foreach (Widget widget in widgets) {
+                widget.Sensitive = sensitive;
+            }
+        }
+
+        // Public accessors
+        
+        public static Gtk.Window Window {
+            get { return main_window_static; }
+        }
+        
+        public static Frame DialogFrame {
+            get { return dialog_frame; }
+        }
+        
         public static PanelFrame LeftPanelFrame {
             get { return left_panel_frame; }
         }
@@ -58,10 +142,21 @@ namespace UltimateCommander {
             get { return right_panel_frame.Panel; }
         }
 
+        public static Panel ActivePanel {
+            get { return active_panel; }
+            set { active_panel = value; }
+        }
+        
+        public static Panel PassivePanel {
+            get { return ActivePanel == LeftPanel ? RightPanel : LeftPanel; }
+        }
+        
         public static InfoBar InfoBar {
             get { return infobar; }
         }
 
+        // Private utility members
+        
         void ResizePanes()
         {
             width = hpaned.Allocation.Width;
@@ -83,33 +178,39 @@ namespace UltimateCommander {
                 hpaned.Position = pos;
             }
         }
+        
+        void SetActivePanel()
+        {
+            if (Config.ActivePanel == WhichPanel.LeftPanel) {
+                ActivePanel = LeftPanel;
+            } else {
+                ActivePanel = RightPanel;
+            }
 
-        // Create directory signal handlers
+        }
+
+        // Signal handlers
         
         void OnCreateDirectoryButtonClicked(object sender, EventArgs args)
         {
-            ((PanelFrame)ActiveFrame).Panel.StartCreateDirectory();
+            CreateDirectory();
         }
 
         void OnCreateDirectoryMenuItemActivate(object sender, EventArgs args)
         {
-            ((PanelFrame)ActiveFrame).Panel.StartCreateDirectory();
+            CreateDirectory();
         }
 
-        // Rename signal handlers
-        
         void OnRenameButtonClicked(object sender, EventArgs args)
         {
-            ((PanelFrame)ActiveFrame).Panel.StartRename();
+            Rename();
         }
 
         void OnRenameMenuItemActivate(object sender, EventArgs args)
         {
-            ((PanelFrame)ActiveFrame).Panel.StartRename();
+            Rename();
         }
 
-        // Quit signal handers
-        
         void OnWindowDeleteEvent(object sender, DeleteEventArgs args)
         {
             Gtk.Application.Quit();
@@ -120,8 +221,6 @@ namespace UltimateCommander {
             Gtk.Application.Quit();
         }
 
-        // Other signal handlers
-        
         void OnWindowCheckResize(object sender, EventArgs args)
         {
             ResizePanes();
@@ -130,7 +229,8 @@ namespace UltimateCommander {
         void OnHPanedCycleChildFocus(object sender, CycleChildFocusArgs args)
         {
             args.RetVal = true;
-            ((PanelFrame)MainWindow.ActiveFrame).Panel.Select();
+            ((PanelFrame)ActiveFrame).Panel.Select();
+            //ActivePanel.Select();  // TODO
         }
     }
 }

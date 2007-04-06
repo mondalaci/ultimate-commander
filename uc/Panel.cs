@@ -29,7 +29,7 @@ namespace UltimateCommander {
         FileComparer comparer = new FileComparer();
         PanelListingConfigurator listing_configurator;
         PanelSortingConfigurator sorting_configurator;
-        CreateDirectoryWidget create_directory_widget;
+        //CreateDirectoryWidget create_directory_widget;
         InvalidEncodingNotifier invalid_encoding_notifier;
         UnreadableDirectoryNotifier unreadable_directory_notifier;
 
@@ -44,7 +44,7 @@ namespace UltimateCommander {
 
             listing_configurator = new PanelListingConfigurator(this);
             sorting_configurator = new PanelSortingConfigurator(this);
-            create_directory_widget = new CreateDirectoryWidget(this);
+            //create_directory_widget = new CreateDirectoryWidget(this);
             invalid_encoding_notifier = new InvalidEncodingNotifier(this);
             unreadable_directory_notifier = new UnreadableDirectoryNotifier(this);
 
@@ -170,7 +170,7 @@ namespace UltimateCommander {
             }
         }
 
-        void SelectFileName(string filename)
+        public void SelectFileName(string filename)
         {
             TreeIter iter = new TreeIter();
             bool has_next = Store.GetIterFirst(out iter);
@@ -291,93 +291,7 @@ namespace UltimateCommander {
             }
         }
 
-        // Directory creation related methods
-
-        [GLib.ConnectBefore]
-        public void OnCreateDirectoryWidgetKeyPressEvent(object sender, KeyPressEventArgs args)
-        {
-            Gdk.Key key = args.Event.Key;
-
-            switch (key) {
-            case Gdk.Key.Tab:    // Disable tab and slash keys when renaming,
-            case Gdk.Key.slash:  // because they are not appropriate in filenames.
-                args.RetVal = true;
-                break;
-            case Gdk.Key.Return:
-            case Gdk.Key.KP_Enter:
-                args.RetVal = true;
-                DoCreateDirectory();
-                break;
-            case Gdk.Key.Escape:
-                CancelCreateDirectory();
-                break;
-            }
-        }
-
-        public void StartCreateDirectory()
-        {
-            if (!CurrentFile.IsDirectoryWritable) {
-                InfoBar.Error("Directory creation failed: the current directory is not writable.");
-                return;
-            }
-
-            create_directory_widget.TextView.Buffer.Clear();
-            ShowCreateDirectoryWidget(true);
-            create_directory_widget.TextView.GrabFocus();
-        }
-
-        public void DoCreateDirectory()
-        {
-            string dest_filename = create_directory_widget.TextView.Buffer.Text;
-            string dest_filepath = UnixPath.Combine(CurrentDirectory, dest_filename); 
-
-            if (File.IsFilePathExists(dest_filepath)) {
-                InfoBar.Warning("Destination filename already exists. " +
-                                "You should choose a different directory name.");
-                return;
-            }
-
-            FinishCreateDirectory();
-
-            if (MUN.Syscall.mkdir(dest_filepath, MUN.FilePermissions.S_IRWXU | 
-                MUN.FilePermissions.S_IRGRP | MUN.FilePermissions.S_IROTH |
-                MUN.FilePermissions.S_IXGRP | MUN.FilePermissions.S_IXOTH) == 0) {
-                ChangeDirectory(CurrentDirectory);
-                SelectFileName(dest_filename);
-                InfoBar.Notice("Directory successfully created.");
-            } else {
-                InfoBar.Error("Directory creation failed: {0}",
-                    MUN.Stdlib.strerror(MUN.Stdlib.GetLastError()));
-            }
-        }
-        public void CancelCreateDirectory()
-        {
-            FinishCreateDirectory();
-            InfoBar.Notice("Directory creation cancelled by user.");
-        }
-
-        void FinishCreateDirectory()
-        {
-            ShowCreateDirectoryWidget(false);
-            Select();
-        }
-        
-        bool CreateDirectoryActive {
-            get { return create_directory_widget.Parent != null; }
-        }
-
-        void ShowCreateDirectoryWidget(bool show)
-        {
-            if (!show && create_directory_widget.Parent != null) {
-                create_directory_widget_slot.Remove(create_directory_widget);
-            } else if (show && create_directory_widget.Parent == null) {
-                create_directory_widget_slot.Add(create_directory_widget);
-            }
-
-            create_directory_widget_slot.ShowAll();
-        }
-
-        // Renaming related methods
+        // Renaming
 
         [GLib.ConnectBefore]
         void OnStatusBarKeyPressEvent(object sender, KeyPressEventArgs args)
@@ -472,6 +386,11 @@ namespace UltimateCommander {
             RefreshStatusBar();
             Select();
         }
+        
+        public override void OnSelect()
+        {
+            MainWindow.ActivePanel = this;
+        }
 
         // Other signal handlers
 
@@ -493,10 +412,6 @@ namespace UltimateCommander {
         void OnCursorChanged(object sender, EventArgs args)
         {
             Select();
-            
-            if (CreateDirectoryActive) {
-                CancelCreateDirectory();
-            }
             
             if (RenameActive) {
                 CancelRename();
@@ -542,8 +457,7 @@ namespace UltimateCommander {
 
         void OnViewMapEvent(object sender, MapEventArgs args)
         {
-            if ((Config.ActivePanel == WhichPanel.LeftPanel && MainWindow.LeftPanel == this) ||
-                (Config.ActivePanel == WhichPanel.RightPanel && MainWindow.RightPanel == this)) {
+            if (MainWindow.ActivePanel == this) {
                 Select();
             }
         }

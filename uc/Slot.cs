@@ -32,6 +32,7 @@ namespace UltimateCommander {
 
         public string Title {
             get { return header.Buffer.Text; }
+            
             set {
                 if (this != null) {
                     header.Buffer.Text = value;
@@ -49,21 +50,47 @@ namespace UltimateCommander {
             get { return view; }
         }
 
+        public TextView Header {
+            get { return header; }
+        }
+        
         public void Redraw()
         {
+            if (frame == null) {
+                return;
+            }
+            
             TextBuffer buffer = header.Buffer;
             buffer.RemoveAllTags(buffer.StartIter, buffer.EndIter);
             
-            if (frame != null && frame.Selected) {
+            if (frame.Selected) {
                 buffer.ApplyTag(white_tag, buffer.StartIter, buffer.EndIter);
-                Util.ModifyWidgetBase(header, StateType.Selected);
-                Util.ModifyWidgetBg(topwidget, StateType.Selected);
+                SetBgColor(StateType.Selected);
             } else {
-                Util.ModifyWidgetBase(header, StateType.Insensitive);
-                Util.ModifyWidgetBg(topwidget, StateType.Insensitive);
+                SetBgColor(StateType.Insensitive);
+            }
+            
+            if (View == MainWindow.ActivePanel && View != MainWindow.ActiveFrame.CurrentView) {
+                buffer.ApplyTag(white_tag, buffer.StartIter, buffer.EndIter);
+                SetBgColor(Config.UnselectedActivePanelSlotColor);
             }
         }
 
+        private void SetBgColor(Gdk.Color color)
+        {
+            header.ModifyBase(StateType.Normal, color);
+            topwidget.ModifyBg(StateType.Normal, color);
+            header.ModifyBase(StateType.Insensitive, color);
+            topwidget.ModifyBg(StateType.Insensitive, color);
+            
+        }
+        
+        private void SetBgColor(StateType statetype)
+        {
+            Gdk.Color color = Widget.DefaultStyle.BaseColors[(int)statetype];
+            SetBgColor(color);
+        }
+        
         [GLib.ConnectBefore]
         void OnButtonPressEvent(object sender, ButtonPressEventArgs args)
         {

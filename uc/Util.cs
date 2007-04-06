@@ -9,8 +9,14 @@ namespace UltimateCommander {
 
         public static Gdk.Pixbuf LoadGtkIcon(string iconname)
         {
-            return Gtk.IconTheme.Default.LoadIcon(iconname,
+            Gdk.Pixbuf icon;
+            try {
+            icon = Gtk.IconTheme.Default.LoadIcon(iconname,
                 Config.IconSize, Gtk.IconLookupFlags.NoSvg);
+            } catch (Exception) {
+                return LoadGtkIcon("gtk-missing-image");
+            }
+            return icon;
         }
 
         public static Pixbuf LoadIcon(string filename)

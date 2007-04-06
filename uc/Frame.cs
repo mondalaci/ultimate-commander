@@ -8,7 +8,7 @@ namespace UltimateCommander {
 
         static ArrayList frames = new ArrayList();
 
-        Frame(): base()
+        public Frame(): base()
         {
             frames.Add(this);
             SwitchPage += new SwitchPageHandler(OnSwitchPage);
@@ -20,6 +20,8 @@ namespace UltimateCommander {
             frames.Remove(this);
         }
 
+        // Public members
+        
         public bool Selected {
             get { return MainWindow.ActiveFrame == this; }
         }
@@ -27,6 +29,8 @@ namespace UltimateCommander {
         public void Select()
         {
             MainWindow.ActiveFrame = this;
+            CurrentView.OnSelect();
+            
             foreach (Frame frame in frames) {
                 frame.Redraw();
             }
@@ -34,7 +38,9 @@ namespace UltimateCommander {
 
         public void Redraw()
         {
-            CurrentView.Slot.Redraw();
+            if (NPages > 0) {
+                CurrentView.Slot.Redraw();
+            }
         }
 
         public void AppendView(View view, string text)
@@ -58,15 +64,26 @@ namespace UltimateCommander {
             RefreshTabs();
         }
 
-        View CurrentView {
+        public void ClearViews()
+        {
+            for (int i=0; i<NPages; i++) {
+                RemovePage(0);
+            }
+        }
+        
+        public View CurrentView {
             get { return ((Slot)GetNthPage(CurrentPage)).View; }
         }
 
+        // Private members
+        
         void RefreshTabs()
         {
             ShowTabs = NPages > 1 ? true : false;
         }
 
+        // Signal handlers
+        
         [GLib.ConnectBefore]
         void OnSwitchPage(object sender, SwitchPageArgs args)
         {

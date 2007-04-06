@@ -342,7 +342,7 @@ namespace UltimateCommander {
                 }
                 try {
                     return new Mono.Unix.UnixUserInfo(OwnerUserId).UserName;
-                } catch (ArgumentException e) {
+                } catch (ArgumentException) {
                     return not_available + " (UID: " + OwnerUserId.ToString() + ")";
                 }
             }
@@ -363,7 +363,7 @@ namespace UltimateCommander {
                 }
                 try {
                     return new Mono.Unix.UnixGroupInfo(OwnerGroupId).GroupName;
-                } catch (ArgumentException e) {
+                } catch (ArgumentException) {
                     return not_available + " (GID:" + OwnerGroupId.ToString() + ")";
                 }
             }

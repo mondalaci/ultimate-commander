@@ -17,10 +17,14 @@ namespace UltimateCommander {
         // Visual attributes
 
         public static int IconSize = 16;
+        
         public static Gdk.Color SelectedFileBgColor = new Gdk.Color(224, 224, 0);
         public static Gdk.Color InvalidFileNameEncodingColor = new Gdk.Color(255, 0, 0);
+        
         public static Gdk.Color ErrorColor = new Gdk.Color(255, 96, 96);
         public static Gdk.Color WarningColor = new Gdk.Color(255, 192, 0);
+
+        public static Gdk.Color UnselectedActivePanelSlotColor = new Gdk.Color(96, 96, 96);  
 
         // Timing attributes
         
