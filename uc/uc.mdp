@@ -57,6 +57,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
   <GtkDesignInfo />
+  <Deployment.LinuxDeployData scriptName="uc" />
   <DeploymentInformation strategy="File">
     <excludeFiles />
   </DeploymentInformation>

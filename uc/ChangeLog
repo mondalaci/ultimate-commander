@@ -1,0 +1,612 @@
+2007-05-02  László Monda <laci@monda.hu> 
+
+	Make the color of the slot of the unselected active panel brighter so it doesn't seem like it's sensitive.
+
+2007-04-06 21:30  László Monda <laci@monda.hu> 
+
+	* Config.cs, CreateDirectoryDialog.cs, Dialog.cs, File.cs,
+	  Frame.cs, MainWindow.cs, Panel.cs, Slot.cs,
+	  UltimateCommander.cs, Util.cs, View.cs, gui/uc.glade, uc.mdp:
+	  Implement dialog handling and reimplement directory creation
+	  using it.
+
+2006-08-02 23:02  László Monda <laci@monda.hu> 
+
+	* Panel.cs: When renaming, place the cursor to the end of the
+	  selection.
+
+2006-08-02 22:50  László Monda <laci@monda.hu> 
+
+	* MainWindow.cs, gui/uc.glade: Redefine hotkeys of Create
+	  Directory and Rename according to the OFM standard.
+
+2006-07-25 00:20  László Monda <laci@monda.hu> 
+
+	* gui/uc.glade: Realign the TextView of the CreateDirectoryWidget.
+
+2006-06-26 14:11  László Monda <laci@monda.hu> 
+
+	* AttributeIcons.cs, File.cs, uc.mds: Improve attribute icon.
+
+2006-05-19 14:47  László Monda <laci@monda.hu> 
+
+	* CreateDirectoryWidget.cs, Panel.cs, gui/uc.glade: Add OK and
+	  Cancel buttons to CreateDirectoryWidget.
+
+2006-05-13 12:29  László Monda <laci@monda.hu> 
+
+	* CreateDirectoryWidget.cs: Add file.
+
+2006-05-01 23:23  László Monda <laci@monda.hu> 
+
+	* File.cs, InfoBar.cs, MainWindow.cs, Notifier.cs, Panel.cs,
+	  Slot.cs, UnreadableDirectoryNotifier.cs, Util.cs, gui/uc.glade,
+	  uc.mdp: Implement directory creation.
+
+2006-05-01 20:04  László Monda <laci@monda.hu> 
+
+	* gui/uc.glade: Add some space on the edges of notifiers to not to
+	  be so crowded.
+
+2006-05-01 20:01  László Monda <laci@monda.hu> 
+
+	* InvalidEncodingNotifier.cs, Notifier.cs, Panel.cs, PanelView.cs,
+	  UnreadableDirectoryNotifier.cs, gui/uc.glade: Fix panel
+	  selection when notifier(s) is/are active and pressing the button
+	  on panel treeview or notifier textview.
+
+2006-05-01 19:37  László Monda <laci@monda.hu> 
+
+	* gui/uc.glade: Activate panel when clicking on its statusbar.
+
+2006-05-01 19:34  László Monda <laci@monda.hu> 
+
+	* AttributeIcons.cs, File.cs: Show searchable, but not readable
+	  directories as attribute icons.
+
+2006-05-01 14:06  László Monda <laci@monda.hu> 
+
+	* Config.cs: Make the error notification color brighter, so it's
+	  easier to read its text while flashing.
+
+2006-05-01 14:00  László Monda <laci@monda.hu> 
+
+	* Config.cs, InfoBar.cs, Panel.cs: Do not delay unnecessarily
+	  Util.FlashInterval msecs before visual bell.
+
+2006-05-01 13:09  László Monda <laci@monda.hu> 
+
+	* File.cs, Panel.cs: Make rename work on symlinks.
+
+2006-05-01 12:11  László Monda <laci@monda.hu> 
+
+	* InfoBar.cs, Panel.cs: Make the infobar notification methods
+	  accept variable arguments.
+
+2006-05-01 11:55  László Monda <laci@monda.hu> 
+
+	* File.cs, Panel.cs: React to nondirectory file activations.
+
+2006-05-01 11:12  László Monda <laci@monda.hu> 
+
+	* Panel.cs: Change focus when clicking on panel scrollbars.
+
+2006-05-01 11:05  László Monda <laci@monda.hu> 
+
+	* Slot.cs, gui/uc.glade: Make panel headers change focus.
+
+2006-05-01 10:55  László Monda <laci@monda.hu> 
+
+	* Panel.cs: Make rename cancellation throw a notice instead of an
+	  error.
+
+2006-05-01 10:51  László Monda <laci@monda.hu> 
+
+	* Config.cs, InfoBar.cs, gui/infobar-down-arrow.png,
+	  gui/infobar-expander.png, gui/infobar-up-arrow.png,
+	  gui/uc.glade: Revamp the InfoBar according to its simplified
+	  policy. Make errors and warnings flash.
+
+2006-04-30 23:03  László Monda <laci@monda.hu> 
+
+	* Notifier.cs, Panel.cs, Slot.cs, Util.cs, gui/uc.glade: Replace
+	  panel header Label with a TextView to wrap header text.
+
+2006-04-28 23:46  László Monda <laci@monda.hu> 
+
+	* Panel.cs, PanelConfigurator.cs, PanelListingConfigurator.cs,
+	  PanelSortingConfigurator.cs, gui/uc.glade: Make configurator OK
+	  buttons work.
+
+2006-04-28 23:19  László Monda <laci@monda.hu> 
+
+	* Notifier.cs, Panel.cs, PanelListingConfigurator.cs,
+	  PanelSortingConfigurator.cs, View.cs, gui/uc.glade: Fix
+	  configurator titles.
+
+2006-04-28 23:02  László Monda <laci@monda.hu> 
+
+	* uc.mdp, uc.mds: Add MonoDevelop solution and project files.
+
+2006-04-28 23:01  László Monda <laci@monda.hu> 
+
+	* AttributeIcons.cs, Config.cs, File.cs, FileComparer.cs,
+	  FileComparerInfo.cs, Frame.cs, GladeWidget.cs, InfoBar.cs,
+	  InvalidEncodingNotifier.cs, MainWindow.cs, Notifier.cs,
+	  Panel.cs, PanelColumn.cs, PanelColumnInfo.cs,
+	  PanelConfigurator.cs, PanelConfiguratorInfo.cs, PanelFrame.cs,
+	  PanelListingConfigurator.cs, PanelSortingConfigurator.cs,
+	  PanelView.cs, Slot.cs, UltimateCommander.cs,
+	  UnreadableDirectoryNotifier.cs, Util.cs, View.cs: Convert all
+	  tabs to spaces.
+
+2006-04-28 01:59  László Monda <laci@monda.hu> 
+
+	* Panel.cs: Use sorting configurator when sorting, not listing
+	  configurator inappropriately.
+
+2006-04-27 23:11  László Monda <laci@monda.hu> 
+
+	* PanelView.cs: Add file.
+
+2006-04-27 12:24  László Monda <laci@monda.hu> 
+
+	* Config.cs, File.cs, Frame.cs, GladeContainer.cs, GladeWidget.cs,
+	  InfoBar.cs, MainWindow.cs, Notifier.cs, Panel.cs,
+	  PanelColumn.cs, PanelColumnInfo.cs, PanelConfigurator.cs,
+	  PanelFrame.cs, PanelListingConfigurator.cs, Slot.cs,
+	  UltimateCommander.cs, Util.cs, View.cs, gui/uc.glade: Implement
+	  rename, complete code cleanup, fix many small bugs.
+
+2006-04-14 09:21  László Monda <laci@monda.hu> 
+
+	* UltimateCommander.cs: Gmane test commit.
+
+2006-04-13 12:59  László Monda <laci@monda.hu> 
+
+	* UltimateCommander.cs: cia.navi.cx stat test.
+
+2006-04-13 12:18  László Monda <laci@monda.hu> 
+
+	* UltimateCommander.cs: SourceForge svnnotify hook test.
+
+2006-04-13 12:04  László Monda <laci@monda.hu> 
+
+	* PanelColumn.cs, PanelColumnInfo.cs: Add alignment property to
+	  panel columns.
+
+2006-04-04 22:59  László Monda <laci@monda.hu> 
+
+	* File.cs, FileComparer.cs, FileComparerInfo.cs, Panel.cs,
+	  PanelColumn.cs, PanelColumnInfo.cs, PanelConfigurator.cs,
+	  PanelConfiguratorInfo.cs, PanelListingConfigurator.cs,
+	  PanelSortingConfigurator.cs, gui/uc.glade: Implement sorting.
+	  Fix panel configurator related issues.
+
+2006-03-28 23:47  László Monda <laci@monda.hu> 
+
+	* gui/uc.glade: Reorder some navigation toolbar buttons of the
+	  panel.
+
+2006-03-28 23:41  László Monda <laci@monda.hu> 
+
+	* Config.cs, Panel.cs, UltimateCommander.cs, Util.cs,
+	  gui/uc.glade: Implement home directory changing button of the
+	  panel.
+
+2006-03-28 23:22  László Monda <laci@monda.hu> 
+
+	* Panel.cs, gui/uc.glade: Implement up one directory function of
+	  panels.
+
+2006-03-28 22:46  László Monda <laci@monda.hu> 
+
+	* InfoBar.cs, MainWindow.cs, Panel.cs: Implement infobar,
+	  inactivate user interface elements that has no function
+	  associated yet and write their signal handler skeleton methods.
+
+2006-03-28 11:14  László Monda <laci@monda.hu> 
+
+	* File.cs, InvalidEncodingNotifier.cs, Notifier.cs, Panel.cs,
+	  UnreadableDirectoryNotifier.cs, Util.cs, gui/uc.glade: Detect
+	  and handle unreadable, but searchable directories. Notify the
+	  user about them.
+
+2006-03-27 20:24  László Monda <laci@monda.hu> 
+
+	* Panel.cs, PanelColumn.cs: Only autosize the columns when
+	  changing directory. This way hovered selection works smooth.
+
+2006-03-27 19:37  László Monda <laci@monda.hu> 
+
+	* PanelColumn.cs, UltimateCommander.cs: Autosize panel columns
+	  every time.
+
+2006-03-27 19:11  László Monda <laci@monda.hu> 
+
+	* File.cs, Panel.cs, UltimateCommander.cs, gui/folder.png: Replace
+	  directory icon to a new one.
+
+2006-03-27 18:18  László Monda <laci@monda.hu> 
+
+	* gui/operation-copy.png, gui/operation-create-directory.png,
+	  gui/operation-delete.png, gui/operation-move.png,
+	  gui/operation-rename.png, gui/uc.glade: Revamp the operation
+	  toolbar.
+
+2006-03-27 17:29  László Monda <laci@monda.hu> 
+
+	* gui/uc.glade: Replace the infobar status notifier from the
+	  bottom right corner to the bottom left corner.
+
+2006-03-25 21:44  László Monda <laci@monda.hu> 
+
+	* File.cs, Panel.cs, UltimateCommander.cs,
+	  gui/infobar-down-arrow.png, gui/infobar-expander.png,
+	  gui/infobar-up-arrow.png, gui/panel-navigate-backward.png,
+	  gui/panel-navigate-forward.png, gui/panel-navigate-home.png,
+	  gui/panel-navigate-up-one-directory.png, gui/panel-quick-cd.png,
+	  gui/panel-set-filter.png, gui/panel-set-listing.png,
+	  gui/panel-set-sorting.png, gui/panel-set-thumbnail-view.png,
+	  gui/panel-zoom-in-thumbnail.png,
+	  gui/panel-zoom-out-thumbnail.png, gui/uc.glade: Revamp the GUI.
+	  Replace the updir icon with a new one. Refine panel updir
+	  positioning. Fix encoding notification bug.
+
+2006-03-24 17:07  László Monda <laci@monda.hu> 
+
+	* File.cs, InvalidEncodingNotifier.cs, Panel.cs, PanelColumn.cs,
+	  PanelColumnInfo.cs, gui/uc.glade: Detect and handle filenames
+	  encoded with invalid character encodings.
+
+2006-03-14 00:12  László Monda <laci@monda.hu> 
+
+	* File.cs, Frame.cs, MainWindow.cs, Makefile, Panel.cs: Format the
+	  code according to the Coding Guidelines.
+
+2006-03-13 23:40  László Monda <laci@monda.hu> 
+
+	* gui/uc.glade: Add some signal handlers.
+
+2006-02-28 17:14  László Monda <laci@monda.hu> 
+
+	* UltimateCommander.cs: Check the UC_GUI_PATH environment variable
+	  and look up GUI resources accrodingly to the path it denotes.
+
+2006-02-28 16:52  László Monda <laci@monda.hu> 
+
+	* PanelListingConfigurator.cs: Refresh the used types treeview
+	  after the remove button was pressed.
+
+2006-02-28 00:01  László Monda <laci@monda.hu> 
+
+	* File.cs, ListingType.cs, MainWindow.cs, Makefile, Panel.cs,
+	  PanelColumn.cs, PanelColumnInfo.cs, PanelConfigurator.cs,
+	  PanelFrame.cs, PanelListingConfigurator.cs,
+	  PanelSortConfigurator.cs, PanelSortingConfigurator.cs: Implement
+	  listing configuration properly.
+
+2006-02-21 12:37  László Monda <laci@monda.hu> 
+
+	* Makefile, PanelColumn.cs, PanelColumnInfo.cs: Move the
+	  ColumnInfo class as PanelColumnInfo from PanelColumn.cs to
+	  PanelColumnInfo.cs.
+
+2006-02-21 12:02  László Monda <laci@monda.hu> 
+
+	* File.cs, PanelColumn.cs: Add and use File.LinkCountString.
+
+2006-02-21 11:58  László Monda <laci@monda.hu> 
+
+	* File.cs: Add and use datetime_format.
+
+2006-02-21 11:55  László Monda <laci@monda.hu> 
+
+	* File.cs: Use IsDanglingLink in OwnerUser and OwnerGroup,
+	  reference to string not_available if needed.
+
+2006-02-21 11:50  László Monda <laci@monda.hu> 
+
+	* File.cs: Add IsDanglingLink and CheckDanglingLink(object).
+
+2006-02-21 11:28  László Monda <laci@monda.hu> 
+
+	* File.cs: Fix *TimeString() methods.
+
+2006-02-21 02:24  László Monda <laci@monda.hu> 
+
+	* ColumnType.cs, File.cs, Makefile, Panel.cs, PanelColumn.cs,
+	  gui/uc.glade: Extend the File class and add the PanelColumn
+	  class.
+
+2006-02-17 12:28  László Monda <laci@monda.hu> 
+
+	* Panel.cs: Use CellRenderer.CellBackgroundGdk to display the
+	  selection state of every row cells consistently.
+
+2006-02-17 01:56  László Monda <laci@monda.hu> 
+
+	* AttributeIcons.cs, File.cs, Panel.cs: Add alpha channel to the
+	  attribute icons.
+
+2006-02-17 01:06  László Monda <laci@monda.hu> 
+
+	* AttributeIcons.cs, File.cs, Panel.cs: Fix the mime icon and size
+	  of dangling symlinks.
+
+2006-02-16 16:39  László Monda <laci@monda.hu> 
+
+	* AttributeIcons.cs, ColumnType.cs, File.cs, Panel.cs: Fix
+	  File.IsSymbolicLink: bool.
+
+2006-02-16 13:08  László Monda <laci@monda.hu> 
+
+	* AttributeIcons.cs, File.cs: Recognize stalled links and display
+	  their mime icon and attribute icon appropriately.
+
+2006-02-16 03:01  László Monda <laci@monda.hu> 
+
+	* AttributeIcons.cs, File.cs, ListingType.cs, MainWindow.cs,
+	  Makefile, Panel.cs, PanelConfigurator.cs,
+	  PanelListingConfigurator.cs, PanelSortConfigurator.cs,
+	  UltimateCommander.cs, gui/uc.glade: Implement AttributeIcon and
+	  integrate it into the Panel.
+
+2006-02-04 00:35  László Monda <laci@monda.hu> 
+
+	* depot-video-thumbnailer, depot-video-thumbnailer/Makefile,
+	  depot-video-thumbnailer/bacon-resize.c,
+	  depot-video-thumbnailer/bacon-resize.h,
+	  depot-video-thumbnailer/bacon-video-widget-xine.c,
+	  depot-video-thumbnailer/bacon-video-widget.h,
+	  depot-video-thumbnailer/baconvideowidget-marshal.c,
+	  depot-video-thumbnailer/baconvideowidget-marshal.h,
+	  depot-video-thumbnailer/config.h,
+	  depot-video-thumbnailer/debug.h,
+	  depot-video-thumbnailer/depot-video-thumbnailer.c,
+	  depot-video-thumbnailer/totem-disc.c,
+	  depot-video-thumbnailer/totem-disc.h,
+	  depot-video-thumbnailer/video-utils.c,
+	  depot-video-thumbnailer/video-utils.h: Import mass-thumbnailing
+	  CLI application.
+
+2006-01-26 00:44  László Monda <laci@monda.hu> 
+
+	* Panel.cs: Temporary disable tab key functionality until the end
+	  of UI refactoring.
+
+2006-01-25 22:10  László Monda <laci@monda.hu> 
+
+	* MainWindow.cs, Panel.cs: Fix bug that caused
+	  NullReferenceException when the mouse pointer moved below the
+	  visible area of a panel which had an active vertical scrollbar
+	  during hovered selection.
+
+2006-01-25 21:28  László Monda <laci@monda.hu> 
+
+	* PanelFrame.cs, gui, gui/.cvsignore: Fix panel configuration
+	  widget container bug.
+
+2006-01-21 13:10  László Monda <laci@monda.hu> 
+
+	* Frame.cs, MainWindow.cs, Makefile, Panel.cs,
+	  PanelConfigurator.cs, PanelFrame.cs,
+	  PanelListingConfigurator.cs, PanelSortConfigurator.cs,
+	  SetViewWidget.cs, Slot.cs, View.cs, gui/uc.glade: Implement
+	  frame handling and the related base classes.
+
+2006-01-18 17:11  László Monda <laci@monda.hu> 
+
+	* Frame.cs, GladeContainer.cs, MainWindow.cs, Makefile, Panel.cs,
+	  SetViewWidget.cs, Slot.cs, View.cs, gui/uc.glade: Polish the
+	  panel view configuration UI and refactor some GUI classes.
+
+2006-01-06 23:47  László Monda <laci@monda.hu> 
+
+	* Frame.cs, GladeContainer.cs, GladeWidget.cs, MainWindow.cs,
+	  Makefile, Panel.cs, logo.png: Abstract Glade widgets.
+
+2006-01-02 14:36  László Monda <laci@monda.hu> 
+
+	* Frame.cs, MainWindow.cs, Makefile, Panel.cs, gui,
+	  gui/.cvsignore: Gladeify the entire GUI.
+
+2005-12-30 11:20  László Monda <laci@monda.hu> 
+
+	* gui/uc.glade: Integrate the panel GUI.
+
+2005-12-30 11:12  László Monda <laci@monda.hu> 
+
+	* MainWindow.cs, Panel.cs, UltimateCommander.cs: Integrate the
+	  panel GUI.
+
+2005-12-22 22:58  László Monda <laci@monda.hu> 
+
+	* gui/operation-make-directory.png: Improve icon.
+
+2005-12-22 00:27  László Monda <laci@monda.hu> 
+
+	* Panel.cs: Remove the unnecessary top-level Box container of the
+	  Panel.
+
+2005-12-21 23:51  László Monda <laci@monda.hu> 
+
+	* Makefile: Repress CS0169 "method never used" mcs warnings
+	  because of the autoconnected Glade# signal handlers.
+
+2005-12-21 23:11  László Monda <laci@monda.hu> 
+
+	* gui/operation-rename.png: Improve icon.
+
+2005-12-21 22:42  László Monda <laci@monda.hu> 
+
+	* MainWindow.cs, Makefile, UltimateCommander.cs, gui,
+	  gui/.cvsignore, gui/logo.png, gui/operation-make-directory.png,
+	  gui/operation-move.png, gui/operation-rename.png, gui/uc.glade:
+	  Gladeify the main window and add toolbar to it.
+
+2005-12-20 12:17  László Monda <laci@monda.hu> 
+
+	* ., .cvsignore, Makefile, Panel.cs, TODO: Use standard theme
+	  colors.
+
+2005-12-20 11:04  László Monda <laci@monda.hu> 
+
+	* Panel.cs: Move the cursor with the actual position of hovered
+	  selection.
+
+2005-12-17 13:49  László Monda <laci@monda.hu> 
+
+	* File.cs, Panel.cs, TODO, UltimateCommander.cs: Implement hovered
+	  file selection using the third mouse button.
+
+2005-12-16 20:23  László Monda <laci@monda.hu> 
+
+	* Panel.cs: Eliminate deprecation warnings with Mono 1.1.10.1
+
+2005-12-16 14:52  László Monda <laci@monda.hu> 
+
+	* Panel.cs, TODO: Make spacing around the header and footer title
+	  proportionally.
+
+2005-12-16 14:39  László Monda <laci@monda.hu> 
+
+	* Panel.cs: Make the updir checkbox inactivatable. Bind the
+	  OnToggled handler to the checkboxes so the user can select files
+	  using them.
+
+2005-12-15 23:33  László Monda <laci@monda.hu> 
+
+	* UltimateCommander.cs, logo.png: Add logo.
+
+2005-12-15 23:32  László Monda <laci@monda.hu> 
+
+	* Makefile: Add clean directive.
+
+2005-12-14 22:11  László Monda <laci@monda.hu> 
+
+	* TODO, UltimateCommander.cs: Make the separator bar beween the
+	  left and right panel grow and shrink proportionally to the
+	  window area.
+
+2005-12-14 22:05  László Monda <laci@monda.hu> 
+
+	* Makefile: Use Gtk# 2.0
+
+2005-11-15 21:42  László Monda <laci@monda.hu> 
+
+	* File.cs, UltimateCommander.cs: Make the source compile without
+	  warnings with mcs 1.1.9.1
+
+2005-11-15 21:24  László Monda <laci@monda.hu> 
+
+	* .project, uc: Add files.
+
+2005-11-12 23:26  László Monda <laci@monda.hu> 
+
+	* AUTHORS, ChangeLog, Colors.py, ColumnType.cs, File.cs, File.py,
+	  FixedEntry.py, INSTALL, MainWindow.py, Makefile,
+	  ModeCheckButtons.py, NEWS, OctalModeEntry.py, Panel.cs,
+	  Panel.py, ParseError.py, README, Sub.py, TODO,
+	  UltimateCommander.cs, Widget.py, config.py, uc.glade, uc.py:
+	  Restart in C#.
+
+2003-10-05 23:04  László Monda <laci@monda.hu> 
+
+	* ChangeLog, Colors.py, File.py, FixedEntry.py, INSTALL,
+	  MainWindow.py, ModeCheckButtons.py, OctalModeEntry.py, Panel.py,
+	  ParseError.py, README, Sub.py, Widget.py, basepanel.py,
+	  config.py, fileentry.py, gtkbasic.py, gtkconfig.py, gtkpanel.py,
+	  parseerror.py, uc.glade, uc.py: Too many changes :)
+
+2003-09-03 21:50  László Monda <laci@monda.hu> 
+
+	* uc.glade: Add UI scratch
+
+2003-08-05 21:06  László Monda <laci@monda.hu> 
+
+	* uc.py: Import and initialize `gtkbasic'.
+
+2003-08-05 21:05  László Monda <laci@monda.hu> 
+
+	* gtkconfig.py: `encoding' added.
+
+2003-08-05 21:03  László Monda <laci@monda.hu> 
+
+	* fileentry.py: Only whitespace cleanup this time.
+
+2003-08-05 20:53  László Monda <laci@monda.hu> 
+
+	* basepanel.py: Reindent hooks properly.
+
+2003-08-05 20:50  László Monda <laci@monda.hu> 
+
+	* ChangeLog: Refreshed.
+
+2003-08-05 20:48  László Monda <laci@monda.hu> 
+
+	* gtkbasic.py: Add `init_colors'.
+
+2003-08-05 20:45  László Monda <laci@monda.hu> 
+
+	* gtkpanel.py: `Panel.move_tagged_entries' and
+	  `Panel.crowd_tagged_entries' properly
+	  implemented. A bunch of cleanup.
+
+2003-08-02 17:56  László Monda <laci@monda.hu> 
+
+	* AUTHORS, COPYING, ChangeLog, NEWS, basepanel.py, config.py,
+	  fileentry.py, gtkbasic.py, gtkconfig.py, gtkpanel.py,
+	  parseerror.py, uc.py: let's do something kewl!
+
+2003-08-02 17:53  László Monda <laci@monda.hu> 
+
+	* Makefile, TODO, color.c, color.h, fileentry.c, fileentry.h,
+	  filelist.c, filelist.h, frame.c, frame.h, input.c, input.h,
+	  link.c, link.h, mem.c, mem.h, panel.c, panel.h, uc.c, uc.h:
+	  Pythonization
+
+2003-05-02 11:33  László Monda <laci@monda.hu> 
+
+	* panel.h: more reasonable identifiers, path array size corrected
+
+2003-02-15 01:09  László Monda <laci@monda.hu> 
+
+	* filelist.c: remove_entry added
+
+2003-02-15 01:05  László Monda <laci@monda.hu> 
+
+	* panel.c: extremely clear code compared to the previous revision
+
+2003-02-15 01:01  László Monda <laci@monda.hu> 
+
+	* Makefile: link.* replaced by widget.*, golbals.* added
+
+2003-02-15 00:51  László Monda <laci@monda.hu> 
+
+	* color.h: draw_hline prototype added because of its replacement
+	  from panel.c to color.h
+
+2003-02-15 00:47  László Monda <laci@monda.hu> 
+
+	* color.c: draw_hline replaced from panel.c
+
+2003-02-15 00:16  László Monda <laci@monda.hu> 
+
+	* panel.h: unuseful comments weeded out, more structured code
+
+2003-02-14 23:59  László Monda <laci@monda.hu> 
+
+	* frame.h: frame_child_t killed, frame_t widgetized
+
+2003-02-12 09:09  László Monda <laci@monda.hu> 
+
+	* TODO: a careless TODO
+
+2003-01-30 22:49  László Monda <laci@monda.hu> 
+
+	* ., Makefile, TODO, color.c, color.h, fileentry.c, fileentry.h,
+	  filelist.c, filelist.h, frame.c, frame.h, input.c, input.h,
+	  link.c, link.h, mem.c, mem.h, panel.c, panel.h, uc.c, uc.h:
+	  Initial revision
+
