@@ -1,0 +1,229 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<stetic-interface>
+  <configuration>
+    <images-root-path>../</images-root-path>
+  </configuration>
+  <icon-factory>
+    <icon-set id="stock_new-dir">
+      <source>
+        <property name="Image">stock:stock_new-dir Menu</property>
+      </source>
+    </icon-set>
+  </icon-factory>
+  <widget class="Gtk.Window" id="UltimateCommander.MainWindow" design-size="904 630">
+    <action-group name="Default">
+      <action id="File">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">File</property>
+        <property name="ShortLabel" translatable="yes">File</property>
+      </action>
+      <action id="CreateDirectory">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">Create Directory</property>
+        <property name="ShortLabel" translatable="yes">Create Directory</property>
+      </action>
+      <action id="Rename">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">Rename</property>
+        <property name="ShortLabel" translatable="yes">Rename</property>
+        <property name="StockId">gtk-copy</property>
+        <signal name="Activated" handler="OnRenameMenuItemActivated" />
+      </action>
+      <action id="Quit">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">Quit</property>
+        <property name="ShortLabel" translatable="yes">Quit</property>
+        <property name="StockId">gtk-quit</property>
+        <signal name="Activated" handler="OnQuitMenuItemActivated" />
+      </action>
+      <action id="CreateDirectory3">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">Create Directory</property>
+        <property name="ShortLabel" translatable="yes">Create Directory</property>
+        <property name="StockId">stock_new-dir</property>
+        <signal name="Activated" handler="OnCreateDirectoryMenItemActivated" />
+      </action>
+      <action id="Copy">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">Copy</property>
+        <property name="ShortLabel" translatable="yes">Copy</property>
+        <property name="StockId">gtk-copy</property>
+      </action>
+      <action id="Move">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">Move</property>
+        <property name="ShortLabel" translatable="yes">Move</property>
+        <property name="StockId">gtk-indent</property>
+      </action>
+      <action id="CreateDirectory2">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">Create Directory</property>
+        <property name="ShortLabel" translatable="yes">Create Directory</property>
+        <property name="StockId">stock_new-dir</property>
+        <signal name="Activated" handler="OnCreateDirectoryButtonActivated" />
+      </action>
+      <action id="Rename1">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">Rename</property>
+        <property name="ShortLabel" translatable="yes">Rename</property>
+        <property name="StockId">gtk-edit</property>
+        <signal name="Activated" handler="OnRenameButtonActivated" />
+      </action>
+      <action id="Delete">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">Delete</property>
+        <property name="ShortLabel" translatable="yes">Delete</property>
+        <property name="StockId">gtk-delete</property>
+      </action>
+      <action id="CreateDirectory4">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">Create Directory</property>
+        <property name="ShortLabel" translatable="yes">Create Directory</property>
+        <property name="StockId">stock_new-dir</property>
+        <signal name="Activated" handler="OnCreateDirectoryButtonActivated" />
+      </action>
+    </action-group>
+    <property name="MemberName" />
+    <property name="Title" translatable="yes">Ultimate Commander</property>
+    <property name="Icon">file:./gui/logo.png</property>
+    <property name="WindowPosition">CenterOnParent</property>
+    <signal name="DeleteEvent" handler="OnWindowDeleteEvent" />
+    <signal name="ResizeChecked" handler="OnWindowResizeChecked" />
+    <child>
+      <widget class="Gtk.VBox" id="vbox1">
+        <property name="MemberName" />
+        <child>
+          <widget class="Gtk.MenuBar" id="menubar">
+            <property name="MemberName" />
+            <node name="menubar" type="Menubar">
+              <node type="Menu" action="File">
+                <node type="Menuitem" action="Rename" />
+                <node type="Menuitem" action="CreateDirectory3" />
+                <node type="Separator" />
+                <node type="Menuitem" action="Quit" />
+              </node>
+            </node>
+          </widget>
+          <packing>
+            <property name="Position">0</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.Toolbar" id="toolbar">
+            <property name="MemberName" />
+            <property name="ShowArrow">False</property>
+            <property name="ButtonStyle">Both</property>
+            <property name="IconSize">SmallToolbar</property>
+            <node name="toolbar" type="Menubar">
+              <node type="Toolitem" action="Copy" />
+              <node type="Toolitem" action="Move" />
+              <node type="Toolitem" action="Rename1" />
+              <node type="Toolitem" action="CreateDirectory4" />
+              <node type="Toolitem" action="Delete" />
+            </node>
+          </widget>
+          <packing>
+            <property name="Position">1</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.EventBox" id="dialog_frame_slot">
+            <property name="MemberName" />
+            <child>
+              <placeholder />
+            </child>
+          </widget>
+          <packing>
+            <property name="Position">2</property>
+            <property name="AutoSize">False</property>
+            <property name="Expand">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.HPaned" id="hpaned">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Position">401</property>
+            <signal name="CycleChildFocus" handler="OnHPanedCycleChildFocus" />
+            <child>
+              <placeholder />
+            </child>
+            <child>
+              <placeholder />
+            </child>
+          </widget>
+          <packing>
+            <property name="Position">3</property>
+            <property name="AutoSize">True</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.HBox" id="command_hbox">
+            <property name="MemberName" />
+            <property name="Spacing">6</property>
+            <property name="BorderWidth">2</property>
+            <child>
+              <widget class="Gtk.Label" id="label1">
+                <property name="MemberName" />
+                <property name="LabelProp" translatable="yes">/currently/static/path</property>
+              </widget>
+              <packing>
+                <property name="Position">0</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.ComboBoxEntry" id="comboboxentry1">
+                <property name="MemberName" />
+                <property name="IsTextCombo">False</property>
+                <property name="Items" translatable="yes" />
+              </widget>
+              <packing>
+                <property name="Position">1</property>
+                <property name="AutoSize">False</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="Position">4</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.HSeparator" id="hseparator1">
+            <property name="MemberName" />
+          </widget>
+          <packing>
+            <property name="Position">5</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.EventBox" id="infobar_slot">
+            <property name="MemberName" />
+            <child>
+              <placeholder />
+            </child>
+          </widget>
+          <packing>
+            <property name="Position">6</property>
+            <property name="AutoSize">False</property>
+            <property name="Expand">False</property>
+          </packing>
+        </child>
+      </widget>
+    </child>
+  </widget>
+</stetic-interface>

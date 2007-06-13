@@ -1,15 +1,15 @@
-<Project name="uc" fileversion="2.0" language="C#" clr-version="Net_1_1" ctype="DotNetProject">
+<Project name="UltimateCommander" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="./bin/Debug" assembly="uc" />
       <Build debugmode="True" target="Exe" />
-      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_1_1" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
       <Output directory="./bin/Release" assembly="uc" />
       <Build debugmode="False" target="Exe" />
-      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_1_1" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
   </Configurations>
@@ -23,7 +23,6 @@
     <File name="./GladeWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="./InfoBar.cs" subtype="Code" buildaction="Compile" />
     <File name="./InvalidEncodingNotifier.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MainWindow.cs" subtype="Code" buildaction="Compile" />
     <File name="./Makefile" subtype="Code" buildaction="Nothing" />
     <File name="./Notifier.cs" subtype="Code" buildaction="Compile" />
     <File name="./Panel.cs" subtype="Code" buildaction="Compile" />
@@ -46,18 +45,38 @@
     <File name="./gtk-gui/gui.stetic" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./CreateDirectoryDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="./Dialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./uc.bat" subtype="Code" buildaction="Nothing" />
     <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="./MainWindow.cs" subtype="Code" buildaction="Compile" />
+    <File name="./gui/operation-delete.png" subtype="Code" buildaction="Nothing" />
+    <File name="./gui/operation-copy.png" subtype="Code" buildaction="FileCopy" DeployService.UseProjectRelativePath="True" />
+    <File name="./gui/folder.png" subtype="Code" buildaction="Nothing" />
+    <File name="./gui/logo.png" subtype="Code" buildaction="FileCopy" DeployService.UseProjectRelativePath="True" />
+    <File name="./gui/operation-create-directory.png" subtype="Code" buildaction="Nothing" />
+    <File name="./gui/operation-make-directory.png" subtype="Code" buildaction="Nothing" />
+    <File name="./gui/operation-move.png" subtype="Code" buildaction="Nothing" />
+    <File name="./gui/operation-rename.png" subtype="Code" buildaction="FileCopy" DeployService.UseProjectRelativePath="True" />
+    <File name="./gui/panel-navigate-backward.png" subtype="Code" buildaction="Nothing" />
+    <File name="./gui/panel-navigate-forward.png" subtype="Code" buildaction="Nothing" />
+    <File name="./gui/panel-navigate-home.png" subtype="Code" buildaction="Nothing" />
+    <File name="./gui/panel-navigate-up-one-directory.png" subtype="Code" buildaction="Nothing" />
+    <File name="./gui/panel-quick-cd.png" subtype="Code" buildaction="Nothing" />
+    <File name="./gui/panel-set-filter.png" subtype="Code" buildaction="Nothing" />
+    <File name="./gui/panel-set-listing.png" subtype="Code" buildaction="Nothing" />
+    <File name="./gui/panel-set-sorting.png" subtype="Code" buildaction="Nothing" />
+    <File name="./gui/panel-set-thumbnail-view.png" subtype="Code" buildaction="Nothing" />
+    <File name="./gui/panel-zoom-in-thumbnail.png" subtype="Code" buildaction="Nothing" />
+    <File name="./gui/panel-zoom-out-thumbnail.png" subtype="Code" buildaction="Nothing" />
+    <File name="./gtk-gui/UltimateCommander.MainWindow.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Gac" localcopy="True" refto="glade-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gnome-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </References>
+  <Deployment.LinuxDeployData scriptName="ultimatecommander" />
   <GtkDesignInfo />
-  <Deployment.LinuxDeployData scriptName="uc" />
   <DeploymentInformation strategy="File">
     <excludeFiles />
   </DeploymentInformation>

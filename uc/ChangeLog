@@ -1,6 +1,14 @@
+2007-05-14  László Monda <laci@monda.hu> 
+
+        * MainWindow.cs, InfoBar.cs, uc.mdp, ChangeLog, uc.mds,
+          gtk-gui/UltimateCommander.MainWindow.cs, gtk-gui/gui.stetic:
+          Migrate the main window from Glade to Stetic.
+
 2007-05-02  László Monda <laci@monda.hu> 
 
-	Make the color of the slot of the unselected active panel brighter so it doesn't seem like it's sensitive.
+	* ChangeLog, Config.cs uc.mdp: Make the color of the slot of
+          the unselected active panel brighter so it doesn't seem like
+          it's sensitive.
 
 2007-04-06 21:30  László Monda <laci@monda.hu> 
 

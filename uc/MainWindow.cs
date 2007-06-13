@@ -1,48 +1,42 @@
 using System;
-using Gtk;
-using Glade;
 
 namespace UltimateCommander {
+	
+	public class MainWindow : Gtk.Window {
 
-    public class MainWindow {
+        // Stetic widgets
+        protected Gtk.EventBox infobar_slot;
+        protected Gtk.HPaned hpaned;
+        protected Gtk.EventBox dialog_frame_slot;
+        protected Gtk.MenuBar menubar;
+        protected Gtk.Toolbar toolbar;
+        protected Gtk.HBox command_hbox;
 
-        [Glade.Widget] Gtk.Window main_window;
-        [Glade.Widget] MenuBar menubar;
-        [Glade.Widget] HandleBox handlebox;
-        [Glade.Widget] EventBox dialog_frame_slot;
-        [Glade.Widget] HPaned hpaned;
-        [Glade.Widget] HBox command_hbox;
-        [Glade.Widget] EventBox infobar_slot;
-        
-        // static Glade widgets
-        static Gtk.Window main_window_static;
-        static MenuBar menubar_static;
-        static HandleBox handlebox_static;
-        static HPaned hpaned_static;
-        static HBox command_hbox_static;
-        static EventBox infobar_slot_static;
+        // static Stetic widgets
+        static Gtk.MenuBar menubar_static;
+        static Gtk.Toolbar toolbar_static;
+        static Gtk.HPaned hpaned_static;
+        static Gtk.HBox command_hbox_static;
 
         static Frame dialog_frame;
         static PanelFrame left_panel_frame;
         static PanelFrame right_panel_frame;
-        static InfoBar infobar = new InfoBar();
         static Frame active_frame;
         static Panel active_panel;
-
+        static InfoBar infobar;
+		
         float panel_ratio = 0.5f;
         int width = 0;
         int old_width = 0;
 
-        public MainWindow()
+        public MainWindow(): base(Gtk.WindowType.Toplevel)
         {
-            Glade.XML glade_xml = new Glade.XML(Config.GladeFileName, "main_window", null);
-            glade_xml.Autoconnect(this);
-            
+            Stetic.Gui.Build(this, typeof(MainWindow));
+
             // these sigleton variables are meant to be static,
-            // but Glade can only bind to non-static variables
-            main_window_static = main_window;
+            // but Stetic can only bind to non-static variables
             menubar_static = menubar;
-            handlebox_static = handlebox;
+            toolbar_static = toolbar;
             hpaned_static = hpaned;
             command_hbox_static = command_hbox;
 
@@ -57,12 +51,13 @@ namespace UltimateCommander {
             hpaned.Add2(right_panel_frame);
             ResizePanes();
             SetActivePanel();
-            
-            // set up the infobar
-            infobar_slot.Add(infobar);
-            InfoBar.Notice("Ultimate Commander started.");
 
-            main_window.ShowAll();
+            // set up the infobar
+            infobar = new InfoBar();
+            infobar_slot.Add(infobar);
+            infobar.PrintInfo(InfoType.Notice, "Ultimate Commander started.");
+
+            this.ShowAll();
         }
 
         // File operations
@@ -100,23 +95,19 @@ namespace UltimateCommander {
 
         static void SetWindowSensitive(bool sensitive)
         {
-            Widget[] widgets = {
-                menubar_static,
-                handlebox_static,
-                hpaned_static,
-                command_hbox_static,
+            Gtk.Widget[] widgets = {
+                (Gtk.Widget)menubar_static,
+                (Gtk.Widget)toolbar_static,
+                (Gtk.Widget)hpaned_static,
+                (Gtk.Widget)command_hbox_static,
             };
-            foreach (Widget widget in widgets) {
+            foreach (Gtk.Widget widget in widgets) {
                 widget.Sensitive = sensitive;
             }
         }
 
         // Public accessors
-        
-        public static Gtk.Window Window {
-            get { return main_window_static; }
-        }
-        
+
         public static Frame DialogFrame {
             get { return dialog_frame; }
         }
@@ -186,51 +177,50 @@ namespace UltimateCommander {
             } else {
                 ActivePanel = RightPanel;
             }
-
         }
 
         // Signal handlers
-        
-        void OnCreateDirectoryButtonClicked(object sender, EventArgs args)
+
+        protected virtual void OnCreateDirectoryButtonActivated (object sender, System.EventArgs e)
         {
             CreateDirectory();
         }
 
-        void OnCreateDirectoryMenuItemActivate(object sender, EventArgs args)
+        protected virtual void OnCreateDirectoryMenItemActivated (object sender, System.EventArgs e)
         {
             CreateDirectory();
         }
 
-        void OnRenameButtonClicked(object sender, EventArgs args)
+        protected virtual void OnRenameButtonActivated (object sender, System.EventArgs e)
         {
             Rename();
         }
 
-        void OnRenameMenuItemActivate(object sender, EventArgs args)
+        protected virtual void OnRenameMenuItemActivated (object sender, System.EventArgs e)
         {
             Rename();
         }
 
-        void OnWindowDeleteEvent(object sender, DeleteEventArgs args)
-        {
-            Gtk.Application.Quit();
-        }
-
-        void OnQuitMenuItemActivate(object sender, EventArgs args)
-        {
-            Gtk.Application.Quit();
-        }
-
-        void OnWindowCheckResize(object sender, EventArgs args)
+        protected virtual void OnWindowResizeChecked (object sender, System.EventArgs e)
         {
             ResizePanes();
         }
 
-        void OnHPanedCycleChildFocus(object sender, CycleChildFocusArgs args)
+        // Override the F6 key which focuses the HPaned by default.
+        protected virtual void OnHPanedCycleChildFocus (object o, Gtk.CycleChildFocusArgs args)
         {
             args.RetVal = true;
-            ((PanelFrame)ActiveFrame).Panel.Select();
-            //ActivePanel.Select();  // TODO
+            ActivePanel.Select();
+        }
+
+        protected virtual void OnWindowDeleteEvent (object o, Gtk.DeleteEventArgs args)
+        {
+            Gtk.Application.Quit();
+        }
+
+        protected virtual void OnQuitMenuItemActivated (object sender, System.EventArgs e)
+        {
+            Gtk.Application.Quit();
         }
     }
 }

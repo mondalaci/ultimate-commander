@@ -1,13 +1,13 @@
 <Combine name="uc" fileversion="2.0">
   <Configurations active="Release">
     <Configuration name="Debug" ctype="CombineConfiguration">
-      <Entry build="True" name="uc" configuration="Debug" />
+      <Entry build="True" name="UltimateCommander" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
-      <Entry build="True" name="uc" configuration="Debug" />
+      <Entry build="True" name="UltimateCommander" configuration="Debug" />
     </Configuration>
   </Configurations>
-  <StartMode startupentry="uc" single="True">
+  <StartMode startupentry="UltimateCommander" single="True">
     <Execute type="None" entry="uc" />
   </StartMode>
   <Entries>

@@ -5,7 +5,7 @@ using Glade;
 
 namespace UltimateCommander {
 
-    enum InfoType {
+    public enum InfoType {
         Notice,
         Warning,
         Error
@@ -49,7 +49,7 @@ namespace UltimateCommander {
             MainWindow.InfoBar.PrintInfo(InfoType.Error, text, args);
         }
 
-        void PrintInfo(InfoType type_arg, string text, params object[] args)
+        public void PrintInfo(InfoType type_arg, string text, params object[] args)
         {
             type = type_arg;
             message.Buffer.Text = String.Format(text, args);
