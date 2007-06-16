@@ -1,3 +1,7 @@
+2007-06-16  László Monda <laci@monda.hu> 
+
+	* Migrate the infobar from Glade to Stetic.
+
 2007-05-14  László Monda <laci@monda.hu> 
 
         * MainWindow.cs, InfoBar.cs, uc.mdp, ChangeLog, uc.mds,

@@ -141,22 +141,51 @@ namespace Stetic.SteticGenerated {
             w28.Expand = false;
             w28.Fill = false;
             // Container child vbox1.Gtk.Box+BoxChild
-            Gtk.HSeparator w29 = new Gtk.HSeparator();
-            bindings["hseparator1"] = w29;
-            w29.Name = "hseparator1";
+            Gtk.Alignment w29 = new Gtk.Alignment(0.5F, 0.5F, 1F, 1F);
+            bindings["alignment1"] = w29;
+            w29.Name = "alignment1";
+            w29.BottomPadding = ((uint)(3));
+            // Container child alignment1.Gtk.Container+ContainerChild
+            Gtk.HSeparator w30 = new Gtk.HSeparator();
+            bindings["hseparator1"] = w30;
+            w30.Name = "hseparator1";
+            w29.Add(w30);
             w14.Add(w29);
-            Gtk.Box.BoxChild w30 = ((Gtk.Box.BoxChild)(w14[w29]));
-            w30.Position = 5;
-            w30.Expand = false;
-            w30.Fill = false;
-            // Container child vbox1.Gtk.Box+BoxChild
-            Gtk.EventBox w31 = new Gtk.EventBox();
-            bindings["infobar_slot"] = w31;
-            w31.Name = "infobar_slot";
-            w14.Add(w31);
-            Gtk.Box.BoxChild w32 = ((Gtk.Box.BoxChild)(w14[w31]));
-            w32.Position = 6;
+            Gtk.Box.BoxChild w32 = ((Gtk.Box.BoxChild)(w14[w29]));
+            w32.Position = 5;
             w32.Expand = false;
+            w32.Fill = false;
+            // Container child vbox1.Gtk.Box+BoxChild
+            Gtk.EventBox w33 = new Gtk.EventBox();
+            bindings["infobar_slot"] = w33;
+            w33.Name = "infobar_slot";
+            // Container child infobar_slot.Gtk.Container+ContainerChild
+            Gtk.HBox w34 = new Gtk.HBox();
+            bindings["hbox1"] = w34;
+            w34.Name = "hbox1";
+            w34.Spacing = 6;
+            // Container child hbox1.Gtk.Box+BoxChild
+            Gtk.Image w35 = new Gtk.Image();
+            bindings["infobar_icon"] = w35;
+            w35.Name = "infobar_icon";
+            w34.Add(w35);
+            Gtk.Box.BoxChild w36 = ((Gtk.Box.BoxChild)(w34[w35]));
+            w36.Position = 0;
+            w36.Expand = false;
+            w36.Fill = false;
+            // Container child hbox1.Gtk.Box+BoxChild
+            Gtk.TextView w37 = new Gtk.TextView();
+            bindings["infobar_message"] = w37;
+            w37.CanFocus = true;
+            w37.Name = "infobar_message";
+            w34.Add(w37);
+            Gtk.Box.BoxChild w38 = ((Gtk.Box.BoxChild)(w34[w37]));
+            w38.Position = 1;
+            w33.Add(w34);
+            w14.Add(w33);
+            Gtk.Box.BoxChild w40 = ((Gtk.Box.BoxChild)(w14[w33]));
+            w40.Position = 6;
+            w40.Expand = false;
             cobj.Add(w14);
             if ((cobj.Child != null)) {
                 cobj.Child.ShowAll();

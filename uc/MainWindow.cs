@@ -1,4 +1,6 @@
 using System;
+using Gdk;
+using Gtk;
 
 namespace UltimateCommander {
 	
@@ -11,12 +13,25 @@ namespace UltimateCommander {
         protected Gtk.MenuBar menubar;
         protected Gtk.Toolbar toolbar;
         protected Gtk.HBox command_hbox;
+        protected Gtk.Image infobar_icon;
+        protected Gtk.TextView infobar_message;
 
         // static Stetic widgets
         static Gtk.MenuBar menubar_static;
         static Gtk.Toolbar toolbar_static;
         static Gtk.HPaned hpaned_static;
         static Gtk.HBox command_hbox_static;
+        static Gtk.Image infobar_icon_static;
+        static Gtk.TextView infobar_message_static;
+
+        // InfoBar related variables
+        static Gdk.Pixbuf error;
+        static Gdk.Pixbuf warning;
+        static Gdk.Pixbuf notice;
+        static InfoType type;
+        static uint timer;
+        static uint timeout_handler;
+        static bool timeout_running = false;
 
         static Frame dialog_frame;
         static PanelFrame left_panel_frame;
@@ -39,6 +54,8 @@ namespace UltimateCommander {
             toolbar_static = toolbar;
             hpaned_static = hpaned;
             command_hbox_static = command_hbox;
+            infobar_icon_static = infobar_icon;
+            infobar_message_static = infobar_message;
 
             // set up the dialog frame
             dialog_frame = new Frame();
@@ -53,9 +70,11 @@ namespace UltimateCommander {
             SetActivePanel();
 
             // set up the infobar
-            infobar = new InfoBar();
-            infobar_slot.Add(infobar);
-            infobar.PrintInfo(InfoType.Notice, "Ultimate Commander started.");
+            error = Util.LoadGtkIcon("gtk-dialog-error");
+            warning = Util.LoadGtkIcon("gtk-dialog-warning");
+            notice = Util.LoadGtkIcon("gtk-info");
+            Util.ModifyWidgetBase(infobar_message, StateType.Insensitive);
+            InfoBar.Notice("Ultimate Commander started.");
 
             this.ShowAll();
         }
@@ -103,6 +122,67 @@ namespace UltimateCommander {
             };
             foreach (Gtk.Widget widget in widgets) {
                 widget.Sensitive = sensitive;
+            }
+        }
+
+        // InfoBar handling
+        
+        public static void PrintInfo(InfoType type_arg, string text, params object[] args)
+        {
+            type = type_arg;
+            infobar_message_static.Buffer.Text = String.Format(text, args);
+
+            switch (type) {
+            case InfoType.Error:
+                infobar_icon_static.Pixbuf = error;
+                break;
+            case InfoType.Warning:
+                infobar_icon_static.Pixbuf = warning;
+                break;
+            default:  // InfoType.Notice
+                infobar_icon_static.Pixbuf = notice;
+                break;
+            }
+
+            if (timeout_running) {
+                timeout_running = false;
+                GLib.Source.Remove(timeout_handler);
+            }
+            
+            ShowBell(true);
+            timeout_running = true;
+            timer = 0;
+            timeout_handler = GLib.Timeout.Add(Config.FlashInterval, ProgressHandler);
+        }
+
+        static bool ProgressHandler()
+        {
+            if (type == InfoType.Error || type == InfoType.Warning) {
+                bool show = timer / Config.FlashInterval % 2 != 0;
+                ShowBell(show);
+            }
+
+            timer += Config.FlashInterval;
+            if (timer <= Config.WaitInterval) {
+                return true;
+            }
+
+            // Terminate
+            timeout_running = false;
+            ShowBell(false);
+            return false;
+        }
+        
+        static void ShowBell(bool show)
+        {
+            if (show) {
+                if (type == InfoType.Error) {
+                    infobar_message_static.ModifyBase(StateType.Normal, Config.ErrorColor);
+                } else if (type == InfoType.Warning) {
+                    infobar_message_static.ModifyBase(StateType.Normal, Config.WarningColor);
+                }
+            } else {
+                Util.ModifyWidgetBase(infobar_message_static, StateType.Insensitive);
             }
         }
 
