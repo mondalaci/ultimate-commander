@@ -1,21 +1,23 @@
 using System;
 using Gtk;
-using Glade;
 
-namespace UltimateCommander {
+namespace UltimateCommander
+{
+    
+    
+    public class Notifier : Gtk.Bin
+    {
+    	protected Gtk.Image icon;
+    	protected Gtk.TextView textview;
 
-    public abstract class Notifier: GladeWidget {
-        
-        [Glade.Widget] protected TextView textview;
-        [Glade.Widget] protected Image icon;
-
-        protected TextTag bold_tag;
+		protected TextTag bold_tag;
         protected TextTag red_tag;
         
         Panel panel;
         
-        public Notifier(Panel panel_arg): base("notifier_widget")
+        public Notifier(Panel panel_arg)
         {
+            Stetic.Gui.Build(this, typeof(Notifier));
             panel = panel_arg;
             red_tag = new TextTag("red");
             red_tag.ForegroundGdk = new Gdk.Color(255, 0, 0);
@@ -37,10 +39,10 @@ namespace UltimateCommander {
             icon.Pixbuf = icon.RenderIcon(icon_name, IconSize.SmallToolbar, "");
         }
         
-        [GLib.ConnectBefore]
-        void OnButtonPressEvent(object sender, ButtonPressEventArgs args)
+        protected virtual void OnButtonPressEvent (object o, Gtk.ButtonPressEventArgs args)
         {
             panel.Select();
         }
-    }
+
+	}
 }

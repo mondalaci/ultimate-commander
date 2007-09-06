@@ -1,0 +1,6 @@
+<objects>
+  <object type="UltimateCommander.Notifier" palette-category="UltimateCommander" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
+</objects>

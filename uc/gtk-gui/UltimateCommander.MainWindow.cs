@@ -162,7 +162,6 @@ namespace Stetic.SteticGenerated {
             // Container child infobar_slot.Gtk.Container+ContainerChild
             Gtk.HBox w34 = new Gtk.HBox();
             bindings["hbox1"] = w34;
-            w34.Name = "hbox1";
             w34.Spacing = 6;
             // Container child hbox1.Gtk.Box+BoxChild
             Gtk.Image w35 = new Gtk.Image();
