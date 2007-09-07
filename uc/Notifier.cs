@@ -1,12 +1,10 @@
 using System;
 using Gtk;
 
-namespace UltimateCommander
-{
+namespace UltimateCommander {
     
-    
-    public class Notifier : Gtk.Bin
-    {
+    public class Notifier : Gtk.Bin {
+		
     	protected Gtk.Image icon;
     	protected Gtk.TextView textview;
 
@@ -39,7 +37,7 @@ namespace UltimateCommander
             icon.Pixbuf = icon.RenderIcon(icon_name, IconSize.SmallToolbar, "");
         }
         
-        protected virtual void OnButtonPressEvent (object o, Gtk.ButtonPressEventArgs args)
+        protected virtual void OnButtonPressEvent(object o, Gtk.ButtonPressEventArgs args)
         {
             panel.Select();
         }

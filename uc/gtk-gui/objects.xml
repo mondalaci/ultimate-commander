@@ -3,4 +3,21 @@
     <itemgroups />
     <signals />
   </object>
+  <object type="UltimateCommander.NewCreateDirectoryDialog" palette-category="UltimateCommander" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups>
+      <itemgroup label="View Properties">
+        <property name="Title" />
+      </itemgroup>
+    </itemgroups>
+    <signals />
+  </object>
+  <object type="UltimateCommander.Slot" palette-category="UltimateCommander" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups>
+      <itemgroup label="Slot Properties">
+        <property name="Title" />
+      </itemgroup>
+    </itemgroups>
+    <signals>
+    </signals>
+  </object>
 </objects>

@@ -4,18 +4,20 @@ using Gdk;
 using Gtk;
 
 namespace UltimateCommander {
-
-    public class Slot: GladeWidget {
-
-        [Glade.Widget] TextView header;
-        [Glade.Widget] EventBox view_slot;
+	
+	public class Slot : Gtk.Bin {
+		
+		protected Gtk.EventBox view_slot;
+		protected Gtk.TextView header;
+        protected Gtk.EventBox topwidget;
 
         Frame frame;
         View view;
         TextTag white_tag;
         
-        public Slot(View view_arg): base("slot_widget")
+        public Slot(View view_arg)
         {
+			Stetic.Gui.Build(this, typeof(Slot));
             view = view_arg;
             view_slot.Add(view);
             view.Slot = this;
@@ -82,7 +84,6 @@ namespace UltimateCommander {
             topwidget.ModifyBg(StateType.Normal, color);
             header.ModifyBase(StateType.Insensitive, color);
             topwidget.ModifyBg(StateType.Insensitive, color);
-            
         }
         
         private void SetBgColor(StateType statetype)
@@ -92,10 +93,10 @@ namespace UltimateCommander {
         }
         
         [GLib.ConnectBefore]
-        void OnButtonPressEvent(object sender, ButtonPressEventArgs args)
+        protected virtual void OnButtonPressEvent(object o, Gtk.ButtonPressEventArgs args)
         {
             Select();
             args.RetVal = true;
         }
-    }
+	}
 }

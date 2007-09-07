@@ -36,6 +36,7 @@ namespace Stetic.SteticGenerated {
             // Container child vbox1.Gtk.Box+BoxChild
             Gtk.HBox w4 = new Gtk.HBox();
             bindings["hbox1"] = w4;
+            w4.Name = "hbox1";
             w4.Spacing = 6;
             // Container child hbox1.Gtk.Box+BoxChild
             Gtk.Image w5 = new Gtk.Image();
