@@ -7,8 +7,6 @@ Ultimate Commander was my Master's Thesis project and its development was halted
 
 A picture says more than a thousand words:
 
-![](https://raw.github.com/mondalaci/ultimate-commander/master/misc/screenshot.png)
-
 ![](/mondalaci/ultimate-commander/raw/master/misc/screenshot.png)
 
 You're supposed to be able to build it by invoking `make` in the root directory but I don't guarantee anything because its dependencies have probably been obsoleted in the meantime.
