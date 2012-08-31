@@ -1,7 +1,7 @@
 Ultimate Commander
 ==================
 
-Ultimate Commander is a Gtk#-based two-pane file manager developed with a special focus on usability and it runs on Linux.
+Ultimate Commander is a [Gtk#](http://www.mono-project.com/GtkSharp)-based two-pane file manager developed with a special focus on usability and it runs on Linux.
 
 Ultimate Commander was my Master's Thesis project and its development was halted in the middle of 2006. It's not feature complete, so it's not intended to be used for production, but I think user interface- and interaction-wise it has some good ideas worth exploring.
 
